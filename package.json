@@ -6,7 +6,8 @@
   "bin": "./index.js",
   "type": "module",
   "scripts": {
-    "release": "standard-version"
+    "release": "standard-version",
+    "postinstall": "node ./installation.js"
   },
   "prettier": {
     "semi": false,
@@ -30,6 +31,7 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
     "html-webpack-plugin": "^4.3.0",
+    "object-assign-deep": "^0.4.0",
     "prettier": "^2.0.5",
     "regenerator-runtime": "^0.13.5",
     "webpack": "^4.43.0",
