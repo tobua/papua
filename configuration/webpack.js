@@ -31,11 +31,6 @@ export default (env) => ({
   resolve: {
     modules: [root('.'), 'node_modules'],
   },
-  devServer: {
-    port: 2000,
-    open: true,
-    writeToDisk: true,
-  },
   performance: {
     hints: false,
   },
