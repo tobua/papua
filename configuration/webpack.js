@@ -1,9 +1,11 @@
 import { resolve } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import { LocalDependenciesPlugin } from 'synec'
 
 const root = (folder) => resolve(process.cwd(), folder)
 
-export default (env) => ({
+export default (development) => ({
+  mode: development ? 'development' : 'production',
   entry: ['core-js/stable', 'regenerator-runtime/runtime', './index.js'],
   module: {
     rules: [
@@ -27,14 +29,12 @@ export default (env) => ({
     new HtmlWebpackPlugin({
       template: './index.html',
     }),
+    new LocalDependenciesPlugin(),
   ],
   resolve: {
     modules: [root('.'), 'node_modules'],
   },
   performance: {
     hints: false,
-  },
-  stats: {
-    children: false,
   },
 })
