@@ -23,6 +23,7 @@
     "babel-loader": "^8.1.0",
     "chalk": "^4.1.0",
     "core-js": "^3.6.5",
+    "deepmerge": "^4.2.2",
     "eslint": "^7.4.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "^6.11.0",
