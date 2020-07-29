@@ -35,3 +35,7 @@ Lints the code and prints errors.
 ### `npm test`
 
 Run tests if there are any.
+
+## Upcoming Features
+
+- Check for updates to dependencies upon start.

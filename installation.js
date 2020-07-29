@@ -4,8 +4,7 @@ import prettier from 'prettier'
 import objectAssignDeep from 'object-assign-deep'
 import configuration from './configuration/package.js'
 
-const root = join(process.cwd(), '../..')
-const packageJsonPath = join(root, 'package.json')
+const packageJsonPath = join(process.cwd(), 'package.json')
 
 let packageContents = readFileSync(packageJsonPath, 'utf8')
 packageContents = JSON.parse(packageContents)
