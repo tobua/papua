@@ -5,4 +5,6 @@ export default {
   // Disables ｢wds｣ logs.
   // NOTE will not work if quiet: true.
   noInfo: true,
+  // Prevent errors from falling back to regular logs.
+  stats: 'none',
 }

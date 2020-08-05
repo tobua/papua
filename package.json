@@ -1,6 +1,7 @@
 {
   "name": "papua",
   "version": "0.0.0",
+  "description": "Setup and build modern web applications.",
   "license": "MIT",
   "author": "Matthias Giger",
   "bin": "./index.js",
