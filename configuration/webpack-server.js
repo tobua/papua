@@ -7,4 +7,6 @@ export default {
   noInfo: true,
   // Prevent errors from falling back to regular logs.
   stats: 'none',
+  // Redirect all routes to index.html (useful with router).
+  historyApiFallback: true,
 }
