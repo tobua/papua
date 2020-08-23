@@ -51,7 +51,14 @@ export default async (development) => {
   const doneSignals = ['SIGINT', 'SIGTERM']
 
   doneSignals.forEach((signal) =>
-    process.on(signal, () => server.close() && process.exit())
+    process.on(signal, () => {
+      server.close()
+      process.exit(0)
+    })
   )
-  process.stdin.on('end', () => server.close() && process.exit())
+
+  process.stdin.on('end', () => {
+    server.close()
+    process.exit(0)
+  })
 }
