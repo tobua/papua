@@ -7,10 +7,6 @@ const root = (folder) => resolve(process.cwd(), folder)
 export default (development) => ({
   mode: development ? 'development' : 'production',
   entry: ['core-js/stable', 'regenerator-runtime/runtime', './index.js'],
-  output: {
-    // Make sure assets can be found from nested folders with router active.
-    publicPath: '.',
-  },
   module: {
     rules: [
       {
@@ -26,6 +22,17 @@ export default (development) => ({
             ],
           },
         },
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: development ? '[path][name].[ext]' : '[contenthash].[ext]',
+            },
+          },
+        ],
       },
     ],
   },
