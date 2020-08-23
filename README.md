@@ -1,16 +1,20 @@
+<p align="center">
+  <img src="https://github.com/tobua/papua/raw/master/logo.png" alt="papua" width="500">
+</p>
+
 # papua
 
 Setup and build modern web applications.
 
 ## Installation
 
-### New Project from Scratch
+### New Project
 
 ```
-npm init papua
+npm init now papua
 ```
 
-### Adding to Existing Project
+### Existing Project
 
 ```
 npm i papua
@@ -36,6 +40,6 @@ Lints the code and prints errors.
 
 Run tests if there are any.
 
-## Upcoming Features
+### `npm update`
 
-- Check for updates to dependencies upon start.
+Checks if there are updates to any npm packages and automatically updates them.
