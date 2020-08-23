@@ -53,11 +53,19 @@ export const logStats = (stats, development) => {
   const errors = stats.compilation.errors
 
   if (warnings.length) {
+    console.log('')
     console.log(chalk.yellow(`${warnings.length} Warnings.`))
   }
 
   if (errors.length) {
-    console.log(chalk.bold.red(`${errors.length} Errors!`))
+    console.log('')
+    const errorCount = errors.length === 1 ? 'Error' : 'Errors'
+    console.log(chalk.bold.red(`${errors.length} ${errorCount}:`))
+
+    errors.forEach((error) => {
+      console.log('')
+      console.log(error)
+    })
   }
 
   console.log('')
