@@ -1,3 +1,4 @@
+import { existsSync } from 'fs'
 import { resolve } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
@@ -38,7 +39,8 @@ export default (development) => ({
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
+      title: 'papua App',
+      template: existsSync(process.cwd(), './index.html') ? './index.html' : undefined, 
     }),
     new LocalDependenciesPlugin(),
   ],

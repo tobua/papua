@@ -40,6 +40,6 @@ Lints the code and prints errors.
 
 Run tests if there are any.
 
-### `npm update`
+### `npm run update`
 
 Checks if there are updates to any npm packages and automatically updates them.

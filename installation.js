@@ -1,8 +1,16 @@
 import { join } from 'path'
 import { readFileSync, writeFileSync } from 'fs'
 import objectAssignDeep from 'object-assign-deep'
+import formatPackageJson from 'pakag'
 import configuration from './configuration/package.js'
-import { formatJson } from './utility/format-json.js'
+
+// Skip postinstall on local install.
+// https://stackoverflow.com/a/53239387/3185545
+const env = process.env
+if (env.INIT_CWD === env.PWD || env.INIT_CWD.indexOf(env.PWD) === 0) {
+  console.info('Skipping `postinstall` script on local installs')
+  process.exit()
+}
 
 const packageJsonPath = join(process.cwd(), '../../package.json')
 
@@ -15,6 +23,6 @@ objectAssignDeep(packageContents, configuration)
 packageContents = JSON.stringify(packageContents)
 
 // Format with prettier before writing.
-packageContents = formatJson(packageContents)
+packageContents = formatPackageJson(packageContents)
 
 writeFileSync(packageJsonPath, packageContents)
