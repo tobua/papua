@@ -1,9 +1,21 @@
 import { existsSync } from 'fs'
-import { resolve } from 'path'
+import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 
 const root = (folder) => resolve(process.cwd(), folder)
+
+const getHtmlWebpackPluginOptions = () => {
+  const options = {
+    title: 'papua App'
+  }
+
+  if (existsSync(join(process.cwd(), './index.html'))) {
+    options.template = './index.html'
+  }
+  
+  return options
+}
 
 export default (development) => ({
   mode: development ? 'development' : 'production',
@@ -18,6 +30,7 @@ export default (development) => ({
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
             plugins: [
+              // Plugins for mobx which uses decorators.
               ['@babel/plugin-proposal-decorators', { legacy: true }],
               ['@babel/plugin-proposal-class-properties', { loose: true }],
             ],
@@ -38,13 +51,12 @@ export default (development) => ({
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      title: 'papua App',
-      template: existsSync(process.cwd(), './index.html') ? './index.html' : undefined, 
-    }),
+    new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
     new LocalDependenciesPlugin(),
   ],
   resolve: {
+    // To allow absolute imports from root, without tons of ../..
+    // and making it easy to copy code and move files around.
     modules: [root('.'), 'node_modules'],
   },
   performance: {
