@@ -34,6 +34,7 @@
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
     "jest": "^26.4.2",
+    "logua": "^1.0.1",
     "npm-check-updates": "^7.1.1",
     "object-assign-deep": "^0.4.0",
     "pakag": "^1.0.1",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "standard-version": "^8.0.2"
   },
+  "color": "blue",
   "files": [
     "configuration",
     "script",

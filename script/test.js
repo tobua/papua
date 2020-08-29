@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import { log } from '../utility/log.js'
+import log from 'logua'
 
 export default () => {
   log('running tests..')
