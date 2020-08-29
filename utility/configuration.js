@@ -27,7 +27,6 @@ export const loadWebpackConfig = async (development) => {
 
   // User configuration can be a function and will receive the default config and the environment.
   if (typeof userConfig === 'function') {
-    console.log('is func')
     userConfiguration = userConfiguration(configuration, development)
   }
 

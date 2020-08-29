@@ -4,6 +4,9 @@ module.exports = {
     'import/prefer-default-export': 0,
     'react/jsx-filename-extension': 0,
     'react/prop-types': 0,
+    'lines-between-class-members': 0,
+    'max-classes-per-file': 0,
+    'react/jsx-props-no-spreading': 0,
   },
   ignorePatterns: ['dist'],
   env: {

@@ -2,28 +2,38 @@ import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
+import { getProjectOptions } from '../utility/options.js'
+
+const options = getProjectOptions()
+
+console.log(options)
 
 const root = (folder) => resolve(process.cwd(), folder)
 
 const getHtmlWebpackPluginOptions = () => {
-  const options = {
-    title: 'papua App'
+  const htmlOptions = {
+    title: 'papua App',
   }
 
   if (existsSync(join(process.cwd(), './index.html'))) {
-    options.template = './index.html'
+    htmlOptions.template = './index.html'
   }
-  
-  return options
+
+  return htmlOptions
+}
+
+const getEntry = () => {
+  const polyfills = ['core-js/stable', 'regenerator-runtime/runtime']
+  return [...polyfills, ...options.entries]
 }
 
 export default (development) => ({
   mode: development ? 'development' : 'production',
-  entry: ['core-js/stable', 'regenerator-runtime/runtime', './index.js'],
+  entry: getEntry(),
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
@@ -34,6 +44,16 @@ export default (development) => ({
               ['@babel/plugin-proposal-decorators', { legacy: true }],
               ['@babel/plugin-proposal-class-properties', { loose: true }],
             ],
+          },
+        },
+      },
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'ts-loader',
+          options: {
+            //
           },
         },
       },
@@ -58,6 +78,8 @@ export default (development) => ({
     // To allow absolute imports from root, without tons of ../..
     // and making it easy to copy code and move files around.
     modules: [root('.'), 'node_modules'],
+    // Add TypeScript extensions.
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   performance: {
     hints: false,

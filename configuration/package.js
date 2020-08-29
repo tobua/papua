@@ -10,4 +10,18 @@ export default {
   eslintConfig: {
     extends: './node_modules/papua/configuration/eslint.cjs',
   },
+  jest: {
+    transform: {
+      '^.+\\.tsx?$': 'ts-jest',
+      '^.+\\.jsx?$': [
+        'babel-jest',
+        { configFile: './node_modules/padua/configuration/.babelrc' },
+      ],
+    },
+    globals: {
+      'ts-jest': {
+        tsConfig: './node_modules/padua/configuration/tsconfig.json',
+      },
+    },
+  },
 }
