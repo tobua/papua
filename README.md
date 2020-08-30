@@ -10,7 +10,7 @@ Setup and build modern web applications.
 
 ### New Project
 
-```
+```js
 // Create default template in current directory.
 npm init now papua
 // Initialize default template in 'my-project' directory.
@@ -21,7 +21,7 @@ npm init now papua . typescript
 
 ### Existing Project
 
-```
+```js
 npm i papua
 ```
 
