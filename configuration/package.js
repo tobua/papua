@@ -6,7 +6,7 @@ export default {
     test: 'papua test',
     update: 'papua update',
   },
-  prettier: 'papua/configuration/prettier.js',
+  prettier: 'papua/configuration/.prettierrc.json',
   eslintConfig: {
     extends: './node_modules/papua/configuration/eslint.cjs',
   },
@@ -15,12 +15,12 @@ export default {
       '^.+\\.tsx?$': 'ts-jest',
       '^.+\\.jsx?$': [
         'babel-jest',
-        { configFile: './node_modules/padua/configuration/.babelrc' },
+        { configFile: './node_modules/papua/configuration/.babelrc' },
       ],
     },
     globals: {
       'ts-jest': {
-        tsConfig: './node_modules/padua/configuration/tsconfig.json',
+        tsConfig: './node_modules/papua/configuration/tsconfig.json',
       },
     },
   },

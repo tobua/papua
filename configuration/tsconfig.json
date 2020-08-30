@@ -3,6 +3,6 @@
     "jsx": "react",
     "esModuleInterop": true,
     "outDir": "../../../dist",
-    "baseUrl": "."
+    "baseUrl": "../../.."
   }
 }

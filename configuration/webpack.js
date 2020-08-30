@@ -7,8 +7,6 @@ import { getProjectOptions } from '../utility/options.js'
 
 const options = getProjectOptions()
 
-console.log(options)
-
 const root = (folder) => resolve(process.cwd(), folder)
 
 const getHtmlWebpackPluginOptions = () => {
@@ -53,9 +51,6 @@ export default (development) => ({
         exclude: /node_modules/,
         use: {
           loader: 'ts-loader',
-          options: {
-            //
-          },
         },
       },
       {

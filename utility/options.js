@@ -29,17 +29,13 @@ const extendTSConfig = (contents, packagePath, projectPath) => {
 const verifyTSConfig = (projectPath, packagePath) => {
   let tsConfigContents = {}
 
-  console.log(projectPath, packagePath)
-
   try {
     tsConfigContents = JSON.parse(readFileSync(projectPath, 'utf8'))
-  } catch (error) {
-    console.log(error)
+  } catch (_) {
     log(`Unable to read TSConfig in ${projectPath}`, 'warning')
   }
 
   if (!tsConfigContents.extends || tsConfigContents.extends !== packagePath) {
-    console.log('extending')
     extendTSConfig(tsConfigContents, packagePath, projectPath)
   }
 }
@@ -120,8 +116,6 @@ export const getProjectOptions = () => {
   options.entries = entries
 
   // JS / TS
-
-  console.log(entries)
 
   options.js = entries.some((entry) => /\.jsx?$/g.test(entry))
   options.ts = entries.some((entry) => /\.tsx?$/g.test(entry))
