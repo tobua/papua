@@ -2,6 +2,7 @@ import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import { getProjectOptions } from '../utility/options.js'
 
 const options = getProjectOptions()
@@ -80,6 +81,7 @@ export default (development) => ({
     modules: [root('.'), 'node_modules'],
     // Add TypeScript extensions.
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    plugins: [new TsconfigPathsPlugin({ configFile: options.tsconfigPath })],
   },
   performance: {
     hints: false,

@@ -1,8 +1,61 @@
 import { join } from 'path'
-import { readFileSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
 import log from 'logua'
+import formatPackageJson from 'pakag'
 
 let optionsCache
+
+// Extend tsconfig with default configuration.
+const extendTSConfig = (contents, packagePath, projectPath) => {
+  // This way extends will be the property at the top.
+  delete contents.extends
+  let newTSConfig = {
+    extends: packagePath,
+    ...contents,
+  }
+
+  newTSConfig = JSON.stringify(newTSConfig)
+
+  newTSConfig = formatPackageJson(newTSConfig, { sort: false })
+
+  try {
+    writeFileSync(projectPath, newTSConfig)
+  } catch (_) {
+    log(`Unable to extend TSConfig in ${projectPath}`, 'warning')
+  }
+}
+
+// Extend project TSConfig with package TSConfig defaults.
+const verifyTSConfig = (projectPath, packagePath) => {
+  let tsConfigContents = {}
+
+  console.log(projectPath, packagePath)
+
+  try {
+    tsConfigContents = JSON.parse(readFileSync(projectPath, 'utf8'))
+  } catch (error) {
+    console.log(error)
+    log(`Unable to read TSConfig in ${projectPath}`, 'warning')
+  }
+
+  if (!tsConfigContents.extends || tsConfigContents.extends !== packagePath) {
+    console.log('extending')
+    extendTSConfig(tsConfigContents, packagePath, projectPath)
+  }
+}
+
+// Find location of applicable TSConfig.
+const findTSConfig = () => {
+  const projectPath = join(process.cwd(), 'tsconfig.json')
+  const packagePath = './node_modules/papua/configuration/tsconfig.json'
+
+  if (existsSync(projectPath)) {
+    verifyTSConfig(projectPath, packagePath)
+    return projectPath
+  }
+
+  return packagePath
+}
 
 // Get the options for this project, either from the filesystem or explicit configuration.
 export const getProjectOptions = () => {
@@ -78,6 +131,11 @@ export const getProjectOptions = () => {
       'Both JavaScript and TypeScript entries found, please only use one',
       'error'
     )
+  }
+
+  // TS Config
+  if (options.ts) {
+    options.tsconfigPath = findTSConfig()
   }
 
   optionsCache = options
