@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/tobua/papua/raw/master/logo.png" alt="papua" width="500">
+  <img src="https://github.com/tobua/papua/raw/master/logo.svg" alt="papua" width="500">
 </p>
 
 # papua
