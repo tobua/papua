@@ -1,26 +1,23 @@
 import chalk from 'chalk'
+import log from 'logua'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
 
 export const startServer = () => {
-  console.log(`${chalk.blue.bold('papua')} Starting server...\n`)
+  log('Starting server...')
 }
 
 export const logStats = (stats, development) => {
   if (!development) {
-    console.log(
-      `${chalk.blue.bold('papua')} Build in ${
-        stats.compilation.entries[0].context
-      } took ${prettyMs(stats.endTime - stats.startTime, {
-        verbose: true,
-      })}.\n`
+    log(
+      `Build in ${stats.compilation.entries[0].context} took ${prettyMs(
+        stats.endTime - stats.startTime,
+        {
+          verbose: true,
+        }
+      )}`
     )
   }
-
-  // const chunks = stats.compilation.chunks.map((chunk) => ({
-  //   name: chunk.name,
-  //   files: chunk.files,
-  // }))
 
   const entries = stats.compilation.entries[0].dependencies
     .map((dep) => dep.module.rawRequest || dep.userRequest)
@@ -73,5 +70,4 @@ export const logStats = (stats, development) => {
 
 export const logError = (error) => console.log(chalk.red(error.message))
 
-export const recompiling = () =>
-  console.log(`${chalk.blue.bold('papua')} Recompiling...\n`)
+export const recompiling = () => log('Recompiling...')
