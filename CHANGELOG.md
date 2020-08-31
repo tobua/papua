@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/tobua/papua/compare/v0.0.2...v0.0.3) (2020-08-31)
+
+
+### Bug Fixes
+
+* **general:** more usage of logua and updating dependencies ([ab52bee](https://github.com/tobua/papua/commit/ab52bee0ea1284a07faf9c8b065d4304ba1fb6de))
+
 ### [0.0.2](https://github.com/tobua/papua/compare/v0.0.1...v0.0.2) (2020-08-31)
 
 
