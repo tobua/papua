@@ -76,7 +76,11 @@ export default (development) => ({
     modules: [root('.'), 'node_modules'],
     // Add TypeScript extensions.
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    plugins: [new TsconfigPathsPlugin({ configFile: options.tsconfigPath })],
+    plugins: [
+      options.ts
+        ? new TsconfigPathsPlugin({ configFile: options.tsconfigPath })
+        : null,
+    ].filter(Boolean),
   },
   performance: {
     hints: false,
