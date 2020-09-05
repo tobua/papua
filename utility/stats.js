@@ -1,13 +1,16 @@
 import chalk from 'chalk'
-import log from 'logua'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
+import formatMessages from 'webpack-format-messages'
+import { log } from '../utility/log.js'
 
 export const startServer = () => {
   log('Starting server...')
 }
 
 export const logStats = (stats, development) => {
+  stats = formatMessages(stats)
+
   if (!development) {
     log(
       `Build in ${stats.compilation.entries[0].context} took ${prettyMs(

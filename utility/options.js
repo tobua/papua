@@ -1,7 +1,7 @@
 import { join } from 'path'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
-import log from 'logua'
 import formatPackageJson from 'pakag'
+import { log } from '../utility/log.js'
 
 let optionsCache
 

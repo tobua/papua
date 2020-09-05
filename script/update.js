@@ -3,7 +3,7 @@ import { join } from 'path'
 import ncu from 'npm-check-updates'
 import { execSync } from 'child_process'
 import rimraf from 'rimraf'
-import log from 'logua'
+import { log } from '../utility/log.js'
 
 export default async () => {
   log('checking for updates..')

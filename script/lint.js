@@ -1,6 +1,6 @@
 import eslint from 'eslint'
 import { execSync } from 'child_process'
-import log from 'logua'
+import { log } from '../utility/log.js'
 
 const ESLint = eslint.ESLint
 const configurationPath = './node_modules/papua/configuration'

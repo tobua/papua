@@ -8,6 +8,8 @@ const customRules = {
   'react/jsx-filename-extension': 0,
   // Prop types not required, use typescript for type checking.
   'react/prop-types': 0,
+  // Props defined with TS which will not be linted.
+  'react/require-default-props': 0,
   // No line required between mobx observable properties.
   'lines-between-class-members': 0,
   // Multiple mobx classes per file, especially for lists.
