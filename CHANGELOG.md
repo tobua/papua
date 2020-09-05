@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/tobua/papua/compare/v0.0.3...v0.0.4) (2020-09-05)
+
+
+### Features
+
+* **log:** use formatter for webpack messages and update logua ([ab299fe](https://github.com/tobua/papua/commit/ab299fe5cbf9472d2d3bbcbd6930cf835e016366))
+
+
+### Bug Fixes
+
+* **postinstall:** exiting with success code as desired behaviour ([c2299d7](https://github.com/tobua/papua/commit/c2299d728fcdfd489d4a2b9530f5d7e0cbb683d0))
+
 ### [0.0.3](https://github.com/tobua/papua/compare/v0.0.2...v0.0.3) (2020-08-31)
 
 
