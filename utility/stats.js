@@ -9,8 +9,6 @@ export const startServer = () => {
 }
 
 export const logStats = (stats, development) => {
-  stats = formatMessages(stats)
-
   if (!development) {
     log(
       `Build in ${stats.compilation.entries[0].context} took ${prettyMs(
@@ -49,12 +47,16 @@ export const logStats = (stats, development) => {
     console.log(`  ${chalk.bold.cyan(asset.name)}  ${prettyBytes(asset.size)}`)
   )
 
-  const warnings = stats.compilation.warnings
-  const errors = stats.compilation.errors
+  const { warnings, errors } = formatMessages(stats)
 
   if (warnings.length) {
     console.log('')
     console.log(chalk.yellow(`${warnings.length} Warnings.`))
+
+    warnings.forEach((warning) => {
+      console.log('')
+      console.log(warning)
+    })
   }
 
   if (errors.length) {
