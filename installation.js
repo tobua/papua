@@ -9,7 +9,7 @@ import configuration from './configuration/package.js'
 const env = process.env
 if (env.INIT_CWD === env.PWD || env.INIT_CWD.indexOf(env.PWD) === 0) {
   console.info('Skipping `postinstall` script on local installs')
-  process.exit()
+  process.exit(0)
 }
 
 const packageJsonPath = join(process.cwd(), '../../package.json')
