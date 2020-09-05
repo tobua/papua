@@ -33,19 +33,19 @@ This will automatically adapt your `package.json` configuration to work with `pa
 
 Builds the application and opens it in the browser.
 
-### `npm run build`
-
-Builds the application for production. A production build will only be created if there are no lint errors and all tests have passed.
-
-### `npm run lint`
-
-Lints the code and prints errors.
-
 ### `npm test`
 
 Run tests if there are any.
 
-### `npm run update`
+### `npx papua build`
+
+Builds the application for production. A production build will only be created if there are no lint errors and all tests have passed.
+
+### `npx papua lint`
+
+Lints the code and prints errors.
+
+### `npx papua update`
 
 Checks if there are updates to any npm packages and automatically updates them.
 
