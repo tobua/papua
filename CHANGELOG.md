@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/tobua/papua/compare/v0.0.5...v0.0.6) (2020-09-23)
+
+
+### Bug Fixes
+
+* **eslint:** add more lint rules and update dependencies ([ac0d34c](https://github.com/tobua/papua/commit/ac0d34c6a13363872f7eacc33d03f48c94effcec))
+* **template:** update version in templates ([29657bb](https://github.com/tobua/papua/commit/29657bb57871ffe48c817141ac354346500caf56))
+
 ### [0.0.5](https://github.com/tobua/papua/compare/v0.0.4...v0.0.5) (2020-09-05)
 
 
