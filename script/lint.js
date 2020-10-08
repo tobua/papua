@@ -1,8 +1,8 @@
 import eslint from 'eslint'
 import { execSync } from 'child_process'
-import { log } from '../utility/log.js'
+import { log } from '../utility/helper.js'
 
-const ESLint = eslint.ESLint
+const { ESLint } = eslint
 const configurationPath = './node_modules/papua/configuration'
 
 export default async () => {

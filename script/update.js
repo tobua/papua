@@ -3,7 +3,7 @@ import { join } from 'path'
 import ncu from 'npm-check-updates'
 import { execSync } from 'child_process'
 import rimraf from 'rimraf'
-import { log } from '../utility/log.js'
+import { log } from '../utility/helper.js'
 
 export default async () => {
   log('checking for updates..')
@@ -13,7 +13,8 @@ export default async () => {
   })
 
   if (Object.keys(upgrades).length === 0) {
-    return log('everything already up-to-date')
+    log('everything already up-to-date')
+    return
   }
 
   Object.keys(upgrades).forEach((key) => {

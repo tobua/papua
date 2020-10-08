@@ -1,18 +1,17 @@
-#!/usr/bin/env node
-
 import * as scripts from './script/index.js'
+import { getOptions } from './utility/options.js'
+import { writeConfiguration } from './utility/configuration.js'
 
-let script = process.argv.slice(2)[0]
+const options = getOptions()
 
-if (['start', 'build', 'test', 'lint', 'update'].includes(script)) {
-  const developmentMode = script === 'start'
+writeConfiguration()
 
-  // Start will be a regular build in development mode with watching and serving.
-  if (script === 'start') {
-    script = 'build'
-  }
+export const start = () => scripts.build(options, true)
 
-  scripts[script](developmentMode)
-} else {
-  console.error('Please provide a valid script.')
-}
+export const build = () => scripts.build(options, false)
+
+export const test = () => scripts.test(options)
+
+export const lint = () => scripts.lint()
+
+export const update = () => scripts.update()

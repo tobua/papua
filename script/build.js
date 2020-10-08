@@ -31,7 +31,8 @@ export default async (development) => {
 
   if (!development) {
     // Run just webpack.
-    return compiler.run(handler)
+    compiler.run(handler)
+    return
   }
 
   // Run webpack with webpack-dev-server.
@@ -42,7 +43,8 @@ export default async (development) => {
   const server = new WebpackDevServer(compiler, devServerConfiguration)
   server.listen(3000, 'localhost', (error) => {
     if (error) {
-      return console.log(error)
+      console.log(error)
+      return
     }
 
     startServer()

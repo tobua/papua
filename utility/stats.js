@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
 import formatMessages from 'webpack-format-messages'
-import { log } from '../utility/log.js'
+import { log } from './helper.js'
 
 export const startServer = () => {
   log('Starting server...')

@@ -1,6 +1,3 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "experimentalDecorators": true
-    }
+  "comment": "This file will be generated from ./jsconfig.js"
 }

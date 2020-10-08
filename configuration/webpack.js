@@ -2,9 +2,7 @@ import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
-import { getProjectOptions } from '../utility/options.js'
-
-const options = getProjectOptions()
+import { options } from '../utility/options.js'
 
 const root = (folder) => resolve(process.cwd(), folder)
 
@@ -22,12 +20,15 @@ const getHtmlWebpackPluginOptions = () => {
 
 const getEntry = () => {
   const polyfills = ['core-js/stable', 'regenerator-runtime/runtime']
-  return [...polyfills, ...options.entries]
+  return [...polyfills, ...options().entries]
 }
 
 export default (development) => ({
   mode: development ? 'development' : 'production',
   entry: getEntry(),
+  output: {
+    path: options().output,
+  },
   module: {
     rules: [
       {
@@ -50,9 +51,6 @@ export default (development) => ({
         exclude: /node_modules/,
         use: {
           loader: 'ts-loader',
-          options: {
-            configFile: options.tsconfigPath,
-          },
         },
       },
       {
