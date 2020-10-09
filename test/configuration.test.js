@@ -5,11 +5,77 @@ import {
   writeGitIgnore,
   writeJSConfig,
   writeTSConfig,
+  writePackageJson,
 } from '../utility/configuration.js'
 import { refresh } from '../utility/helper.js'
 
 const CWD = process.cwd()
 const cwdSpy = jest.spyOn(process, 'cwd')
+
+test('Adds necessary package json properties.', () => {
+  refresh()
+  const fixturePath = join(CWD, 'test/fixture/default')
+  const gitignorePath = join(fixturePath, '.gitignore')
+  const jsconfigPath = join(fixturePath, 'jsconfig.json')
+  const indexJsPath = join(fixturePath, 'index.js')
+  const packageJsonPath = join(fixturePath, 'package.json')
+  cwdSpy.mockReturnValue(fixturePath)
+
+  rimraf.sync(jsconfigPath)
+  rimraf.sync(indexJsPath)
+  rimraf.sync(gitignorePath)
+
+  const { packageContents } = writePackageJson()
+
+  expect(typeof packageContents.papua).toEqual('object')
+
+  const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+
+  expect(pkg.papua).toEqual(undefined)
+  delete packageContents.papua
+  expect(pkg).toEqual(packageContents)
+  // No tests available.
+  expect(pkg.scripts.test).toEqual(undefined)
+  expect(Object.keys(pkg.scripts).length).toEqual(1)
+  expect(pkg.prettier && pkg.eslintConfig && pkg.stylelint && true).toEqual(
+    true
+  )
+
+  rimraf.sync(jsconfigPath)
+  rimraf.sync(indexJsPath)
+  rimraf.sync(gitignorePath)
+  writeFileSync(packageJsonPath, `{\n  "name": "default"\n}\n`)
+})
+
+test('Adds an empty package.json if none can be found.', () => {
+  refresh()
+  const fixturePath = join(CWD, 'test/fixture/empty')
+  const gitignorePath = join(fixturePath, '.gitignore')
+  const jsconfigPath = join(fixturePath, 'jsconfig.json')
+  const indexJsPath = join(fixturePath, 'index.js')
+  const packageJsonPath = join(fixturePath, 'package.json')
+  cwdSpy.mockReturnValue(fixturePath)
+
+  rimraf.sync(jsconfigPath)
+  rimraf.sync(indexJsPath)
+  rimraf.sync(gitignorePath)
+  rimraf.sync(packageJsonPath)
+
+  expect(existsSync(packageJsonPath)).toEqual(false)
+
+  writePackageJson()
+
+  expect(existsSync(packageJsonPath)).toEqual(true)
+
+  const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+
+  expect(Object.keys(pkg.scripts).length).toEqual(1)
+
+  rimraf.sync(jsconfigPath)
+  rimraf.sync(indexJsPath)
+  rimraf.sync(gitignorePath)
+  rimraf.sync(packageJsonPath)
+})
 
 test('Generates jsconfig extending package config.', () => {
   refresh()

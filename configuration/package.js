@@ -2,6 +2,10 @@ import { options } from '../utility/options.js'
 
 export const packageJson = () => {
   const pkg = {
+    scripts: {
+      start: 'papua start',
+    },
+    type: 'module',
     engines: {
       node: '>= 13.2.0',
     },
@@ -12,11 +16,6 @@ export const packageJson = () => {
     stylelint: {
       extends: 'papua/configuration/stylelint.js',
     },
-    files: [options().output],
-  }
-
-  if (options().test || !options().source) {
-    pkg.scripts = {}
   }
 
   if (options().test) {
@@ -38,25 +37,6 @@ export const packageJson = () => {
         { configFile: './node_modules/papua/configuration/.babelrc' },
       ]
     }
-  }
-
-  if (options().source) {
-    pkg.files = ['**/*.js', 'index.d.ts']
-    if (options().test) {
-      pkg.files.push('!test')
-    }
-    pkg.main = `${options().entry}`
-    // Extensions required for node source code.
-    pkg.eslintConfig.rules = {
-      'import/extensions': [2, 'always'],
-    }
-  } else {
-    pkg.scripts.start = 'papua start'
-    pkg.main = `${options().output}/index.js`
-  }
-
-  if (options().entry) {
-    pkg.source = options().entry
   }
 
   return pkg

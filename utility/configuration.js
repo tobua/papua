@@ -18,7 +18,7 @@ import { packageJson } from '../configuration/package.js'
 import { gitignore } from '../configuration/gitignore.js'
 import webpackConfig from '../configuration/webpack.js'
 import webpackServerConfiguration from '../configuration/webpack-server.js'
-import { log } from './helper.js'
+import { log, isPlugin } from './helper.js'
 import { options } from './options.js'
 import { getProjectBasePath } from './path.js'
 
@@ -197,11 +197,19 @@ export const writeGitIgnore = (gitIgnoreOverrides = []) => {
   writeFileSync(gitIgnorePath, entries.join('\r\n'))
 }
 
-const writePackageJson = () => {
+export const writePackageJson = (postinstall) => {
   const packageJsonPath = join(getProjectBasePath(), './package.json')
+
+  if (!existsSync(packageJsonPath)) {
+    writeFileSync(packageJsonPath, `{\n}\n`)
+  }
 
   let packageContents = readFileSync(packageJsonPath, 'utf8')
   packageContents = JSON.parse(packageContents)
+
+  if (postinstall && isPlugin(packageContents)) {
+    return { packageContents }
+  }
 
   // Merge existing configuration with additional required attributes.
   objectAssignDeep(packageContents, packageJson())
@@ -216,10 +224,16 @@ const writePackageJson = () => {
   return { packageContents }
 }
 
-export const writeConfiguration = () => {
-  const { packageContents } = writePackageJson()
+export const writeConfiguration = (postinstall) => {
+  const { packageContents } = writePackageJson(postinstall)
+
+  if (postinstall && isPlugin(packageContents)) {
+    return null
+  }
+
   writeJSConfig(packageContents.papua.jsconfig)
   writeTSConfig(packageContents.papua.tsconfig)
   writeGitIgnore(packageContents.papua.gitignore)
+
   return { packageContents }
 }
