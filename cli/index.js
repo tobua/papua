@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as scripts from './script/index.js'
+import * as scripts from '../script/index.js'
 
 let script = process.argv.slice(2)[0]
 
