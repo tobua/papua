@@ -9,6 +9,9 @@ export const packageJson = () => {
     eslintConfig: {
       extends: './node_modules/papua/configuration/eslint.cjs',
     },
+    stylelint: {
+      extends: 'papua/configuration/stylelint.js',
+    },
     files: [options().output],
   }
 

@@ -1,4 +1,5 @@
 import eslint from 'eslint'
+import { lint } from 'stylelint'
 import { execSync } from 'child_process'
 import { log } from '../utility/helper.js'
 
@@ -15,14 +16,21 @@ export default async () => {
   console.log('')
 
   log('linting files..')
+
+  // ESLint
   const linter = new ESLint({
     fix: true,
     extensions: ['.js', '.ts', '.jsx', '.tsx'],
   })
-  const results = await linter.lintFiles('.')
-  await ESLint.outputFixes(results)
+  const eslintResults = await linter.lintFiles('.')
+  await ESLint.outputFixes(eslintResults)
   const formatter = await linter.loadFormatter('stylish')
-  const resultText = formatter.format(results)
+  const resultText = formatter.format(eslintResults)
 
   console.log(resultText)
+
+  // Stylelint
+  const stylelintResults = await lint({ files: '**/*.[jt]sx?' })
+
+  console.log(stylelintResults.output)
 }
