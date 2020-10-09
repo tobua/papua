@@ -3,6 +3,7 @@ import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
+import { getProjectBasePath } from '../utility/path.js'
 
 const root = (folder) => resolve(process.cwd(), folder)
 
@@ -27,7 +28,7 @@ export default (development) => ({
   mode: development ? 'development' : 'production',
   entry: getEntry(),
   output: {
-    path: options().output,
+    path: join(getProjectBasePath(), options().output),
   },
   module: {
     rules: [
