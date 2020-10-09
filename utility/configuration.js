@@ -85,10 +85,15 @@ const writeUserAndPackageConfig = (
 // remove ../../.. to place config in project root.
 const adaptConfigToRoot = (packageConfig) => {
   deepForEach(packageConfig, (value, key, subject) => {
+    const emptyBasePackagePath = '../../..'
     const baseFromPackagePath = '../../../'
     if (typeof value === 'string' && value.includes(baseFromPackagePath)) {
       // eslint-disable-next-line no-param-reassign
       subject[key] = value.replace(baseFromPackagePath, '')
+    }
+    if (typeof value === 'string' && value.includes(emptyBasePackagePath)) {
+      // eslint-disable-next-line no-param-reassign
+      subject[key] = value.replace(emptyBasePackagePath, '.')
     }
   })
 }
@@ -103,10 +108,10 @@ const writeOnlyUserConfig = (
     // eslint-disable-next-line no-param-reassign
     delete userConfig.extends
     adaptConfigToRoot(packageConfig)
-    Object.assign(userConfig, packageConfig)
+    const mergedUserConfig = merge(userConfig, packageConfig, { clone: false })
     writeFileSync(
       userTSConfigPath,
-      formatJson(JSON.stringify(userConfig), { sort: false })
+      formatJson(JSON.stringify(mergedUserConfig), { sort: false })
     )
   } catch (_) {
     log(
@@ -158,7 +163,7 @@ const writePackageAndUserFile = (
   }
 }
 
-const writeTSConfig = (tsConfigUserOverrides = {}) => {
+export const writeTSConfig = (tsConfigUserOverrides = {}) => {
   writePackageAndUserFile(
     !options().typescript,
     'tsconfig.json',
@@ -167,7 +172,7 @@ const writeTSConfig = (tsConfigUserOverrides = {}) => {
   )
 }
 
-const writeJSConfig = (jsConfigUserOverrides = {}) => {
+export const writeJSConfig = (jsConfigUserOverrides = {}) => {
   writePackageAndUserFile(
     options().typescript,
     'jsconfig.json',
