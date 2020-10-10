@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import * as scripts from '../script/index.js'
+import { writeConfiguration } from '../utility/configuration.js'
 
 let script = process.argv.slice(2)[0]
 
@@ -11,6 +12,8 @@ if (['start', 'build', 'test', 'lint', 'update'].includes(script)) {
   if (script === 'start') {
     script = 'build'
   }
+
+  writeConfiguration()
 
   scripts[script](developmentMode)
 } else {

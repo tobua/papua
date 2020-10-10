@@ -14,7 +14,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
       baseUrl: '../../..',
       experimentalDecorators: true,
     },
-    files: [`../../../${options().entry}`],
+    files: options().entries.map((entry) => `../../../${entry}`),
     exclude: [`../../../${options().output}`],
   }
 

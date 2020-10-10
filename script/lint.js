@@ -31,7 +31,10 @@ export default async () => {
   console.log(resultText)
 
   // Stylelint
-  const stylelintResults = await lint({ files: '**/*.[jt]sx?' })
+  const stylelintResults = await lint({
+    files: '**/*.{js,jsx,ts,tsx}',
+    formatter: 'verbose',
+  })
 
   console.log(stylelintResults.output)
 }

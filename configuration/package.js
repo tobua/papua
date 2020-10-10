@@ -14,7 +14,7 @@ export const packageJson = () => {
       extends: './node_modules/papua/configuration/eslint.cjs',
     },
     stylelint: {
-      extends: 'papua/configuration/stylelint.js',
+      extends: 'papua/configuration/stylelint.cjs',
     },
   }
 
