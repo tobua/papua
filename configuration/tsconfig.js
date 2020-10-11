@@ -12,7 +12,6 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
       esModuleInterop: true,
       outDir: `../../../${options().output}`,
       baseUrl: '../../..',
-      experimentalDecorators: true,
     },
     files: options().entries.map((entry) => `../../../${entry}`),
     exclude: [`../../../${options().output}`],
