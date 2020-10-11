@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/tobua/papua/compare/v0.0.7...v0.1.0) (2020-10-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **configuration:** config is now always generated and should be ignored
+
+### Features
+
+* **configuration:** apply recent configuration changes from padua ([023854d](https://github.com/tobua/papua/commit/023854d9c303ece3f546096397b4b50281a2eddf))
+* **lint:** add stylelint for css-in-js ([59dc0ff](https://github.com/tobua/papua/commit/59dc0ffa3b7321d97bba71c066380def8d3f1a04))
+
+
+### Bug Fixes
+
+* **configuration:** fix for newly added stylelint and tsconfig ([29dafcf](https://github.com/tobua/papua/commit/29dafcf3b907032fee2fa38283b419b8d9f09a97))
+* **mobx:** remove decorator configuration as MobX 6 was released ([8788b27](https://github.com/tobua/papua/commit/8788b276bb8bd8521c6dce993dea65f158b757ad))
+* **project:** proper imports and removing options coming from padua ([4603b19](https://github.com/tobua/papua/commit/4603b1995f475bde8e98021dd3d6bbea2dac61be))
+* **script:** small fixes after integration test ([f8ad781](https://github.com/tobua/papua/commit/f8ad78102d85be3cee29d9f0ba379a81298fa1c0))
+
 ### [0.0.7](https://github.com/tobua/papua/compare/v0.0.6...v0.0.7) (2020-09-23)
 
 
