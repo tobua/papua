@@ -6,7 +6,7 @@ import {
   writeFileSync,
   unlinkSync,
 } from 'fs'
-import { resolve, join } from 'path'
+import { join } from 'path'
 import merge from 'deepmerge'
 import formatJson from 'pakag'
 import objectAssignDeep from 'object-assign-deep'
@@ -34,7 +34,7 @@ export const loadWebpackConfig = async (development) => {
     // Works with module.exports = {} and export default {}.
     // The latter only if type in project is set to ES Modules.
     userConfiguration = await import(
-      resolve(process.cwd(), './webpack.config.js')
+      join(getProjectBasePath(), './webpack.config.js')
     )
 
     if (userConfiguration.default) {
