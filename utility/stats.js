@@ -8,10 +8,35 @@ export const startServer = () => {
   log('Starting server...')
 }
 
+const logChunkEntrySizes = (entry, chunkName, logChunk) => {
+  let entries = entry.dependencies
+    .map((dep) => dep.request || dep.userRequest)
+    .filter(
+      (_entry) => !_entry.match(/core-js\/stable|regenerator-runtime\/runtime|webpack-dev-server/)
+    )
+
+  // Remove duplicates
+  entries = [...new Set(entries)]
+
+  let chunkInfo = ''
+
+  if (logChunk) {
+    chunkInfo = ` (${chalk.bold.green(chunkName)} chunk)`
+  }
+
+  if (entries.length === 1) {
+    console.log(`${chalk.gray('Entry')} ${entries[0]}${chunkInfo}`)
+  }
+
+  if (entries.length > 1) {
+    console.log(`${chalk.gray('Entries')} ${entries.join(' ')}${chunkInfo}`)
+  }
+}
+
 export const logStats = (stats, development) => {
   if (!development) {
     log(
-      `Build in ${stats.compilation.entries[0].context} took ${prettyMs(
+      `Build in ${stats.compilation.outputOptions.path} took ${prettyMs(
         stats.endTime - stats.startTime,
         {
           verbose: true,
@@ -20,18 +45,9 @@ export const logStats = (stats, development) => {
     )
   }
 
-  const entries = stats.compilation.entries[0].dependencies
-    .map((dep) => dep.module.rawRequest || dep.userRequest)
-    .filter(
-      (entry) => !entry.match(/core-js\/stable|regenerator-runtime\/runtime/)
-    )
-
-  if (entries.length === 1) {
-    console.log(`${chalk.gray('Entry')} ${entries[0]}`)
-  }
-
-  if (entries.length > 1) {
-    console.log(`${chalk.gray('Entries')} ${entries.join(' ')}`)
+  // eslint-disable-next-line no-restricted-syntax
+  for (const [chunkName, entry] of stats.compilation.entries) {
+    logChunkEntrySizes(entry, chunkName, stats.compilation.entries.size > 1)
   }
 
   const assets = Object.keys(stats.compilation.assets).map((name) => {
