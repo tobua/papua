@@ -211,17 +211,24 @@ export const writePackageJson = (postinstall) => {
     return { packageContents }
   }
 
+  const generatedPackageJson = packageJson()
+
   // Merge existing configuration with additional required attributes.
-  objectAssignDeep(packageContents, packageJson())
+  // Existing properties override generated configuration to allow
+  // the user to configure it their way.
+  objectAssignDeep(generatedPackageJson, packageContents)
 
   // Format with prettier and sort before writing.
-  writeFileSync(packageJsonPath, formatJson(JSON.stringify(packageContents)))
+  writeFileSync(
+    packageJsonPath,
+    formatJson(JSON.stringify(generatedPackageJson))
+  )
 
-  if (!packageContents.papua) {
-    packageContents.papua = {}
+  if (!generatedPackageJson.papua) {
+    generatedPackageJson.papua = {}
   }
 
-  return { packageContents }
+  return { packageContents: generatedPackageJson }
 }
 
 export const writeConfiguration = (postinstall) => {
