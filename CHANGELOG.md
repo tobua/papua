@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/tobua/papua/compare/v0.1.0...v0.1.1) (2020-10-21)
+
+
+### Bug Fixes
+
+* **lint:** stylelint-vscode unable to load cjs ([3e80fc7](https://github.com/tobua/papua/commit/3e80fc7d16d45e40f1d8532566db08bcd4727c0d))
+* **package:** switch merge order and update dependencies ([7ab49e7](https://github.com/tobua/papua/commit/7ab49e7c5d8d5e30533f1c7bf9cfe01ae83e65b1))
+* **webpack:** adapt stats generation to new data structure ([936156f](https://github.com/tobua/papua/commit/936156fe3c480a769f070c3c9503648fbd8234b6))
+
 ## [0.1.0](https://github.com/tobua/papua/compare/v0.0.7...v0.1.0) (2020-10-11)
 
 
