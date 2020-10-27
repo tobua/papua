@@ -28,7 +28,7 @@ export const packageJson = () => {
       pkg.jest.transform['^.+\\.tsx?$'] = 'ts-jest'
       pkg.jest.globals = {
         'ts-jest': {
-          tsConfig: './node_modules/papua/configuration/tsconfig.json',
+          tsconfig: './node_modules/papua/configuration/tsconfig.json',
         },
       }
     } else {
