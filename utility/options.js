@@ -133,5 +133,9 @@ export const options = cache(() => {
     result.test = true
   }
 
+  if (!result.title) {
+    result.title = `${packageContents.name || 'papua'} App`
+  }
+
   return result
 })

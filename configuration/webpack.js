@@ -9,7 +9,7 @@ const root = (folder) => resolve(process.cwd(), folder)
 
 const getHtmlWebpackPluginOptions = () => {
   const htmlOptions = {
-    title: 'papua App',
+    title: options().title,
   }
 
   if (existsSync(join(process.cwd(), './index.html'))) {
