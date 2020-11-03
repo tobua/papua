@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/tobua/papua/compare/v0.1.1...v0.1.2) (2020-11-03)
+
+
+### Features
+
+* **webpack:** configurable title with package name as fallback ([4b30b56](https://github.com/tobua/papua/commit/4b30b56367cdc9e08b6977b84aac9084a54123dd))
+
+
+### Bug Fixes
+
+* **test:** change deprecated property for ts-jest ([d2135ff](https://github.com/tobua/papua/commit/d2135ff48c630630b8ddac5042f473e3b18abd17))
+
 ### [0.1.1](https://github.com/tobua/papua/compare/v0.1.0...v0.1.1) (2020-10-21)
 
 
