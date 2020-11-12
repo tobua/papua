@@ -1,6 +1,7 @@
 import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
@@ -65,10 +66,15 @@ export default (development) => ({
           },
         ],
       },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
+    new MiniCssExtractPlugin(),
     new LocalDependenciesPlugin(),
   ],
   resolve: {
