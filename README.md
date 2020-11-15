@@ -19,6 +19,16 @@ npm init now papua ./my-project
 npm init now papua . typescript
 ```
 
+The following [templates](https://github.com/tobua/papua/tree/master/template) are available:
+
+- default (JS + React)
+- typescript (TS + React)
+- pwa (TS + React + Progressive Web App)
+
+```js
+npm init now papua [destination-directory] [template]
+```
+
 ### Existing Project
 
 ```js

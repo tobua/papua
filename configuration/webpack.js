@@ -2,6 +2,7 @@ import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import CopyPlugin from 'copy-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
@@ -75,6 +76,9 @@ export default (development) => ({
   plugins: [
     new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
     new MiniCssExtractPlugin(),
+    new CopyPlugin({
+      patterns: [{ from: 'public', to: options().output }],
+    }),
     new LocalDependenciesPlugin(),
   ],
   resolve: {
