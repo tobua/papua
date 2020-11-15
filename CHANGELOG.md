@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/tobua/papua/compare/v0.1.3...v0.1.4) (2020-11-15)
+
+
+### Features
+
+* **template:** Draft PWA template and necessary webpack changes ([a59e5e0](https://github.com/tobua/papua/commit/a59e5e0c190babe3c0a1c2d83d67fd65eea2473f))
+
 ### [0.1.3](https://github.com/tobua/papua/compare/v0.1.2...v0.1.3) (2020-11-15)
 
 
