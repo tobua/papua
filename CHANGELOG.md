@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/tobua/papua/compare/v0.1.2...v0.1.3) (2020-11-15)
+
+
+### Features
+
+* **webpack:** add css support for legacy plugins ([2956362](https://github.com/tobua/papua/commit/2956362294bcc9da968a7dc0fddcca44cc4a7a25))
+
 ### [0.1.2](https://github.com/tobua/papua/compare/v0.1.1...v0.1.2) (2020-11-03)
 
 
