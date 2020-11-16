@@ -26,6 +26,24 @@ const getEntry = () => {
   return [...polyfills, ...options().entries]
 }
 
+const getPlugins = (development) => {
+  const plugins = [
+    new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
+    new MiniCssExtractPlugin(),
+    new LocalDependenciesPlugin(),
+  ]
+
+  if (existsSync(join(process.cwd(), 'public'))) {
+    plugins.push(
+      new CopyPlugin({
+        patterns: [{ from: 'public', to: options().output }],
+      })
+    )
+  }
+
+  return plugins
+}
+
 export default (development) => ({
   mode: development ? 'development' : 'production',
   entry: getEntry(),
@@ -73,14 +91,7 @@ export default (development) => ({
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
-    new MiniCssExtractPlugin(),
-    new CopyPlugin({
-      patterns: [{ from: 'public', to: options().output }],
-    }),
-    new LocalDependenciesPlugin(),
-  ],
+  plugins: getPlugins(development),
   resolve: {
     // To allow absolute imports from root, without tons of ../..
     // and making it easy to copy code and move files around.
