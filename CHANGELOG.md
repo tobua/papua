@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/tobua/papua/compare/v0.1.4...v0.1.5) (2020-11-16)
+
+
+### Bug Fixes
+
+* **webpack:** prevent error when copy folder missing ([8f74aed](https://github.com/tobua/papua/commit/8f74aed00fb4df91f36a2445bbd2cb2d3bb426ca))
+
 ### [0.1.4](https://github.com/tobua/papua/compare/v0.1.3...v0.1.4) (2020-11-15)
 
 
