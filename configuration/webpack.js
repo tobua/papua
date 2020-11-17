@@ -36,7 +36,7 @@ const getPlugins = (development) => {
   if (existsSync(join(process.cwd(), 'public'))) {
     plugins.push(
       new CopyPlugin({
-        patterns: [{ from: 'public', to: options().output }],
+        patterns: [{ from: 'public' }],
       })
     )
   }
