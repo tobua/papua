@@ -3,6 +3,7 @@ import { resolve, join } from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
+import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
@@ -51,6 +52,22 @@ const getPlugins = (development) => {
     plugins.push(
       new CopyPlugin({
         patterns: [{ from: 'public' }],
+      })
+    )
+  }
+
+  const serviceWorkerFileName = `service-worker.${
+    options().typescript ? 'ts' : 'js'
+  }`
+  const serviceWorkerSourcePath = join(
+    getProjectBasePath(),
+    serviceWorkerFileName
+  )
+
+  if (!development && existsSync(serviceWorkerSourcePath)) {
+    plugins.push(
+      new WorkboxWebpackPlugin.InjectManifest({
+        swSrc: serviceWorkerSourcePath,
       })
     )
   }
