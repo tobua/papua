@@ -45,6 +45,8 @@ const defaultOptions = {
   test: false,
   // What's the name of the entry file (defaults: index.[jt]sx?).
   entry: null,
+  // Public path where the files are served from.
+  publicPath: '/',
 }
 
 // Get the options for this project, either from the filesystem or explicit configuration.
