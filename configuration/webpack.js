@@ -23,7 +23,21 @@ const getHtmlWebpackPluginOptions = () => {
 
 const getEntry = () => {
   const polyfills = ['core-js/stable', 'regenerator-runtime/runtime']
-  return [...polyfills, ...options().entries]
+
+  const result = {
+    polyfills,
+    main: options().entries,
+  }
+
+  const serviceWorkerFileName = `service-worker.${
+    options().typescript ? 'ts' : 'js'
+  }`
+
+  if (existsSync(join(getProjectBasePath(), serviceWorkerFileName))) {
+    result['service-worker'] = serviceWorkerFileName
+  }
+
+  return result
 }
 
 const getPlugins = (development) => {
