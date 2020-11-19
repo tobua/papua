@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import { resolve, join } from 'path'
-import { DefinePlugin } from 'webpack'
+import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
@@ -33,7 +33,7 @@ const getPlugins = (development) => {
     new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
     new MiniCssExtractPlugin(),
     new LocalDependenciesPlugin(),
-    new DefinePlugin({
+    new webpack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(options().publicPath),
     }),
   ]
