@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/tobua/papua/compare/v0.1.5...v0.1.6) (2020-11-27)
+
+
+### Features
+
+* **pwa:** optionally add service-worker entry ([e9f0a64](https://github.com/tobua/papua/commit/e9f0a64e8a9120089b6691a7edfdff46105ff7d3))
+* **template:** add PWA code files ([7e1358e](https://github.com/tobua/papua/commit/7e1358e06c6453ce1abbb1be0ba8cf1f3356fe13))
+* **template:** update template code ([b5e678c](https://github.com/tobua/papua/commit/b5e678c361fbc19c934586205b4e0a630c3e3e52))
+* **webpack:** add workbox plugin to generate service worker PWA file ([0b41115](https://github.com/tobua/papua/commit/0b411157ee588b6c9d0cc9a874abbd9418bd76c0))
+* **webpack:** inject configurable public url to define asset location ([11016a5](https://github.com/tobua/papua/commit/11016a5bcd39270a6251f26dccfc7f4d93981f53))
+
+
+### Bug Fixes
+
+* **template:** make sure variables kept intact for PWA template ([beba6f3](https://github.com/tobua/papua/commit/beba6f324fa321b646eddda1f5aa9fcc7cb8ea29))
+* **webpack:** plugin will add the entry ([bc536c5](https://github.com/tobua/papua/commit/bc536c5d91f09bede949835a1bf9d074ce1a25b6))
+* **webpack:** to is already set to output folder and fix template output ([f13efe5](https://github.com/tobua/papua/commit/f13efe5dd504204bf48fbbfb8b0238f54a159628))
+
 ### [0.1.5](https://github.com/tobua/papua/compare/v0.1.4...v0.1.5) (2020-11-16)
 
 
