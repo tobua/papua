@@ -72,6 +72,7 @@ export default (development) => ({
     path: join(getProjectBasePath(), options().output),
     publicPath: options().publicPath,
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
