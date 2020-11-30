@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/tobua/papua/compare/v0.1.6...v0.1.7) (2020-11-30)
+
+
+### Features
+
+* **template:** enhance PWA with markup and database ([b596c34](https://github.com/tobua/papua/commit/b596c34f41e39cf6756ff91fd638b7fe6178c0db))
+
+
+### Bug Fixes
+
+* **webpack:** enable source-maps in development ([5784619](https://github.com/tobua/papua/commit/57846192c84fd568d387930f1ee3e1eed46ce607))
+
 ### [0.1.6](https://github.com/tobua/papua/compare/v0.1.5...v0.1.6) (2020-11-27)
 
 
