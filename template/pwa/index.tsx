@@ -1,21 +1,29 @@
 import React from 'react'
 import { render } from 'react-dom'
-import * as serviceWorkerRegistration from './register'
+import { Todo } from 'markup/Todo'
+import { register } from 'background/registration'
+
+const styles = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+  fontFamily: 'sans-serif',
+}
+
+const contentStyles = { width: 600, maxWidth: '100%' }
 
 render(
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      fontFamily: 'sans-serif',
-    }}
-  >
-    <h1>Progressive Web App</h1>
-    <img alt="logo" src="logo512.png" />
+  <div style={styles}>
+    <header style={styles}>
+      <img alt="logo" src="logo512.png" width="100" />
+      <h1>Progressive Web App</h1>
+    </header>
+    <main style={contentStyles}>
+      <Todo />
+    </main>
   </div>,
   document.body
 )
 
-serviceWorkerRegistration.register({})
+register({})

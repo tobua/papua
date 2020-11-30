@@ -1,8 +1,10 @@
 {
   "dependencies": {
-    "papua": "^0.1.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "mobx": "^6.0.4",
+    "mobx-react": "^7.0.5",
+    "papua": "^0.1.7",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "url-join": "^4.0.1",
     "workbox-core": "^5.1.4",
     "workbox-expiration": "^5.1.4",

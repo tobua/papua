@@ -1,6 +1,7 @@
 {
   "short_name": "PWA",
   "name": "Progressive Web App",
+  "description": "This is demoing a Progressive Web App.",
   "icons": [
     {
       "src": "favicon.ico",
