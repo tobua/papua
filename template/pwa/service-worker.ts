@@ -36,7 +36,7 @@ registerRoute(
 
     return true
   },
-  createHandlerBoundToURL(join(process.env.PUBLIC_URL, '/index.html'))
+  createHandlerBoundToURL(join(process.env.PUBLIC_URL, 'index.html'))
 )
 
 // An example runtime caching route for requests that aren't handled by the
