@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/tobua/papua/compare/v0.1.7...v0.1.8) (2020-12-06)
+
+
+### Bug Fixes
+
+* **webpack:** make sure default public url works outside root ([149fc18](https://github.com/tobua/papua/commit/149fc18d2a91e6c8fbc4d905067ea4eb037ebd5c))
+
 ### [0.1.7](https://github.com/tobua/papua/compare/v0.1.6...v0.1.7) (2020-11-30)
 
 
