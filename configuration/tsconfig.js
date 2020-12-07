@@ -15,10 +15,11 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
     },
     files: options().entries.map((entry) => `../../../${entry}`),
     exclude: [`../../../${options().output}`],
+    include: ['./global.d.ts'],
   }
 
   if (options().test) {
-    packageTSConfig.include = ['../../../test']
+    packageTSConfig.include.push('../../../test')
   }
 
   Object.assign(userTSConfig, tsconfigUserOverrides)
