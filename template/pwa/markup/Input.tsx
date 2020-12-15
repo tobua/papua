@@ -5,7 +5,7 @@ import { Todo } from 'data/todo'
 const styles = { position: 'relative', width: '100%', marginBottom: 20 }
 
 const inputStyles = (active: boolean) => ({
-  width: '100%',
+  width: 'calc(100% - 20px)',
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: 'black',
