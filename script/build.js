@@ -43,7 +43,7 @@ export default async (development) => {
 
   const server = new WebpackDevServer(compiler, devServerConfiguration)
   server.listen(
-    await getPort({ port: getPort.makeRange(3000, 3100) }),
+    await getPort({ port: getPort.makeRange(3000, 3100), host: '127.0.0.1' }),
     'localhost',
     (error) => {
       if (error) {
