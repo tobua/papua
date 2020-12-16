@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.11](https://github.com/tobua/papua/compare/v0.1.10...v0.1.11) (2020-12-16)
+
+
+### Features
+
+* **webpack:** skip occupied ports ([b783bd5](https://github.com/tobua/papua/commit/b783bd5caf38ccd0f8f48be318b955cf36d8b900))
+
+
+### Bug Fixes
+
+* **template:** fix small styling issue ([44490bb](https://github.com/tobua/papua/commit/44490bbb880007fc709e1dcd6f8c041739536747))
+
 ### [0.1.10](https://github.com/tobua/papua/compare/v0.1.9...v0.1.10) (2020-12-15)
 
 ### [0.1.9](https://github.com/tobua/papua/compare/v0.1.8...v0.1.9) (2020-12-07)
