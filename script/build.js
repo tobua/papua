@@ -42,18 +42,19 @@ export default async (development) => {
   compiler.hooks.done.tap('done', (stats) => logStats(stats, development))
 
   const server = new WebpackDevServer(compiler, devServerConfiguration)
-  server.listen(
-    await getPort({ port: getPort.makeRange(3000, 3100), host: '127.0.0.1' }),
-    'localhost',
-    (error) => {
-      if (error) {
-        console.log(error)
-        return
-      }
-
-      startServer()
+  const freePort = await getPort({
+    port: getPort.makeRange(3000, 3100),
+    host: '127.0.0.1',
+  })
+  const host = 'localhost'
+  server.listen(freePort, host, (error) => {
+    if (error) {
+      console.log(error)
+      return
     }
-  )
+
+    startServer(`${host}:${freePort}`)
+  })
 
   const doneSignals = ['SIGINT', 'SIGTERM']
 
