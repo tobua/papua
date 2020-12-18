@@ -6,7 +6,7 @@ import {
   writeFileSync,
   unlinkSync,
 } from 'fs'
-import { join } from 'path'
+import { join, resolve } from 'path'
 import merge from 'deepmerge'
 import formatJson from 'pakag'
 import objectAssignDeep from 'object-assign-deep'
@@ -22,11 +22,29 @@ import { log, isPlugin } from './helper.js'
 import { options } from './options.js'
 import { getProjectBasePath } from './path.js'
 
+const removeLeadingSlash = (path) => path.replace(/^\/*/, '')
+
 // Merges the default webpack config with user additions.
 export const loadWebpackConfig = async (development) => {
   let configuration = webpackConfig(development)
 
   configuration.devServer = webpackServerConfiguration
+
+  if (options().publicPath) {
+    // Won't work with leading slash.
+    configuration.devServer.openPage = removeLeadingSlash(options().publicPath)
+    // Require leading slash.
+    const publicPathLeadingSlash = resolve('/', options().publicPath)
+    configuration.devServer.publicPath = publicPathLeadingSlash
+    configuration.output.publicPath = publicPathLeadingSlash
+
+    // Rewrite index requests to public path.
+    configuration.devServer.historyApiFallback = {
+      index: publicPathLeadingSlash,
+    }
+  } else {
+    configuration.output.publicPath = '/'
+  }
 
   let userConfiguration = {}
 
