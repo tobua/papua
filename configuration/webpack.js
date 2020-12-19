@@ -31,7 +31,10 @@ const getEntry = () => {
 const getPlugins = (development) => {
   const plugins = [
     new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+      filename: development ? '[name].css' : '[name].[contenthash].css',
+      chunkFilename: development ? '[id].css' : '[id].[contenthash].css',
+    }),
     new LocalDependenciesPlugin(),
     new webpack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(options().publicPath),
@@ -69,6 +72,7 @@ export default (development) => ({
   mode: development ? 'development' : 'production',
   entry: getEntry(),
   output: {
+    filename: development ? '[name].js' : '[name].[contenthash].js',
     path: join(getProjectBasePath(), options().output),
     publicPath: options().publicPath,
   },
