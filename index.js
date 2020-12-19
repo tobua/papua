@@ -1,7 +1,7 @@
 import * as scripts from './script/index.js'
 import { writeConfiguration } from './utility/configuration.js'
 
-writeConfiguration()
+export const configure = () => writeConfiguration()
 
 export const start = () => scripts.build(true)
 

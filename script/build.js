@@ -22,18 +22,18 @@ export default async (development) => {
     process.exit(1)
   }
 
-  const handler = (error, stats) => {
+  const handler = (done, error, stats) => {
     if (error) {
       logError(error)
     } else {
       logStats(stats, development)
     }
+    done()
   }
 
   if (!development) {
     // Run just webpack.
-    compiler.run(handler)
-    return
+    return new Promise((done) => compiler.run(handler.bind(null, done)))
   }
 
   // Run webpack with webpack-dev-server.
@@ -69,4 +69,6 @@ export default async (development) => {
     server.close()
     process.exit(0)
   })
+
+  return null
 }

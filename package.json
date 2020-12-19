@@ -1,16 +1,13 @@
 {
   "name": "papua",
-  "version": "0.1.12",
   "description": "Setup and build modern web applications.",
+  "version": "0.1.12",
   "repository": "github:tobua/papua",
   "license": "MIT",
   "author": "Matthias Giger",
-  "bin": "cli/index.js",
-  "main": "index.js",
-  "type": "module",
   "scripts": {
-    "release": "standard-version",
     "postinstall": "node ./installation.js",
+    "release": "standard-version",
     "test": "jest"
   },
   "dependencies": {
@@ -68,6 +65,19 @@
     "webpack-format-messages": "^2.0.6",
     "workbox-webpack-plugin": "^6.0.2"
   },
+  "type": "module",
+  "main": "index.js",
+  "bin": "cli/index.js",
+  "files": [
+    "cli",
+    "configuration",
+    "script",
+    "utility",
+    "*.js"
+  ],
+  "devDependencies": {
+    "standard-version": "^9.0.0"
+  },
   "prettier": {
     "semi": false,
     "singleQuote": true
@@ -75,14 +85,18 @@
   "eslintConfig": {
     "extends": "./configuration/eslint.cjs",
     "rules": {
+      "no-console": 0,
       "import/extensions": [
         2,
         "always"
-      ],
-      "no-console": 0
+      ]
     }
   },
   "jest": {
+    "modulePathIgnorePatterns": [
+      "test/fixture",
+      "template"
+    ],
     "testPathIgnorePatterns": [
       "/template/",
       "/script/"
@@ -98,15 +112,5 @@
     "transformIgnorePatterns": [
       "node_modules/cint"
     ]
-  },
-  "devDependencies": {
-    "standard-version": "^9.0.0"
-  },
-  "files": [
-    "cli",
-    "configuration",
-    "script",
-    "utility",
-    "*.js"
-  ]
+  }
 }
