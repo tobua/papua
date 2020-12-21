@@ -6,18 +6,10 @@ const packageJson = (name) => ({
   },
 })
 
-const indexJavaScript = {
+const indexJavaScript = (contents) => ({
   name: 'index.js',
-  contents: `console.log('test')`,
-}
-
-const indexJavaScriptImports = {
-  name: 'index.js',
-  contents: `import './styles.css';
-import './logo.png';
-
-console.log('test')`,
-}
+  contents,
+})
 
 const cssStyles = {
   name: 'styles.css',
@@ -29,11 +21,28 @@ const pngLogo = {
   copy: 'logo.png',
 }
 
-export const build = [packageJson('build'), indexJavaScript]
+const myModule = (contents) => ({
+  name: 'node_modules/my-module/index.js',
+  contents,
+})
+
+export const build = [
+  packageJson('build'),
+  indexJavaScript(`console.log('test')`),
+]
 
 export const hash = [
   packageJson('hash'),
-  indexJavaScriptImports,
+  indexJavaScript(`import './styles.css';
+  import './logo.png';
+  
+  console.log('test')`),
   cssStyles,
   pngLogo,
+]
+
+export const module = [
+  packageJson('module'),
+  myModule(`console.log('hello');`),
+  indexJavaScript(`import 'my-module';`),
 ]

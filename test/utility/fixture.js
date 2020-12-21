@@ -1,5 +1,5 @@
-import { copyFileSync, mkdirSync } from 'fs'
-import { join } from 'path'
+import { copyFileSync, mkdirSync, existsSync } from 'fs'
+import { join, dirname } from 'path'
 import rimraf from 'rimraf'
 import { writeFile } from './file.js'
 import * as structures from './structures.js'
@@ -18,10 +18,17 @@ export const setup = (structureName) => {
   mkdirSync(BASE, { recursive: true })
 
   structures[structureName].forEach((file) => {
+    const filePath = join(BASE, file.name)
+    const fileDirectory = dirname(filePath)
+
+    if (!existsSync(fileDirectory)) {
+      mkdirSync(fileDirectory, { recursive: true })
+    }
+
     if (file.copy) {
-      copyFileSync(join(CWD, 'test/assets', file.copy), join(BASE, file.name))
+      copyFileSync(join(CWD, 'test/assets', file.copy), filePath)
     } else {
-      writeFile(join(BASE, file.name), file.contents, {
+      writeFile(filePath, file.contents, {
         json: file.json,
       })
     }
