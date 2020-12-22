@@ -9,6 +9,9 @@ import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
 
+const isTest = (testOption, regularOption) =>
+  typeof jest !== 'undefined' ? testOption : regularOption
+
 const root = (folder) => resolve(process.cwd(), folder)
 
 const getHtmlWebpackPluginOptions = () => {
@@ -24,7 +27,11 @@ const getHtmlWebpackPluginOptions = () => {
 }
 
 const getEntry = () => {
-  const polyfills = ['core-js/stable', 'regenerator-runtime/runtime']
+  // Do not include polyfills for tests.
+  const polyfills = isTest(
+    [],
+    ['core-js/stable', 'regenerator-runtime/runtime']
+  )
   return [...polyfills, ...options().entries]
 }
 

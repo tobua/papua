@@ -26,8 +26,8 @@ const pngLogo = {
   copy: 'logo.png',
 }
 
-const myModule = (contents) => ({
-  name: 'node_modules/my-module/index.js',
+const javaScriptModule = (name, contents) => ({
+  name: `node_modules/${name}/index.js`,
   contents,
 })
 
@@ -63,6 +63,27 @@ export const hash = [
 
 export const module = [
   packageJson('module'),
-  myModule(`console.log('hello');`),
   indexJavaScript(`import 'my-module';`),
+  javaScriptModule('my-module', `console.log('hello');`),
+]
+
+export const esmodule = [
+  packageJson('esmodule'),
+  indexJavaScript(`import 'my-module';`),
+  javaScriptModule('my-module', `import 'my-imported-module'`),
+  javaScriptModule(
+    'my-imported-module',
+    `export default console.log('hello again')`
+  ),
+]
+
+export const treeshaking = [
+  packageJson('treeshaking'),
+  indexJavaScript(`import { hello } from 'my-module'; console.log(hello)`),
+  javaScriptModule(
+    'my-module',
+    `export default 'remove-me'
+export const hello = 'keep-me'
+export const world = 'remove-me'`
+  ),
 ]
