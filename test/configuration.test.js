@@ -8,18 +8,19 @@ import {
   writePackageJson,
 } from '../utility/configuration.js'
 import { refresh } from '../utility/helper.js'
+import { environment, prepare } from './utility/prepare.js'
 
-const CWD = process.cwd()
-const cwdSpy = jest.spyOn(process, 'cwd')
+const [fixturePath] = environment('configuration')
 
 test('Adds necessary package json properties.', () => {
+  prepare('simple', fixturePath)
+
   refresh()
-  const fixturePath = join(CWD, 'test/fixture/default')
+
   const gitignorePath = join(fixturePath, '.gitignore')
   const jsconfigPath = join(fixturePath, 'jsconfig.json')
   const indexJsPath = join(fixturePath, 'index.js')
   const packageJsonPath = join(fixturePath, 'package.json')
-  cwdSpy.mockReturnValue(fixturePath)
 
   rimraf.sync(jsconfigPath)
   rimraf.sync(indexJsPath)
@@ -48,13 +49,14 @@ test('Adds necessary package json properties.', () => {
 })
 
 test('Adds an empty package.json if none can be found.', () => {
+  prepare('empty', fixturePath)
+
   refresh()
-  const fixturePath = join(CWD, 'test/fixture/empty')
+
   const gitignorePath = join(fixturePath, '.gitignore')
   const jsconfigPath = join(fixturePath, 'jsconfig.json')
   const indexJsPath = join(fixturePath, 'index.js')
   const packageJsonPath = join(fixturePath, 'package.json')
-  cwdSpy.mockReturnValue(fixturePath)
 
   rimraf.sync(jsconfigPath)
   rimraf.sync(indexJsPath)
@@ -78,8 +80,10 @@ test('Adds an empty package.json if none can be found.', () => {
 })
 
 test('Generates jsconfig extending package config.', () => {
+  prepare('simple', fixturePath)
+
   refresh()
-  const fixturePath = join(CWD, 'test/fixture/default')
+
   const gitignorePath = join(fixturePath, '.gitignore')
   const jsconfigPath = join(fixturePath, 'jsconfig.json')
   const indexJsPath = join(fixturePath, 'index.js')
@@ -92,7 +96,6 @@ test('Generates jsconfig extending package config.', () => {
     fixturePath,
     'node_modules/papua/configuration'
   )
-  cwdSpy.mockReturnValue(fixturePath)
 
   rimraf.sync(jsconfigPath)
   rimraf.sync(nodeModulesPath)
@@ -136,8 +139,10 @@ test('Generates jsconfig extending package config.', () => {
 })
 
 test('Generates tsconfig extending package config.', () => {
+  prepare('typescript', fixturePath)
+
   refresh()
-  const fixturePath = join(CWD, 'test/fixture/typescript')
+
   const gitignorePath = join(fixturePath, '.gitignore')
   const tsconfigPath = join(fixturePath, 'tsconfig.json')
   const nodeModulesPath = join(fixturePath, 'node_modules')
@@ -149,7 +154,6 @@ test('Generates tsconfig extending package config.', () => {
     fixturePath,
     'node_modules/papua/configuration'
   )
-  cwdSpy.mockReturnValue(fixturePath)
 
   rimraf.sync(tsconfigPath)
   rimraf.sync(nodeModulesPath)
@@ -196,8 +200,10 @@ test('Generates tsconfig extending package config.', () => {
 })
 
 test('Fallback to put whole tsconfig into user folder if not writable.', () => {
+  prepare('typescript', fixturePath)
+
   refresh()
-  const fixturePath = join(CWD, 'test/fixture/typescript')
+
   const gitignorePath = join(fixturePath, '.gitignore')
   const tsconfigPath = join(fixturePath, 'tsconfig.json')
   const nodeModulesPath = join(fixturePath, 'node_modules')
@@ -205,7 +211,6 @@ test('Fallback to put whole tsconfig into user folder if not writable.', () => {
     fixturePath,
     'node_modules/papua/configuration/tsconfig.json'
   )
-  cwdSpy.mockReturnValue(fixturePath)
 
   rimraf.sync(tsconfigPath)
   rimraf.sync(nodeModulesPath)
@@ -229,10 +234,11 @@ test('Fallback to put whole tsconfig into user folder if not writable.', () => {
 })
 
 test('Generates gitignore with default entries.', () => {
+  prepare('gitignore', fixturePath)
+
   refresh()
-  const fixturePath = join(CWD, 'test/fixture/gitignore')
+
   const gitignorePath = join(fixturePath, '.gitignore')
-  cwdSpy.mockReturnValue(fixturePath)
 
   rimraf.sync(gitignorePath)
 
@@ -252,10 +258,11 @@ test('Generates gitignore with default entries.', () => {
 })
 
 test('Generates proper gitignore for typescript.', () => {
+  prepare('typescript', fixturePath)
+
   refresh()
-  const fixturePath = join(CWD, 'test/fixture/typescript')
+
   const gitignorePath = join(fixturePath, '.gitignore')
-  cwdSpy.mockReturnValue(fixturePath)
 
   rimraf.sync(gitignorePath)
 

@@ -17,7 +17,7 @@ export const readFile = (name, options = {}) => {
   return content
 }
 
-export const writeFile = (name, content, options = {}) => {
+export const writeFile = (name, content = '', options = {}) => {
   let path = name
 
   if (!isAbsolute(path)) {

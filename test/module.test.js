@@ -2,23 +2,27 @@ import { existsSync } from 'fs'
 import { join } from 'path'
 import glob from 'fast-glob'
 import { build } from '../index.js'
-import { prepare } from './utility/prepare.js'
 import { readFile } from './utility/file.js'
+import { environment, prepare } from './utility/prepare.js'
 
-prepare('module')
+const [fixturePath] = environment('module')
 
 test('Can import node modules.', async () => {
+  prepare('module', fixturePath)
+
   await build()
 
-  expect(existsSync(join(global.PATH, 'dist'))).toEqual(true)
+  const distFolder = join(fixturePath, 'dist')
+
+  expect(existsSync(distFolder)).toEqual(true)
 
   const mainJs = glob.sync(['*.js'], {
-    cwd: join(global.PATH, 'dist'),
+    cwd: distFolder,
   })
 
   expect(mainJs.length).toEqual(1)
 
-  const mainJsFilePath = join(global.PATH, `dist/${mainJs[0]}`)
+  const mainJsFilePath = join(distFolder, mainJs[0])
 
   expect(existsSync(mainJsFilePath)).toEqual(true)
 

@@ -2,22 +2,27 @@ import { existsSync } from 'fs'
 import { join } from 'path'
 import glob from 'fast-glob'
 import { build } from '../index.js'
-import { prepare } from './utility/prepare.js'
+import { environment, prepare } from './utility/prepare.js'
 
-prepare('build')
+const [fixturePath] = environment('build')
 
 test('Builds without errors.', async () => {
+  console.log(fixturePath)
+  prepare('build', fixturePath)
+
   await build()
 
-  expect(existsSync(join(global.PATH, 'dist'))).toEqual(true)
-  expect(existsSync(join(global.PATH, 'dist/index.html'))).toEqual(true)
+  const distFolder = join(fixturePath, 'dist')
+
+  expect(existsSync(distFolder)).toEqual(true)
+  expect(existsSync(join(distFolder, 'index.html'))).toEqual(true)
 
   const mainJs = glob.sync(['*.js'], {
-    cwd: join(global.PATH, 'dist'),
+    cwd: distFolder,
   })
 
   const mainJsMap = glob.sync(['*.js.map'], {
-    cwd: join(global.PATH, 'dist'),
+    cwd: distFolder,
   })
 
   // JS and map for main chunk are available.

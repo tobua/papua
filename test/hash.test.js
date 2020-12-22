@@ -2,30 +2,34 @@ import { existsSync } from 'fs'
 import { join } from 'path'
 import glob from 'fast-glob'
 import { build } from '../index.js'
-import { prepare } from './utility/prepare.js'
+import { environment, prepare } from './utility/prepare.js'
 
-prepare('hash')
+const [fixturePath] = environment('hash')
 
-test('Builds without errors.', async () => {
+test('Various production file types contain content hashes.', async () => {
+  prepare('hash', fixturePath)
+
   await build()
 
-  expect(existsSync(join(global.PATH, 'dist'))).toEqual(true)
-  expect(existsSync(join(global.PATH, 'dist/index.html'))).toEqual(true)
+  const distFolder = join(fixturePath, 'dist')
+
+  expect(existsSync(distFolder)).toEqual(true)
+  expect(existsSync(join(distFolder, 'index.html'))).toEqual(true)
 
   const mainJs = glob.sync(['main.*.js'], {
-    cwd: join(global.PATH, 'dist'),
+    cwd: distFolder,
   })
 
   const mainJsMap = glob.sync(['main.*.js.map'], {
-    cwd: join(global.PATH, 'dist'),
+    cwd: distFolder,
   })
 
   const styles = glob.sync(['*.css'], {
-    cwd: join(global.PATH, 'dist'),
+    cwd: distFolder,
   })
 
   const images = glob.sync(['*.png'], {
-    cwd: join(global.PATH, 'dist'),
+    cwd: distFolder,
   })
 
   // JS and map for main chunk are available.

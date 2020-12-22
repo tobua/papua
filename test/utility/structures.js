@@ -11,6 +11,11 @@ const indexJavaScript = (contents) => ({
   contents,
 })
 
+const indexTypeScript = (contents) => ({
+  name: 'index.ts',
+  contents,
+})
+
 const cssStyles = {
   name: 'styles.css',
   contents: `p { color: red; }`,
@@ -25,6 +30,21 @@ const myModule = (contents) => ({
   name: 'node_modules/my-module/index.js',
   contents,
 })
+
+const gitkeep = {
+  name: '.gitkeep',
+}
+
+export const simple = [packageJson('simple')]
+
+export const empty = [gitkeep]
+
+export const gitignore = [packageJson('gitignore'), indexJavaScript('')]
+
+export const typescript = [
+  packageJson('typescript'),
+  indexTypeScript(`console.log('typescript')`),
+]
 
 export const build = [
   packageJson('build'),

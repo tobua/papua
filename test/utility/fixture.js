@@ -8,17 +8,15 @@ import * as structures from './structures.js'
 const CWD = process.cwd()
 
 // Create file structure required to test the plugins.
-export const setup = (structureName) => {
-  const BASE = join(CWD, 'test/fixture', structureName)
-
+export const setup = (structureName, fixturePath) => {
   // Cleanup in case leftovers from previous runs exist.
-  rimraf.sync(BASE)
+  rimraf.sync(fixturePath)
 
   // Create test/fixture directory to put files.
-  mkdirSync(BASE, { recursive: true })
+  mkdirSync(fixturePath, { recursive: true })
 
   structures[structureName].forEach((file) => {
-    const filePath = join(BASE, file.name)
+    const filePath = join(fixturePath, file.name)
     const fileDirectory = dirname(filePath)
 
     if (!existsSync(fileDirectory)) {
@@ -33,16 +31,14 @@ export const setup = (structureName) => {
       })
     }
   })
-
-  return BASE
 }
 
 // Remove temporary files inside fixtures created during tests.
-export const reset = (BASE) => {
-  rimraf.sync(join(BASE, 'dist'))
+export const reset = (fixturePath) => {
+  rimraf.sync(join(fixturePath, 'dist'))
 }
 
 // Remove test suites created during setup.
-export const remove = (BASE) => {
-  rimraf.sync(BASE)
+export const remove = (fixturePath) => {
+  rimraf.sync(fixturePath)
 }
