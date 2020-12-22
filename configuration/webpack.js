@@ -86,11 +86,6 @@ export default (development) => ({
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
-            plugins: [
-              // Plugins for mobx which uses decorators.
-              ['@babel/plugin-proposal-decorators', { legacy: true }],
-              ['@babel/plugin-proposal-class-properties', { loose: true }],
-            ],
           },
         },
       },

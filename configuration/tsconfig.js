@@ -1,3 +1,4 @@
+import objectAssignDeep from 'object-assign-deep'
 import { options } from '../utility/options.js'
 
 export const tsconfig = (tsconfigUserOverrides = {}) => {
@@ -22,7 +23,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
     packageTSConfig.include.push('../../../test')
   }
 
-  Object.assign(userTSConfig, tsconfigUserOverrides)
+  objectAssignDeep(userTSConfig, tsconfigUserOverrides)
 
   return [userTSConfig, packageTSConfig]
 }

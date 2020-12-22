@@ -1,3 +1,5 @@
+import objectAssignDeep from 'object-assign-deep'
+
 export const jsconfig = (jsconfigUserOverrides = {}) => {
   const userJSConfig = {
     extends: 'papua/configuration/jsconfig',
@@ -7,11 +9,10 @@ export const jsconfig = (jsconfigUserOverrides = {}) => {
   const packageJSConfig = {
     compilerOptions: {
       baseUrl: '.',
-      experimentalDecorators: true,
     },
   }
 
-  Object.assign(userJSConfig, jsconfigUserOverrides)
+  objectAssignDeep(userJSConfig, jsconfigUserOverrides)
 
   return [userJSConfig, packageJSConfig]
 }
