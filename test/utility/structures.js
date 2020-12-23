@@ -1,37 +1,38 @@
-const packageJson = (name) => ({
+export const packageJson = (name, papua = {}) => ({
   name: 'package.json',
   json: true,
   contents: {
     name,
+    papua,
   },
 })
 
-const indexJavaScript = (contents) => ({
+export const indexJavaScript = (contents) => ({
   name: 'index.js',
   contents,
 })
 
-const indexTypeScript = (contents) => ({
+export const indexTypeScript = (contents) => ({
   name: 'index.ts',
   contents,
 })
 
-const cssStyles = {
+export const cssStyles = {
   name: 'styles.css',
   contents: `p { color: red; }`,
 }
 
-const pngLogo = {
+export const pngLogo = {
   name: 'logo.png',
   copy: 'logo.png',
 }
 
-const javaScriptModule = (name, contents) => ({
+export const javaScriptModule = (name, contents) => ({
   name: `node_modules/${name}/index.js`,
   contents,
 })
 
-const gitkeep = {
+export const gitkeep = {
   name: '.gitkeep',
 }
 

@@ -8,9 +8,7 @@ import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
-
-const isTest = (testOption, regularOption) =>
-  typeof jest !== 'undefined' ? testOption : regularOption
+import { isTest } from '../utility/helper.js'
 
 const root = (folder) => resolve(process.cwd(), folder)
 
@@ -75,13 +73,24 @@ const getPlugins = (development) => {
   return plugins
 }
 
+const getPublicPath = () => {
+  if (options().publicPath) {
+    console.log('in')
+    // Require leading slash.
+    const publicPathWithSlashes = join('/', options().publicPath, '/')
+    return publicPathWithSlashes
+  }
+
+  return ''
+}
+
 export default (development) => ({
   mode: development ? 'development' : 'production',
   entry: getEntry(),
   output: {
     filename: development ? '[name].js' : '[name].[contenthash].js',
     path: join(getProjectBasePath(), options().output),
-    publicPath: options().publicPath,
+    publicPath: getPublicPath(),
   },
   devtool: 'source-map',
   module: {

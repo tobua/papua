@@ -23,3 +23,8 @@ export const refresh = () => results.clear()
 // Skip modifying the project in case it's being used programmatically by a plugin.
 export const isPlugin = (packageContents) =>
   packageContents.main && packageContents.version
+
+export const isTest = (testOption, regularOption) =>
+  typeof jest !== 'undefined' ? testOption : regularOption
+
+export const removeLeadingSlash = (path) => path.replace(/^\/*/, '')

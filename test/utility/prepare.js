@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import { join } from 'path'
 import { setup, reset, remove } from './fixture.js'
+import { refresh } from '../../utility/helper.js'
 
 // Access directory, before it's modified for tests.
 const CWD = process.cwd()
@@ -22,7 +23,11 @@ export const environment = (testSuiteName) => {
     setCwd(fixturePath)
   })
 
-  afterEach(() => remove(fixturePath))
+  afterEach(() => {
+    remove(fixturePath)
+    // Remove cached package.json
+    refresh()
+  })
 
   return [fixturePath, setCwd]
 }

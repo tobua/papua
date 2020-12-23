@@ -15,7 +15,12 @@ export const setup = (structureName, fixturePath) => {
   // Create test/fixture directory to put files.
   mkdirSync(fixturePath, { recursive: true })
 
-  structures[structureName].forEach((file) => {
+  const structure =
+    typeof structureName === 'object'
+      ? structureName
+      : structures[structureName]
+
+  structure.forEach((file) => {
     const filePath = join(fixturePath, file.name)
     const fileDirectory = dirname(filePath)
 
