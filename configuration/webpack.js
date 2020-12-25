@@ -101,7 +101,16 @@ export default (development) => ({
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
+            presets: [
+              '@babel/preset-env',
+              [
+                '@babel/preset-react',
+                {
+                  // React not required to be in scope for JSX.
+                  runtime: 'automatic',
+                },
+              ],
+            ],
           },
         },
       },

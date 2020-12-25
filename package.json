@@ -47,7 +47,7 @@
     "pakag": "^2.2.0",
     "parse-gitignore": "^1.0.1",
     "prettier": "^2.2.1",
-    "pretty-bytes": "^5.4.1",
+    "pretty-bytes": "^5.5.0",
     "pretty-ms": "^7.0.1",
     "regenerator-runtime": "^0.13.7",
     "rimraf": "^3.0.2",

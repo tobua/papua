@@ -21,6 +21,9 @@ const customRules = {
   'import/extensions': 0,
   // Often there is only the index available, would make plugin API more complex otherwise.
   'react/no-array-index-key': 0,
+  // Importing not required anymore for React >= 17.
+  'react/jsx-uses-react': 0,
+  'react/react-in-jsx-scope': 0,
 }
 
 const customSettings = {
