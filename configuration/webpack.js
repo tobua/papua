@@ -6,7 +6,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
-import { options } from '../utility/options.js'
+import { options, extensions } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
 import { isTest } from '../utility/helper.js'
 
@@ -144,7 +144,10 @@ export default (development) => ({
     // and making it easy to copy code and move files around.
     modules: [root('.'), 'node_modules'],
     // Add TypeScript extensions.
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: extensions
+      .map((extension) => `.${extension.name}`)
+      .filter((extension) => options().typescript || !extension.includes('ts'))
+      .concat('.json', '.mjs', '.wasm'),
   },
   performance: {
     hints: false,

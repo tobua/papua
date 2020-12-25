@@ -8,7 +8,8 @@ export const jsconfig = (jsconfigUserOverrides = {}) => {
   // The local tsconfig in this package will be written and the user config is extending it.
   const packageJSConfig = {
     compilerOptions: {
-      baseUrl: '.',
+      jsx: 'react', // Required to import .jsx
+      baseUrl: './../../..',
     },
   }
 

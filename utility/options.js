@@ -6,7 +6,7 @@ import { log, cache } from './helper.js'
 import { getProjectBasePath } from './path.js'
 
 const commonEntries = ['index', 'src/index']
-const extensions = [
+export const extensions = [
   {
     name: 'js',
     typescript: false,

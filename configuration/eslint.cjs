@@ -33,7 +33,7 @@ const customSettings = {
       paths: ['.'],
     },
   },
-  'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+  'import/extensions': ['.js', '.jsx', '.ts', '.tsx', '.json', '.mjs', '.wasm'],
 }
 
 // Same as in utility/options.js (but cannot be imported as it's a ES module)
