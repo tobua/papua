@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from 'react-dom'
 import { Todo } from 'markup/Todo'
 import { register } from 'background/registration'

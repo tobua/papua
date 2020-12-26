@@ -1,4 +1,3 @@
-import React from 'react'
 import { observer } from 'mobx-react'
 import { Todo as Data } from 'data/todo'
 import { Input } from './Input'
