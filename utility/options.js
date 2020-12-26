@@ -79,7 +79,7 @@ export const options = cache(() => {
   if (!entry || (Array.isArray(entry) && entry.length < 1)) {
     commonEntries.forEach((commonEntry) =>
       extensions.forEach((extension) => {
-        const entryFilePath = `${commonEntry}.${extension.name}`
+        const entryFilePath = `./${commonEntry}.${extension.name}`
 
         if (existsSync(join(getProjectBasePath(), entryFilePath))) {
           result.entries.push(entryFilePath)

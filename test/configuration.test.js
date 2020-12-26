@@ -32,8 +32,7 @@ test('Adds necessary package json properties.', () => {
 
   const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
 
-  expect(pkg.papua).toEqual(undefined)
-  delete packageContents.papua
+  expect(pkg.papua).toEqual({})
   expect(pkg).toEqual(packageContents)
   // No tests available.
   expect(pkg.scripts.test).toEqual(undefined)

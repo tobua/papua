@@ -5,7 +5,7 @@ import formatMessages from 'webpack-format-messages'
 import { log } from './helper.js'
 
 export const startServer = (url) => {
-  log(`Starting server... on ${url}`)
+  log(`Starting server on ${url}...`)
 }
 
 const logChunkEntrySizes = (entry, chunkName, logChunk) => {
