@@ -233,6 +233,7 @@ export const writePackageJson = (postinstall) => {
 export const writeConfiguration = (postinstall) => {
   const { packageContents } = writePackageJson(postinstall)
 
+  // Skip modifying the project in case it's being installed for later programmatic use by a plugin.
   if (postinstall && isPlugin(packageContents)) {
     return null
   }

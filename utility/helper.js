@@ -20,7 +20,6 @@ export const cache = (method) => () => {
 
 export const refresh = () => results.clear()
 
-// Skip modifying the project in case it's being used programmatically by a plugin.
 export const isPlugin = (packageContents) =>
   packageContents.main && packageContents.version
 
