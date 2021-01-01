@@ -53,6 +53,7 @@
     "rimraf": "^3.0.2",
     "serve-handler": "^6.1.3",
     "skip-local-postinstall": "^1.0.5",
+    "snowpack": "^2.18.5",
     "stylelint": "^13.8.0",
     "stylelint-config-recommended": "^3.0.0",
     "synec": "^0.1.13",

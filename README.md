@@ -63,6 +63,10 @@ Checks if there are updates to any npm packages and automatically updates them.
 
 Builds the production assets and serves them. Can be configured through the `papua.serve` property in `package.json` see [Serve](https://github.com/vercel/serve-handler#options) for available options.
 
+### `npx papua snow`
+
+Alternative to the `webpack-dev-server` in `papua start` much faster but still experimental. Likely to replace start once it's stable.
+
 ## Configuration
 
 ### JavaScript / TypeScript

@@ -18,6 +18,7 @@ import { packageJson } from '../configuration/package.js'
 import { gitignore } from '../configuration/gitignore.js'
 import webpackConfig from '../configuration/webpack.js'
 import { webpackServer } from '../configuration/webpack-server.js'
+import snowpackConfig from '../configuration/snowpack.js'
 import { log, isPlugin } from './helper.js'
 import { options } from './options.js'
 import { getProjectBasePath } from './path.js'
@@ -44,17 +45,45 @@ export const loadWebpackConfig = async (development) => {
   }
 
   // User configuration can be a function and will receive the default config and the environment.
-  if (typeof userConfig === 'function') {
+  if (typeof userConfiguration === 'function') {
     userConfiguration = userConfiguration(configuration, development)
   }
 
-  // Without clone plugins etc. will be gone.
+  // With clone plugins etc. (non-serializable properties) will be gone.
   configuration = merge(configuration, userConfiguration, { clone: false })
 
   const devServerConfiguration = configuration.devServer
   delete configuration.devServer
 
   return [configuration, devServerConfiguration]
+}
+
+export const loadSnowpackConfig = async () => {
+  let configuration = await snowpackConfig()
+  let userConfiguration = {}
+
+  try {
+    // Works with module.exports = {} and export default {}.
+    // The latter only if type in project is set to ES Modules.
+    userConfiguration = await import(
+      join(getProjectBasePath(), './snowpack.config.js')
+    )
+
+    if (userConfiguration.default) {
+      userConfiguration = userConfiguration.default
+    }
+  } catch (error) {
+    // User configuration is optional.
+  }
+
+  // User configuration can be a function and will receive the default config and the environment.
+  if (typeof userConfiguration === 'function') {
+    userConfiguration = userConfiguration(configuration)
+  }
+
+  configuration = merge(configuration, userConfiguration, { clone: false })
+
+  return configuration
 }
 
 const writeUserAndPackageConfig = (
