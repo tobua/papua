@@ -1,6 +1,5 @@
 import webpack from 'webpack'
 import WebpackDevServer from 'webpack-dev-server'
-import getPort from 'get-port'
 import { loadWebpackConfig } from '../utility/configuration.js'
 import {
   startServer,
@@ -8,6 +7,7 @@ import {
   logStats,
   logError,
 } from '../utility/stats.js'
+import { freePort } from '../utility/helper.js'
 
 export default async (development) => {
   const [configuration, devServerConfiguration] = await loadWebpackConfig(
@@ -42,18 +42,15 @@ export default async (development) => {
   compiler.hooks.done.tap('done', (stats) => logStats(stats, development))
 
   const server = new WebpackDevServer(compiler, devServerConfiguration)
-  const freePort = await getPort({
-    port: getPort.makeRange(3000, 3100),
-    host: '127.0.0.1',
-  })
+  const port = await freePort()
   const host = 'localhost'
-  server.listen(freePort, host, (error) => {
+  server.listen(port, host, (error) => {
     if (error) {
       console.log(error)
       return
     }
 
-    startServer(`${host}:${freePort}`)
+    startServer(`${host}:${port}`)
   })
 
   const doneSignals = ['SIGINT', 'SIGTERM']

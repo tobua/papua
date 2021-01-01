@@ -59,6 +59,10 @@ Lints the code and prints errors.
 
 Checks if there are updates to any npm packages and automatically updates them.
 
+### `npx papua serve`
+
+Builds the production assets and serves them. Can be configured through the `papua.serve` property in `package.json` see [Serve](https://github.com/vercel/serve-handler#options) for available options.
+
 ## Configuration
 
 ### JavaScript / TypeScript

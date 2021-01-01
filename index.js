@@ -11,4 +11,6 @@ export const test = () => scripts.test()
 
 export const lint = () => scripts.lint()
 
+export const serve = () => scripts.serve()
+
 export const update = () => scripts.update()

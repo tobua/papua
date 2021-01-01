@@ -5,7 +5,7 @@ import { writeConfiguration } from '../utility/configuration.js'
 
 let script = process.argv.slice(2)[0]
 
-if (['start', 'build', 'test', 'lint', 'update'].includes(script)) {
+if (['start', 'build', 'test', 'lint', 'update', 'serve'].includes(script)) {
   const developmentMode = script === 'start'
 
   // Start will be a regular build in development mode with watching and serving.

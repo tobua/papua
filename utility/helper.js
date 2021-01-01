@@ -1,4 +1,5 @@
 import { create } from 'logua'
+import getPort from 'get-port'
 
 export const log = create('papua', 'blue')
 
@@ -27,3 +28,9 @@ export const isTest = (testOption, regularOption) =>
   typeof jest !== 'undefined' ? testOption : regularOption
 
 export const removeLeadingSlash = (path) => path.replace(/^\/*/, '')
+
+export const freePort = async () =>
+  getPort({
+    port: getPort.makeRange(3000, 3100),
+    host: '127.0.0.1',
+  })
