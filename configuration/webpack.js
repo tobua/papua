@@ -62,12 +62,17 @@ const getPlugins = (development) => {
     serviceWorkerFileName
   )
 
-  if (!development && existsSync(serviceWorkerSourcePath)) {
-    plugins.push(
-      new WorkboxWebpackPlugin.InjectManifest({
-        swSrc: serviceWorkerSourcePath,
-      })
-    )
+  if (existsSync(serviceWorkerSourcePath)) {
+    const workboxOptions = {
+      swSrc: serviceWorkerSourcePath,
+    }
+
+    // Prevent max file size warning in development (files not minified etc.).
+    if (development) {
+      workboxOptions.maximumFileSizeToCacheInBytes = 20000000
+    }
+
+    plugins.push(new WorkboxWebpackPlugin.InjectManifest(workboxOptions))
   }
 
   return plugins
