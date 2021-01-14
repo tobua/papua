@@ -2,8 +2,8 @@ import webpack from 'webpack'
 import { loadWebpackConfig } from '../utility/configuration.js'
 import { logStats, logError } from '../utility/stats.js'
 
-export default async () => {
-  const [configuration] = await loadWebpackConfig(false)
+export default async (watch = false) => {
+  const [configuration] = await loadWebpackConfig(false, watch)
 
   let compiler
   try {

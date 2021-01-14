@@ -7,6 +7,8 @@ export const start = () => scripts.start()
 
 export const build = () => scripts.build()
 
+export const watch = () => scripts.watch()
+
 export const test = () => scripts.test()
 
 export const lint = () => scripts.lint()

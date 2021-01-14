@@ -24,8 +24,8 @@ import { options } from './options.js'
 import { getProjectBasePath } from './path.js'
 
 // Merges the default webpack config with user additions.
-export const loadWebpackConfig = async (development) => {
-  let configuration = webpackConfig(development)
+export const loadWebpackConfig = async (development, watch) => {
+  let configuration = webpackConfig(development, watch)
   configuration.devServer = webpackServer()
 
   let userConfiguration = {}
