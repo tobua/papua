@@ -10,10 +10,7 @@ import {
 import { freePort } from '../utility/helper.js'
 
 export default async (development) => {
-  const [configuration, devServerConfiguration] = await loadWebpackConfig(
-    true,
-    true
-  )
+  const [configuration, devServerConfiguration] = await loadWebpackConfig(true)
 
   let compiler
   try {

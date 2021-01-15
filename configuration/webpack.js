@@ -89,7 +89,7 @@ const getPublicPath = () => {
   return ''
 }
 
-export default (development, watch) => ({
+export default (development) => ({
   mode: development ? 'development' : 'production',
   entry: getEntry(),
   output: {
@@ -97,7 +97,6 @@ export default (development, watch) => ({
     path: join(getProjectBasePath(), options().output),
     publicPath: getPublicPath(),
   },
-  watch,
   devtool: 'source-map',
   module: {
     rules: [
