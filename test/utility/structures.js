@@ -12,6 +12,11 @@ export const indexJavaScript = (contents) => ({
   contents,
 })
 
+export const javaScriptFile = (name, contents = `console.log('empty')`) => ({
+  name,
+  contents,
+})
+
 export const indexTypeScript = (contents) => ({
   name: 'index.ts',
   contents,

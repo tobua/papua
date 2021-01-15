@@ -3,7 +3,7 @@ import { loadWebpackConfig } from '../utility/configuration.js'
 import { logStats, logError, recompiling } from '../utility/stats.js'
 
 export default async () => {
-  const [configuration] = await loadWebpackConfig(false)
+  const [configuration] = await loadWebpackConfig(true)
 
   let compiler
   try {

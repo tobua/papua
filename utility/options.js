@@ -5,61 +5,30 @@ import objectAssignDeep from 'object-assign-deep'
 import { log, cache } from './helper.js'
 import { getProjectBasePath } from './path.js'
 
-const commonEntries = ['index', 'src/index']
-export const extensions = [
-  {
-    name: 'js',
-    typescript: false,
-    react: false,
-  },
-  {
-    name: 'ts',
-    typescript: true,
-    react: false,
-  },
-  {
-    name: 'jsx',
-    typescript: false,
-    react: true,
-  },
-  {
-    name: 'tsx',
-    typescript: true,
-    react: true,
-  },
-]
-const emptyFileTemplate = `
-// This is the entry file for your application.
+const emptyFileTemplate = `// This is the entry file for your application.
 // If you want to use TypeScript rename it to index.ts
 // To enable/disable React adapt the ending .jsx .tsx (React) .js .ts (no React)
 // or install React as a dependency.
 `
 // Default options.
 const defaultOptions = {
-  // Output directory for build files.
   output: 'dist',
-  // Is project written in TypeScript.
   typescript: false,
-  // Does the project include React.
   react: false,
-  // Are there any tests.
-  test: false,
-  // What's the name of the entry file (defaults: index.[jt]sx?).
-  entry: null,
-  // Public path where the files are served from.
+  test: 'test',
+  entry: [],
   publicPath: '',
+  polyfills: ['core-js/stable', 'regenerator-runtime/runtime'],
 }
 
 // Get the options for this project, either from the filesystem or explicit configuration.
 export const options = cache(() => {
   let packageContents
-  const result = defaultOptions
+  const result = objectAssignDeep({}, defaultOptions)
 
   try {
-    packageContents = readFileSync(
-      join(getProjectBasePath(), 'package.json'),
-      'utf8'
-    )
+    const packageJsonPath = join(getProjectBasePath(), 'package.json')
+    packageContents = readFileSync(packageJsonPath, 'utf8')
     packageContents = JSON.parse(packageContents)
   } catch (error) {
     log('unable to load package.json', 'error')
@@ -68,67 +37,81 @@ export const options = cache(() => {
   if (typeof packageContents.papua === 'object') {
     // Include project specific overrides
     objectAssignDeep(result, packageContents.papua)
+
+    if (typeof result.entry !== 'string' && !Array.isArray(result.entry)) {
+      log(`Invalid 'entry' option provided`, 'error')
+    }
+
+    if (typeof result.entry === 'string') {
+      result.entry = [result.entry]
+    }
   }
 
-  const { entry } = result
+  // Add default includes found in file system.
+  ;['index', 'src/index'].forEach((entry) =>
+    ['js', 'ts', 'jsx', 'tsx'].forEach((extension) => {
+      const entryFilePath = `./${entry}.${extension}`
 
-  // Will use single entries array entry for simplicity.
-  delete result.entry
-  result.entries = []
+      if (existsSync(join(getProjectBasePath(), entryFilePath))) {
+        result.entry.push(entryFilePath)
+      }
+    })
+  )
 
-  if (!entry || (Array.isArray(entry) && entry.length < 1)) {
-    commonEntries.forEach((commonEntry) =>
-      extensions.forEach((extension) => {
-        const entryFilePath = `./${commonEntry}.${extension.name}`
+  let hasJS = false
+  let hasTS = false
 
-        if (existsSync(join(getProjectBasePath(), entryFilePath))) {
-          result.entries.push(entryFilePath)
-          result.typescript = extension.typescript
-          result.react = extensions.react
-        }
-      })
-    )
-  } else if (
-    typeof entry === 'string' &&
-    existsSync(join(getProjectBasePath(), entry))
-  ) {
-    result.entries.push(entry)
-  } else if (Array.isArray(entry)) {
-    result.entries = entry
-  } else {
-    log(`Invalid 'entry' option provided`, 'error')
-  }
+  result.entry.forEach((entry) => {
+    if (/\.tsx?$/.test(entry)) {
+      result.typescript = true
+      hasTS = true
+    }
 
-  const hasJS = result.entries.some((_entry) => /\.jsx?$/g.test(_entry))
-  const hasTS = result.entries.some((_entry) => /\.tsx?$/g.test(_entry))
+    if (/\.jsx?$/.test(entry)) {
+      hasJS = true
+    }
 
+    if (/\.[tj]sx$/.test(entry)) {
+      result.react = true
+    }
+  })
+
+  // Remove duplicates.
+  result.entry = [...new Set(result.entry)]
+
+  // Warn if TS and JS mixed (should still work though).
   if (hasJS && hasTS) {
     log(
-      'Both JavaScript and TypeScript entries found, please only use one language',
-      'error'
+      'Both JavaScript and TypeScript entries found, we recommend to only use one language per project',
+      'warning'
     )
   }
 
-  if (
-    // Doesn't matter which kind of dependencies the user is using for private projects.
+  // Doesn't matter which kind of dependencies the user is using for private projects.
+  // Using peerDependencies however makes no sense.
+  const reactInstalled =
     Object.keys(packageContents.dependencies || {}).includes('react') ||
     Object.keys(packageContents.devDependencies || {}).includes('react')
-  ) {
+
+  // JSX also works with .js extension and will also be enabled if react dependency is found.
+  if (reactInstalled) {
     result.react = true
+  } else if (result.react && !reactInstalled) {
+    log(`Using JSX but React isn't installed`, 'warning')
   }
 
-  if (!result.entries || result.entries.length < 1) {
-    const entryFile = `index.${result.react ? 'jsx' : 'js'}`
+  if (result.entry.length === 0) {
+    const entryFile = `./index.${result.react ? 'jsx' : 'js'}`
     const entryFilePath = join(getProjectBasePath(), entryFile)
 
     writeFileSync(entryFilePath, emptyFileTemplate)
 
     log(`No entry file found, created one in ${entryFilePath}`)
 
-    result.entries = [entryFile]
+    result.entry = [entryFile]
   }
 
-  const testFiles = glob.sync(['test/**.test.?s*'], {
+  const testFiles = glob.sync([`${result.test}/**.test.?s*`], {
     cwd: getProjectBasePath(),
   })
 

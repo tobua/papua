@@ -71,6 +71,32 @@ Alternative to the `webpack-dev-server` in `papua start` much faster but still e
 
 ## Configuration
 
+Most of the default configurations can easily be extended. To do that add
+a `papua` property to your `package.json` with the following options available:
+
+```js
+{
+  "name": "my-app",
+  "papua": {
+    // Output directory for build files, default 'dist'.
+    output: 'build',
+    // Is project written in TypeScript, automatically detected from extension (ts).
+    typescript: true,
+    // Does the project include React, automatically detected from extension (jsx, tsx).
+    react: true,
+    // Folder for tests with jest, default /test, test configuration enabled if `**.test.[jt]s*` files found inside.
+    test: 'markup',
+    // What's the name of the entry file, automatically adds [src/]?index.[jt]sx? file if available.
+    entry: 'another.tsx',
+    entry: ['another.js', 'several.jsx'],
+    // Public path where the files are served from, default '.'.
+    publicPath: '/app',
+    // Polyfills to include, defaults below.
+    polyfills: ['core-js/stable', 'regenerator-runtime/runtime'],
+  }
+}
+```
+
 ### JavaScript / TypeScript
 
 `index.js` / `index.ts`

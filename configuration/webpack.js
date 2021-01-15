@@ -6,7 +6,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
-import { options, extensions } from '../utility/options.js'
+import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
 import { isTest } from '../utility/helper.js'
 
@@ -25,12 +25,16 @@ const getHtmlWebpackPluginOptions = () => {
 }
 
 const getEntry = () => {
+  const entry = {}
+
   // Do not include polyfills for tests.
-  const polyfills = isTest(
-    [],
-    ['core-js/stable', 'regenerator-runtime/runtime']
-  )
-  return [...polyfills, ...options().entries]
+  if (!isTest) {
+    entry.polyfills = options().polyfills
+  }
+
+  entry.main = options().entry
+
+  return entry
 }
 
 const getPlugins = (development) => {
@@ -149,8 +153,7 @@ export default (development) => ({
     // and making it easy to copy code and move files around.
     modules: [root('.'), 'node_modules'],
     // Add TypeScript extensions.
-    extensions: extensions
-      .map((extension) => `.${extension.name}`)
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
       .filter((extension) => options().typescript || !extension.includes('ts'))
       .concat('.json', '.mjs', '.wasm'),
     alias: {

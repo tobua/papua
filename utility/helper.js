@@ -24,8 +24,7 @@ export const refresh = () => results.clear()
 export const isPlugin = (packageContents) =>
   packageContents.main && packageContents.version
 
-export const isTest = (testOption, regularOption) =>
-  typeof jest !== 'undefined' ? testOption : regularOption
+export const isTest = typeof jest !== 'undefined'
 
 export const removeLeadingSlash = (path) => path.replace(/^\/*/, '')
 

@@ -5,6 +5,7 @@ import isPathInside from 'is-path-inside'
 import globalDirs from 'global-dirs'
 import { log } from '../utility/helper.js'
 import { getProjectBasePath } from '../utility/path.js'
+import { options } from '../utility/options.js'
 
 const installCypressIfMissing = () => {
   if (isPathInside('cypress', join(getProjectBasePath(), 'node_modules'))) {
@@ -26,7 +27,7 @@ const installCypressIfMissing = () => {
 }
 
 export default () => {
-  const hasJest = isPathInside('test', getProjectBasePath())
+  const hasJest = isPathInside(options().test, getProjectBasePath())
   const hasCypress = isPathInside('cypress', getProjectBasePath())
 
   const additionalArguments = process.argv.slice(3)
@@ -47,7 +48,9 @@ export default () => {
 
   if (!hasJest && !hasCypress) {
     log(
-      'No tests found add tests inside /test for Jest or inside /cypress for Cypress',
+      `No tests found add tests inside /${
+        options().test
+      } for Jest or inside /cypress for Cypress`,
       'warning'
     )
   }
