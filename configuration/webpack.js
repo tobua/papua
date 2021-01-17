@@ -6,6 +6,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
+import objectAssignDeep from 'object-assign-deep'
 import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
 import { isTest } from '../utility/helper.js'
@@ -19,6 +20,10 @@ const getHtmlWebpackPluginOptions = () => {
 
   if (existsSync(join(process.cwd(), './index.html'))) {
     htmlOptions.template = './index.html'
+  }
+
+  if (options().html && typeof options().html === 'object') {
+    objectAssignDeep(htmlOptions, options().html)
   }
 
   return htmlOptions

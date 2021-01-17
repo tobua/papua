@@ -93,6 +93,8 @@ a `papua` property to your `package.json` with the following options available:
     publicPath: '/app',
     // Polyfills to include, defaults below.
     polyfills: ['core-js/stable', 'regenerator-runtime/runtime'],
+    // Configure html file to be generated.
+    html: { template: 'page.html', filename: 'modern.html', excludeChunks: ['polyfills'] }
   }
 }
 ```
