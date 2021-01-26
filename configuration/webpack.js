@@ -89,7 +89,6 @@ const getPlugins = (development) => {
 
 const getPublicPath = () => {
   if (options().publicPath) {
-    console.log('in')
     // Require leading slash.
     const publicPathWithSlashes = join('/', options().publicPath, '/')
     return publicPathWithSlashes

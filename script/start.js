@@ -26,8 +26,8 @@ export default async (development) => {
   compiler.hooks.done.tap('done', (stats) => logStats(stats, development))
 
   const server = new WebpackDevServer(compiler, devServerConfiguration)
-  const port = await freePort()
-  const host = 'localhost'
+  const port = devServerConfiguration.port || (await freePort())
+  const host = devServerConfiguration.host || 'localhost'
   server.listen(port, host, (error) => {
     if (error) {
       console.log(error)
