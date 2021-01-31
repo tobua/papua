@@ -24,6 +24,8 @@ const customRules = {
   // Importing not required anymore for React >= 17.
   'react/jsx-uses-react': 0,
   'react/react-in-jsx-scope': 0,
+  // Allow assignment to function param properties, like parameter.innerHTML = ...
+  'no-param-reassign': [2, { props: false }],
 }
 
 const customSettings = {

@@ -117,6 +117,8 @@ export const options = cache(() => {
 
   if (testFiles.length > 0) {
     result.test = true
+  } else {
+    result.test = false
   }
 
   if (!result.title) {

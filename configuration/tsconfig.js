@@ -14,7 +14,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
       outDir: `../../../${options().output}`,
       baseUrl: '../../..',
     },
-    files: options().entries.map((entry) => `../../../${entry}`),
+    files: options().entry.map((entry) => `../../../${entry}`),
     exclude: [`../../../${options().output}`],
     include: ['./global.d.ts'],
   }
