@@ -1,33 +1,15 @@
 import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import webpack from 'webpack'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
-import objectAssignDeep from 'object-assign-deep'
 import { options } from '../utility/options.js'
 import { getProjectBasePath } from '../utility/path.js'
 import { isTest } from '../utility/helper.js'
 
 const root = (folder) => resolve(process.cwd(), folder)
-
-const getHtmlWebpackPluginOptions = () => {
-  const htmlOptions = {
-    title: options().title,
-  }
-
-  if (existsSync(join(process.cwd(), './index.html'))) {
-    htmlOptions.template = './index.html'
-  }
-
-  if (options().html && typeof options().html === 'object') {
-    objectAssignDeep(htmlOptions, options().html)
-  }
-
-  return htmlOptions
-}
 
 const getEntry = () => {
   const entry = {}
@@ -44,7 +26,6 @@ const getEntry = () => {
 
 const getPlugins = (development) => {
   const plugins = [
-    new HtmlWebpackPlugin(getHtmlWebpackPluginOptions()),
     new MiniCssExtractPlugin({
       filename: development ? '[name].css' : '[name].[contenthash].css',
       chunkFilename: development ? '[id].css' : '[id].[contenthash].css',

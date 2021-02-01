@@ -23,7 +23,13 @@ export default async (development) => {
   // Run webpack with webpack-dev-server.
   compiler.hooks.invalid.tap('invalid', recompiling)
 
-  compiler.hooks.done.tap('done', (stats) => logStats(stats, development))
+  compiler.hooks.done.tap('done', (stats) => {
+    if (stats.stats && Array.isArray(stats.stats)) {
+      stats.stats.forEach((stat) => logStats(stat, development))
+    } else {
+      logStats(stats, development)
+    }
+  })
 
   const server = new WebpackDevServer(compiler, devServerConfiguration)
   const port = devServerConfiguration.port || (await freePort())

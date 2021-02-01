@@ -16,6 +16,8 @@ export default async () => {
   const handler = (done, error, stats) => {
     if (error) {
       logError(error)
+    } else if (stats.stats && Array.isArray(stats.stats)) {
+      stats.stats.forEach((stat) => logStats(stat, false))
     } else {
       logStats(stats, false)
     }

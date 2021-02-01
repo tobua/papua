@@ -18,8 +18,10 @@ export default async () => {
   return compiler.watch({}, (error, stats) => {
     if (error) {
       logError(error)
+    } else if (stats.stats && Array.isArray(stats.stats)) {
+      stats.stats.forEach((stat) => logStats(stat, true))
     } else {
-      logStats(stats, false)
+      logStats(stats, true)
     }
   })
 }

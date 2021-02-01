@@ -18,16 +18,51 @@ import { packageJson } from '../configuration/package.js'
 import { gitignore } from '../configuration/gitignore.js'
 import webpackConfig from '../configuration/webpack.js'
 import { webpackServer } from '../configuration/webpack-server.js'
+import { html } from '../configuration/webpack-html.js'
 import snowpackConfig from '../configuration/snowpack.js'
 import { log, isPlugin } from './helper.js'
 import { options } from './options.js'
 import { getProjectBasePath } from './path.js'
 
-// Merges the default webpack config with user additions.
-export const loadWebpackConfig = async (development) => {
+const createSingleWebpackConfiguration = (
+  userConfiguration,
+  development,
+  index
+) => {
   let configuration = webpackConfig(development)
   configuration.devServer = webpackServer()
 
+  // With clone plugins etc. (non-serializable properties) will be gone.
+  configuration = merge(configuration, userConfiguration, { clone: false })
+
+  // Allows the user to configure different html templates.
+  if (
+    userConfiguration.html !== false &&
+    (options().html !== false || index > 0)
+  ) {
+    configuration.plugins.unshift(
+      html(userConfiguration.html || options().html)
+    )
+  }
+
+  delete configuration.html
+
+  return configuration
+}
+
+const createMultipleWebpackConfigurations = (
+  userConfigurations,
+  development
+) => {
+  const configurations = userConfigurations.map((userConfiguration, index) =>
+    createSingleWebpackConfiguration(userConfiguration, development, index)
+  )
+
+  return configurations
+}
+
+// Merges the default webpack config with user additions.
+export const loadWebpackConfig = async (development) => {
   let userConfiguration = {}
 
   try {
@@ -46,14 +81,35 @@ export const loadWebpackConfig = async (development) => {
 
   // User configuration can be a function and will receive the default config and the environment.
   if (typeof userConfiguration === 'function') {
-    userConfiguration = userConfiguration(configuration, development)
+    userConfiguration = userConfiguration(
+      webpackConfig(development),
+      development
+    )
   }
 
-  // With clone plugins etc. (non-serializable properties) will be gone.
-  configuration = merge(configuration, userConfiguration, { clone: false })
+  let configuration
 
-  const devServerConfiguration = configuration.devServer
-  delete configuration.devServer
+  if (!Array.isArray(userConfiguration)) {
+    configuration = createSingleWebpackConfiguration(
+      userConfiguration,
+      development
+    )
+  } else {
+    configuration = createMultipleWebpackConfigurations(
+      userConfiguration,
+      development
+    )
+  }
+
+  const devServerConfiguration = Array.isArray(configuration)
+    ? configuration[0].devServer
+    : configuration.devServer
+
+  if (Array.isArray(configuration)) {
+    delete configuration[0].devServer
+  } else {
+    delete configuration.devServer
+  }
 
   return [configuration, devServerConfiguration]
 }
