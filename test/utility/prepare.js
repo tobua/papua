@@ -9,8 +9,13 @@ const CWD = process.cwd()
 // Waiting up to 5 minutes for async tests, npm install might take some time.
 jest.setTimeout(300000)
 
-export const prepare = (fixtureName, fixturePath) =>
+export const prepare = (fixtureName, fixturePath) => {
   setup(fixtureName, fixturePath)
+
+  return {
+    dist: join(fixturePath, 'dist'),
+  }
+}
 
 export const clear = (fixturePath) => reset(fixturePath)
 

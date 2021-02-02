@@ -1,34 +1,27 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import glob from 'fast-glob'
 import { build } from '../index.js'
 import { readFile } from './utility/file.js'
+import {
+  listFilesMatching,
+  contentsForFilesMatching,
+} from './utility/helper.js'
 import { environment, prepare } from './utility/prepare.js'
 import { packageJson, indexJavaScript, pngLogo } from './utility/structures.js'
 
 const [fixturePath] = environment('build')
 
 test('Builds without errors.', async () => {
-  prepare('build', fixturePath)
+  const { dist } = prepare('build', fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
-
-  expect(existsSync(distFolder)).toEqual(true)
-  expect(existsSync(join(distFolder, 'index.html'))).toEqual(true)
-
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolder,
-  })
-
-  const mainJsMap = glob.sync(['*.js.map'], {
-    cwd: distFolder,
-  })
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
   // JS and map for main chunk are available.
-  expect(mainJs.length).toEqual(1)
-  expect(mainJsMap.length).toEqual(1)
+  expect(listFilesMatching('*.js', dist).length).toEqual(1)
+  expect(listFilesMatching('*.js.map', dist).length).toEqual(1)
 })
 
 test('No public path applied properly in bundle.', async () => {
@@ -38,30 +31,22 @@ test('No public path applied properly in bundle.', async () => {
     pngLogo,
   ]
 
-  prepare(noPublicPathStructure, fixturePath)
+  const { dist } = prepare(noPublicPathStructure, fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-  expect(existsSync(distFolder)).toEqual(true)
-  expect(existsSync(join(distFolder, 'index.html'))).toEqual(true)
-
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolder,
-  })
-
-  const logo = glob.sync(['*.png'], {
-    cwd: distFolder,
-  })
-
-  const htmlContents = readFile(join(distFolder, 'index.html'))
-  const mainJsContents = readFile(join(distFolder, mainJs[0]))
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  const mainJsName = listFilesMatching('*.js', dist)[0]
+  const pngName = listFilesMatching('*.png', dist)[0]
 
   // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="${mainJs[0]}"`)
+  expect(htmlContents).toContain(`src="${mainJsName}"`)
   // Proper path to logo.
-  expect(mainJsContents).toContain(`"${logo[0]}"`)
+  expect(mainJsContents).toContain(`"${pngName}"`)
 })
 
 test('Root public path applied properly in bundle.', async () => {
@@ -71,30 +56,22 @@ test('Root public path applied properly in bundle.', async () => {
     pngLogo,
   ]
 
-  prepare(noPublicPathStructure, fixturePath)
+  const { dist } = prepare(noPublicPathStructure, fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-  expect(existsSync(distFolder)).toEqual(true)
-  expect(existsSync(join(distFolder, 'index.html'))).toEqual(true)
-
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolder,
-  })
-
-  const logo = glob.sync(['*.png'], {
-    cwd: distFolder,
-  })
-
-  const htmlContents = readFile(join(distFolder, 'index.html'))
-  const mainJsContents = readFile(join(distFolder, mainJs[0]))
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  const mainJsName = listFilesMatching('*.js', dist)[0]
+  const pngName = listFilesMatching('*.png', dist)[0]
 
   // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="/${mainJs[0]}"`)
+  expect(htmlContents).toContain(`src="/${mainJsName}"`)
   // Proper path to logo.
-  expect(mainJsContents).toContain(`"/${logo[0]}"`)
+  expect(mainJsContents).toContain(`"/${pngName}"`)
 })
 
 test('Deep public path applied properly in bundle.', async () => {
@@ -105,28 +82,20 @@ test('Deep public path applied properly in bundle.', async () => {
     pngLogo,
   ]
 
-  prepare(noPublicPathStructure, fixturePath)
+  const { dist } = prepare(noPublicPathStructure, fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-  expect(existsSync(distFolder)).toEqual(true)
-  expect(existsSync(join(distFolder, 'index.html'))).toEqual(true)
-
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolder,
-  })
-
-  const logo = glob.sync(['*.png'], {
-    cwd: distFolder,
-  })
-
-  const htmlContents = readFile(join(distFolder, 'index.html'))
-  const mainJsContents = readFile(join(distFolder, mainJs[0]))
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  const mainJsName = listFilesMatching('*.js', dist)[0]
+  const pngName = listFilesMatching('*.png', dist)[0]
 
   // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="/${path}/${mainJs[0]}"`)
+  expect(htmlContents).toContain(`src="/${path}/${mainJsName}"`)
   // Proper path to logo.
-  expect(mainJsContents).toContain(`"/${path}/${logo[0]}"`)
+  expect(mainJsContents).toContain(`"/${path}/${pngName}"`)
 })

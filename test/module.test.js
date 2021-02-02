@@ -1,89 +1,48 @@
 import { existsSync } from 'fs'
-import { join } from 'path'
-import glob from 'fast-glob'
 import { build } from '../index.js'
-import { readFile } from './utility/file.js'
 import { environment, prepare } from './utility/prepare.js'
+import { contentsForFilesMatching } from './utility/helper.js'
 
 const [fixturePath] = environment('module')
 
 test('Can import node modules.', async () => {
-  prepare('module', fixturePath)
+  const { dist } = prepare('module', fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
+  expect(existsSync(dist)).toEqual(true)
 
-  expect(existsSync(distFolder)).toEqual(true)
+  const jsContents = contentsForFilesMatching('*.js', dist)
 
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolder,
-  })
+  expect(jsContents.length).toEqual(1)
 
-  expect(mainJs.length).toEqual(1)
-
-  const mainJsFilePath = join(distFolder, mainJs[0])
-
-  expect(existsSync(mainJsFilePath)).toEqual(true)
-
-  const mainJsContents = readFile(mainJsFilePath)
-
-  expect(mainJsContents).toBeDefined()
   // Module found in dist file.
-  expect(mainJsContents).toContain('hello')
+  expect(jsContents[0].contents).toContain('hello')
 })
 
 test('Works with ES Module packages.', async () => {
-  prepare('esmodule', fixturePath)
+  const { dist } = prepare('esmodule', fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
+  expect(existsSync(dist)).toEqual(true)
 
-  expect(existsSync(distFolder)).toEqual(true)
-
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolder,
-  })
-
-  expect(mainJs.length).toEqual(1)
-
-  const mainJsFilePath = join(distFolder, mainJs[0])
-
-  expect(existsSync(mainJsFilePath)).toEqual(true)
-
-  const mainJsContents = readFile(mainJsFilePath)
-
-  console.log(mainJsContents)
+  const jsContents = contentsForFilesMatching('*.js', dist)
 
   // Contents of imported module imported are found in bundle.
-  expect(mainJsContents).toContain('hello again')
+  expect(jsContents[0].contents).toContain('hello again')
 })
 
 test('Tree-shaking is applied to ES Modules.', async () => {
-  prepare('treeshaking', fixturePath)
+  const { dist } = prepare('treeshaking', fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
+  expect(existsSync(dist)).toEqual(true)
 
-  expect(existsSync(distFolder)).toEqual(true)
-
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolder,
-  })
-
-  expect(mainJs.length).toEqual(1)
-
-  const mainJsFilePath = join(distFolder, mainJs[0])
-
-  expect(existsSync(mainJsFilePath)).toEqual(true)
-
-  const mainJsContents = readFile(mainJsFilePath)
-
-  console.log(mainJsContents)
+  const jsContents = contentsForFilesMatching('*.js', dist)
 
   // Contents of imported module imported are found in bundle.
-  expect(mainJsContents).toContain('keep-me')
-  expect(mainJsContents).not.toContain('remove-me')
+  expect(jsContents[0].contents).toContain('keep-me')
+  expect(jsContents[0].contents).not.toContain('remove-me')
 })

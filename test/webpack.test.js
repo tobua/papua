@@ -1,6 +1,5 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import glob from 'fast-glob'
 import { build } from '../index.js'
 import { readFile } from './utility/file.js'
 import { environment, prepare } from './utility/prepare.js'
@@ -10,6 +9,10 @@ import {
   pngLogo,
   indexJavaScript,
 } from './utility/structures.js'
+import {
+  listFilesMatching,
+  contentsForFilesMatching,
+} from './utility/helper.js'
 
 const [fixturePath] = environment('webpack')
 
@@ -20,14 +23,12 @@ test('Can disable html template.', async () => {
     }),
     indexJavaScript(`console.log('test')`),
   ]
-  prepare(disableHtmlPluginStructure, fixturePath)
+  const { dist } = prepare(disableHtmlPluginStructure, fixturePath)
 
   await build()
 
-  const distFolder = join(fixturePath, 'dist')
-
-  expect(existsSync(distFolder)).toEqual(true)
-  expect(existsSync(join(distFolder, 'index.html'))).toEqual(false)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(false)
 })
 
 const webpackConfigMultipleBuilds = `import { join } from 'path'
@@ -91,20 +92,11 @@ test('Multiple builds with different output locations.', async () => {
   expect(existsSync(join(distFolderExtension, 'index.html'))).toEqual(false)
   expect(existsSync(join(distFolderBlog, 'index.html'))).toEqual(true)
 
-  // Check public path.
-  const mainJs = glob.sync(['*.js'], {
-    cwd: distFolderBlog,
-  })
-
-  const logo = glob.sync(['*.png'], {
-    cwd: distFolderBlog,
-  })
-
   const htmlContents = readFile(join(distFolderBlog, 'index.html'))
-  const mainJsContents = readFile(join(distFolderBlog, mainJs[0]))
+  const jsContents = contentsForFilesMatching('*.js', distFolderBlog)
+  const imageFiles = listFilesMatching('*.png', distFolderBlog)
 
-  // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="our/blog/${mainJs[0]}"`)
-  // Proper path to logo.
-  expect(mainJsContents).toContain(`"our/blog/${logo[0]}"`)
+  // Check public path.
+  expect(htmlContents).toContain(`src="our/blog/${jsContents[0].name}"`)
+  expect(jsContents[0].contents).toContain(`"our/blog/${imageFiles[0]}"`)
 })
