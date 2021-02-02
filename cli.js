@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as scripts from '../script/index.js'
-import { writeConfiguration } from '../utility/configuration.js'
+import * as scripts from './script/index.js'
+import { writeConfiguration } from './utility/configuration.js'
 
 const script = process.argv.slice(2)[0]
 

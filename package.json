@@ -71,9 +71,8 @@
   },
   "type": "module",
   "main": "index.js",
-  "bin": "cli/index.js",
+  "bin": "cli.js",
   "files": [
-    "cli",
     "configuration",
     "script",
     "utility",
