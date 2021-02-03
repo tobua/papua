@@ -1,5 +1,6 @@
 import webpack from 'webpack'
 import WebpackDevServer from 'webpack-dev-server'
+import objectAssignDeep from 'object-assign-deep'
 import { loadWebpackConfig } from '../utility/configuration.js'
 import {
   startServer,
@@ -9,8 +10,28 @@ import {
 } from '../utility/stats.js'
 import { freePort } from '../utility/helper.js'
 
-export default async (development) => {
+const attachDoneSignals = (server) => {
+  const doneSignals = ['SIGINT', 'SIGTERM']
+
+  doneSignals.forEach((signal) =>
+    process.on(signal, () => {
+      server.close()
+      process.exit(0)
+    })
+  )
+
+  process.stdin.on('end', () => {
+    server.close()
+    process.exit(0)
+  })
+}
+
+export default async (options) => {
   const [configuration, devServerConfiguration] = await loadWebpackConfig(true)
+
+  if (typeof options === 'object') {
+    objectAssignDeep(devServerConfiguration, options)
+  }
 
   let compiler
   try {
@@ -25,37 +46,31 @@ export default async (development) => {
 
   compiler.hooks.done.tap('done', (stats) => {
     if (stats.stats && Array.isArray(stats.stats)) {
-      stats.stats.forEach((stat) => logStats(stat, development))
+      stats.stats.forEach((stat) => logStats(stat, true))
     } else {
-      logStats(stats, development)
+      logStats(stats, true)
     }
   })
 
   const server = new WebpackDevServer(compiler, devServerConfiguration)
   const port = devServerConfiguration.port || (await freePort())
   const host = devServerConfiguration.host || 'localhost'
+  const url = `${host}:${port}`
+
+  attachDoneSignals(server)
+
   server.listen(port, host, (error) => {
     if (error) {
       console.log(error)
       return
     }
 
-    startServer(`${host}:${port}`)
+    startServer(url)
   })
 
-  const doneSignals = ['SIGINT', 'SIGTERM']
-
-  doneSignals.forEach((signal) =>
-    process.on(signal, () => {
-      server.close()
-      process.exit(0)
-    })
-  )
-
-  process.stdin.on('end', () => {
-    server.close()
-    process.exit(0)
-  })
-
-  return null
+  return {
+    url,
+    port,
+    server,
+  }
 }

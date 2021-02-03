@@ -21,3 +21,6 @@ export const contentsForFilesMatching = (matcher, folder) => {
     contents: readFile(join(folder, fileName)),
   }))
 }
+
+export const closeServer = (server) =>
+  new Promise((done) => server.close(() => done()))

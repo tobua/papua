@@ -3,7 +3,7 @@ import { writeConfiguration } from './utility/configuration.js'
 
 export const configure = () => writeConfiguration()
 
-export const start = () => scripts.start()
+export const start = (options) => scripts.start(options)
 
 export const build = () => scripts.build()
 
