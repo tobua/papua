@@ -116,5 +116,8 @@
     "transformIgnorePatterns": [
       "node_modules/cint"
     ]
+  },
+  "engines": {
+    "node": ">= 14"
   }
 }

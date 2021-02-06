@@ -7,14 +7,14 @@ export const packageJson = () => {
     },
     type: 'module',
     engines: {
-      node: '>= 13.2.0',
+      node: '>= 14',
     },
     prettier: 'papua/configuration/.prettierrc.json',
     eslintConfig: {
       extends: './node_modules/papua/configuration/eslint.cjs',
     },
     stylelint: {
-      extends: 'papua/configuration/stylelint.js',
+      extends: 'papua/configuration/stylelint.cjs',
     },
   }
 
