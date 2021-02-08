@@ -22,6 +22,16 @@ export const indexTypeScript = (contents) => ({
   contents,
 })
 
+export const testJavaScript = (contents = "test('hello', () => {})") => ({
+  name: 'test/basic.test.js',
+  contents,
+})
+
+export const testTypeScript = (contents = "test('hello', () => {})") => ({
+  name: 'test/basic.test.ts',
+  contents,
+})
+
 export const cssStyles = {
   name: 'styles.css',
   contents: `p { color: red; }`,

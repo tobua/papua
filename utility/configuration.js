@@ -281,6 +281,27 @@ export const writeGitIgnore = (gitIgnoreOverrides = []) => {
   writeFileSync(gitIgnorePath, entries.join('\r\n'))
 }
 
+// TODO simplify and make configurable.
+export const removePropertiesToUpdate = (pkg) => {
+  if (typeof pkg.engines === 'object') {
+    delete pkg.engines.node
+  }
+
+  if (typeof pkg.jest === 'object') {
+    if (typeof pkg.jest.globals === 'object') {
+      if (typeof pkg.jest.globals['ts-jest'] === 'object') {
+        // Old property no longer used.
+        delete pkg.jest.globals['ts-jest'].tsConfig
+      }
+    }
+  }
+
+  if (typeof pkg.stylelint === 'object') {
+    // Switches from JS to CJS (JS file no longer available).
+    delete pkg.stylelint.extends
+  }
+}
+
 export const writePackageJson = (postinstall) => {
   const packageJsonPath = join(getProjectBasePath(), './package.json')
 
@@ -296,6 +317,9 @@ export const writePackageJson = (postinstall) => {
   }
 
   const generatedPackageJson = packageJson()
+
+  // Remove properties that should be kept up-to-date.
+  removePropertiesToUpdate(packageContents)
 
   // Merge existing configuration with additional required attributes.
   // Existing properties override generated configuration to allow

@@ -9,6 +9,7 @@ import {
 } from '../utility/configuration.js'
 import { refresh } from '../utility/helper.js'
 import { environment, prepare } from './utility/prepare.js'
+import { indexTypeScript, testTypeScript } from './utility/structures.js'
 
 const [fixturePath] = environment('configuration')
 
@@ -45,6 +46,56 @@ test('Adds necessary package json properties.', () => {
   rimraf.sync(indexJsPath)
   rimraf.sync(gitignorePath)
   writeFileSync(packageJsonPath, `{\n  "name": "default"\n}\n`)
+})
+
+test('Updates old package json properties.', () => {
+  const outdatedPackageStructure = [
+    {
+      name: 'package.json',
+      json: true,
+      contents: {
+        name: 'outdated',
+        engines: {
+          test: 'hello',
+          node: '>= 13.2.0',
+        },
+        jest: {
+          globals: {
+            'ts-jest': {
+              tsConfig: './node_modules/papua/configuration/tsconfig.json',
+            },
+          },
+        },
+        stylelint: {
+          extends: 'papua/configuration/stylelint.js',
+        },
+      },
+    },
+    indexTypeScript(),
+    testTypeScript(),
+  ]
+  prepare(outdatedPackageStructure, fixturePath)
+
+  refresh()
+
+  const packageJsonPath = join(fixturePath, 'package.json')
+  let pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+
+  expect(pkg.engines.test).toEqual('hello')
+  expect(pkg.engines.node).toEqual('>= 13.2.0')
+  expect(pkg.jest.globals['ts-jest'].tsConfig).toBeDefined()
+  expect(pkg.jest.globals['ts-jest'].tsconfig).not.toBeDefined()
+  expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.js')
+
+  writePackageJson()
+
+  pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+
+  expect(pkg.engines.node).toEqual('>= 14')
+  expect(pkg.engines.test).toEqual('hello')
+  expect(pkg.jest.globals['ts-jest'].tsConfig).not.toBeDefined()
+  expect(pkg.jest.globals['ts-jest'].tsconfig).toBeDefined()
+  expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.cjs')
 })
 
 test('Adds an empty package.json if none can be found.', () => {
