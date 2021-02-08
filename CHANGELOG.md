@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.13](https://github.com/tobua/papua/compare/v0.1.12...v0.1.13) (2021-02-08)
+
+
+### Features
+
+* **build:** show server url when building ([bf8e9b4](https://github.com/tobua/papua/commit/bf8e9b4c82bed47f9aa7b28a994bf4ab85436407))
+* **configuration:** update old package configuration properties ([3ff4c9f](https://github.com/tobua/papua/commit/3ff4c9f0a9ef674b8346e91539814d666c821e7d))
+* **react:** as of version 17 React not required to be in scope for JSX ([0b782a4](https://github.com/tobua/papua/commit/0b782a44e2734293a5987683b90b1e07fa578c4f))
+* **script:** add snowpack as an alternative to webpack-dev-server ([264928a](https://github.com/tobua/papua/commit/264928a7045ff6d87edc6929e59882a7a0da4eac))
+* **script:** add watch script to build in watch mode without dev-server ([bc71785](https://github.com/tobua/papua/commit/bc71785b267c18f6ba381e23b145ad70ffa7c02e))
+* **serve:** new script to view and test production assets ([2f0d534](https://github.com/tobua/papua/commit/2f0d5341e469ab7adada08b6a3265dc0bc99a68d))
+* **serve:** option to open in browser, better logs and update deps ([0876ab7](https://github.com/tobua/papua/commit/0876ab7a226ad0bda859e2844c8c5b6e5da1e5f8))
+* **test:** arguments can be passed to test cli ([34cb49c](https://github.com/tobua/papua/commit/34cb49c44333dd531cf54fa60f26b68a66b3cd2c))
+* **test:** preliminary cypress end-to-end test integration ([44ea9b1](https://github.com/tobua/papua/commit/44ea9b114848b6c18e55344b02159a37bfd6244d))
+* **test:** run Cypress with papua configuration if found ([7a91063](https://github.com/tobua/papua/commit/7a91063bac0166b46463ca191e001a7340b012ff))
+* **webpack:** make default html options configurable ([8055f81](https://github.com/tobua/papua/commit/8055f816874ed7f244b78062df9fd906302bb742))
+* **webpack:** possibility to configure multiple builds ([31057b0](https://github.com/tobua/papua/commit/31057b03d48f6e9c25ac21c5bbaff96cdca96607))
+
+
+### Bug Fixes
+
+* **configuration:** cross origin sources in cypress and always build sw ([2d0514d](https://github.com/tobua/papua/commit/2d0514d859a785f234070e71cb91ef5f67161d00))
+* **configuration:** more extensions and improvements to absolute imports ([b83f97d](https://github.com/tobua/papua/commit/b83f97dceb896999fb322fa5e824cf7a3afef552))
+* **general:** fix tests, regular entry import and improve log ([638d68c](https://github.com/tobua/papua/commit/638d68c109d0fbe9c682850e71ade1b31ff07961))
+* **lint:** switch to CJS file for stylelint to ensure import in VSCode ([573aeab](https://github.com/tobua/papua/commit/573aeabf89ee3f4106de4a729c9c9e98e34f3c6e))
+* **options:** fix recently broken options, update deps and add lint rule ([6f013b3](https://github.com/tobua/papua/commit/6f013b325c99cb38b6eec458998d95bc2b44eb8d))
+* **start:** proper history fallback for dev server ([2b6182e](https://github.com/tobua/papua/commit/2b6182eb5972b91d6785d89e700fb66dc19ff614))
+* **watch:** improvements to new watch script ([d7d59b4](https://github.com/tobua/papua/commit/d7d59b448b799a84f80119f16040cd4a7cde480d))
+* **webpack:** add public path to server and adapt history api fallback ([92a37e2](https://github.com/tobua/papua/commit/92a37e20a43d93748cd122b65d43793990700f51))
+* **webpack:** allow configuration of host and port with dev-server ([9ebabf8](https://github.com/tobua/papua/commit/9ebabf83603e2b01f0c3569523df80cf44af1739))
+* **webpack:** improve and document options & new webpack entry structure ([3a532a3](https://github.com/tobua/papua/commit/3a532a3c4807361f2cc6af72c3f0e59dd8527877))
+* **webpack:** workaround to import react/dev-runtime in webpack 5 ([01af84d](https://github.com/tobua/papua/commit/01af84db0082c54ff56d0670c9c7bf8120782969))
+
 ### [0.1.12](https://github.com/tobua/papua/compare/v0.1.11...v0.1.12) (2020-12-16)
 
 
