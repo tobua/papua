@@ -1,15 +1,15 @@
 {
   "dependencies": {
-    "mobx": "^6.0.4",
-    "mobx-react": "^7.0.5",
-    "papua": "^0.1.8",
+    "mobx": "^6.1.5",
+    "mobx-react": "^7.1.0",
+    "papua": "^0.1.12",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "url-join": "^4.0.1",
-    "workbox-core": "^6.0.2",
-    "workbox-expiration": "^6.0.2",
-    "workbox-precaching": "^6.0.2",
-    "workbox-routing": "^6.0.2",
-    "workbox-strategies": "^6.0.2"
+    "workbox-core": "^6.1.0",
+    "workbox-expiration": "^6.1.0",
+    "workbox-precaching": "^6.1.0",
+    "workbox-routing": "^6.1.0",
+    "workbox-strategies": "^6.1.0"
   }
 }

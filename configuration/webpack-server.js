@@ -28,6 +28,8 @@ export const webpackServer = () => {
     // Rewrite index requests to public path.
     baseConfiguration.historyApiFallback = {
       index: publicPathWithSlashes,
+      // Route every request to index.html (SPA assumed).
+      rewrites: [{ from: /./, to: join(publicPathWithSlashes, 'index.html') }],
     }
   }
 
