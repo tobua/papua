@@ -1,9 +1,10 @@
-export const packageJson = (name, papua = {}) => ({
+export const packageJson = (name, papua = {}, others = {}) => ({
   name: 'package.json',
   json: true,
   contents: {
     name,
     papua,
+    ...others,
   },
 })
 

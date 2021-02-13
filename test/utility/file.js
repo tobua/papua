@@ -10,7 +10,7 @@ export const readFile = (name, options = {}) => {
 
   let content = readFileSync(path, 'utf8')
 
-  if (options.json) {
+  if (options.json || /^.*\.json$/.test(path)) {
     content = JSON.parse(content)
   }
 

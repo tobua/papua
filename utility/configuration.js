@@ -106,7 +106,9 @@ export const loadWebpackConfig = async (development) => {
     : configuration.devServer
 
   if (Array.isArray(configuration)) {
-    delete configuration[0].devServer
+    configuration.forEach(
+      (currentConfiguration) => delete currentConfiguration.devServer
+    )
   } else {
     delete configuration.devServer
   }
