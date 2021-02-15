@@ -17,14 +17,17 @@ import { loadWebpackConfig } from '../utility/configuration.js'
 
 const [fixturePath] = environment('webpack')
 
+const webpackConfig = {
+  __esModule: true,
+  default: {},
+}
+
 test('Can disable html template.', async () => {
   const disableHtmlPluginStructure = [
     packageJson('disable-template', {
       html: false,
     }),
     indexJavaScript(`console.log('test')`),
-    // Need the file to be available, so that it can be mocked in tests below.
-    javaScriptFile('webpack.config.js', ''),
   ]
   const { dist } = prepare(disableHtmlPluginStructure, fixturePath)
 
@@ -35,6 +38,11 @@ test('Can disable html template.', async () => {
 })
 
 test('Multiple builds with different output locations.', async () => {
+  // Virtual mock, so that file doesn't necessarly have to exist.
+  jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
+    virtual: true,
+  })
+
   const multipleBuildsStructure = [
     packageJson('multiple-builds', {
       entry: 'web.js',
@@ -46,13 +54,9 @@ test('Multiple builds with different output locations.', async () => {
       `import logo from 'logo.png'; console.log('blog', logo)`
     ),
     pngLogo,
-    javaScriptFile('webpack.config.js', ''),
   ]
-  prepare(multipleBuildsStructure, fixturePath)
 
-  jest.resetModuleRegistry()
-  jest.resetModules()
-  jest.doMock(join(fixturePath, 'webpack.config.js'), () => () => [
+  webpackConfig.default = [
     {
       output: {
         path: join(fixturePath, 'web/dist'),
@@ -80,7 +84,9 @@ test('Multiple builds with different output locations.', async () => {
         publicPath: 'our/blog/',
       },
     },
-  ])
+  ]
+
+  prepare(multipleBuildsStructure, fixturePath)
 
   await build()
 
@@ -105,19 +111,20 @@ test('Multiple builds with different output locations.', async () => {
 })
 
 test('User can add loaders and plugins.', async () => {
+  // Virtual mock, so that file doesn't necessarly have to exist.
+  jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
+    virtual: true,
+  })
+
   const loaderPluginMergeStructure = [
     packageJson('loader-plugin-merge', {}, { type: 'module' }),
     indexJavaScript(),
-    javaScriptFile('webpack.config.js', ''),
   ]
 
   prepare(loaderPluginMergeStructure, fixturePath)
 
-  jest.resetModuleRegistry()
-
   // Mocking import manually, as filesystem import is cached and filechanges not reflected.
-  jest.resetModules()
-  jest.doMock(join(fixturePath, 'webpack.config.js'), () => {})
+  webpackConfig.default = {}
 
   const [initialConfiguration] = await loadWebpackConfig(true)
 
@@ -127,8 +134,7 @@ test('User can add loaders and plugins.', async () => {
   prepare(loaderPluginMergeStructure, fixturePath)
 
   // Reset previous imports/mocks.
-  jest.resetModules()
-  jest.doMock(join(fixturePath, 'webpack.config.js'), () => ({
+  webpackConfig.default = {
     module: {
       rules: [
         {
@@ -138,7 +144,7 @@ test('User can add loaders and plugins.', async () => {
       ],
     },
     plugins: [() => {}],
-  }))
+  }
 
   const [configuration] = await loadWebpackConfig(true)
 
