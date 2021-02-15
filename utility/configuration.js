@@ -27,6 +27,7 @@ import { getProjectBasePath } from './path.js'
 const createSingleWebpackConfiguration = (
   userConfiguration,
   development,
+  afterMergeConfiguration,
   index
 ) => {
   let configuration = webpackConfig(development)
@@ -47,15 +48,30 @@ const createSingleWebpackConfiguration = (
 
   delete configuration.html
 
+  // Apply user edits.
+  if (afterMergeConfiguration) {
+    const resultingConfiguration = afterMergeConfiguration(configuration)
+    // If no return value assume in place edits without return.
+    if (typeof resultingConfiguration === 'object') {
+      configuration = resultingConfiguration
+    }
+  }
+
   return configuration
 }
 
 const createMultipleWebpackConfigurations = (
   userConfigurations,
-  development
+  development,
+  afterMergeConfiguration
 ) => {
   const configurations = userConfigurations.map((userConfiguration, index) =>
-    createSingleWebpackConfiguration(userConfiguration, development, index)
+    createSingleWebpackConfiguration(
+      userConfiguration,
+      development,
+      afterMergeConfiguration,
+      index
+    )
   )
 
   return configurations
@@ -64,6 +80,7 @@ const createMultipleWebpackConfigurations = (
 // Merges the default webpack config with user additions.
 export const loadWebpackConfig = async (development) => {
   let userConfiguration = {}
+  let afterMergeConfiguration
 
   try {
     // Works with module.exports = {} and export default {}.
@@ -71,6 +88,13 @@ export const loadWebpackConfig = async (development) => {
     userConfiguration = await import(
       join(getProjectBasePath(), './webpack.config.js')
     )
+
+    if (
+      userConfiguration.after &&
+      typeof userConfiguration.after === 'function'
+    ) {
+      afterMergeConfiguration = userConfiguration.after
+    }
 
     if (userConfiguration.default) {
       userConfiguration = userConfiguration.default
@@ -92,12 +116,14 @@ export const loadWebpackConfig = async (development) => {
   if (!Array.isArray(userConfiguration)) {
     configuration = createSingleWebpackConfiguration(
       userConfiguration,
-      development
+      development,
+      afterMergeConfiguration
     )
   } else {
     configuration = createMultipleWebpackConfigurations(
       userConfiguration,
-      development
+      development,
+      afterMergeConfiguration
     )
   }
 

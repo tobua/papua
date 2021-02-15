@@ -23,6 +23,11 @@ export const indexTypeScript = (contents) => ({
   contents,
 })
 
+export const anyFile = (name, contents) => ({
+  name,
+  contents,
+})
+
 export const testJavaScript = (contents = "test('hello', () => {})") => ({
   name: 'test/basic.test.js',
   contents,

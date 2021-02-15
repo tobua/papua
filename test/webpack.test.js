@@ -8,6 +8,7 @@ import {
   javaScriptFile,
   pngLogo,
   indexJavaScript,
+  anyFile,
 } from './utility/structures.js'
 import {
   listFilesMatching,
@@ -117,7 +118,7 @@ test('User can add loaders and plugins.', async () => {
   })
 
   const loaderPluginMergeStructure = [
-    packageJson('loader-plugin-merge', {}, { type: 'module' }),
+    packageJson('loader-plugin-merge'),
     indexJavaScript(),
   ]
 
@@ -138,7 +139,7 @@ test('User can add loaders and plugins.', async () => {
     module: {
       rules: [
         {
-          test: /\\.svg$/,
+          test: /\.svg$/,
           loader: 'my-loader',
         },
       ],
@@ -154,4 +155,70 @@ test('User can add loaders and plugins.', async () => {
   // New plugin and loader is present.
   expect(pluginCount - 1).toEqual(initialPluginCount)
   expect(rulesCount - 1).toEqual(initialRulesCount)
+})
+
+test('Custom plugins and loaders can be used.', async () => {
+  // Virtual mock, so that file doesn't necessarly have to exist.
+  jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
+    virtual: true,
+  })
+
+  const newContents = 'empty now'
+
+  const customLoaderPluginStructure = [
+    packageJson('custom-loader-and-plugin', {}, { type: 'module' }),
+    indexJavaScript(`import icon from 'icon.svg'; console.log(icon)`),
+    anyFile('icon.svg', 'iconista'),
+    anyFile(
+      'loader.js',
+      `export default function MyLoader(content) {
+  // This will be the return value of the import.
+  return \`export default '${newContents}'\`
+}`
+    ),
+  ]
+
+  const { dist } = prepare(customLoaderPluginStructure, fixturePath)
+
+  const pluginMock = jest.fn()
+
+  class MyPlugin {
+    // eslint-disable-next-line class-methods-use-this
+    apply(compiler) {
+      compiler.hooks.run.tap('my-plugin', pluginMock)
+    }
+  }
+
+  webpackConfig.after = (configuration) => {
+    configuration.module.rules.splice(2, 1)
+    return configuration
+  }
+
+  // Reset previous imports/mocks.
+  webpackConfig.default = {
+    module: {
+      rules: [
+        {
+          test: /\.svg$/,
+          use: {
+            loader: join(fixturePath, 'loader.js'),
+          },
+        },
+      ],
+    },
+    plugins: [new MyPlugin()],
+  }
+
+  await build()
+
+  expect(existsSync(dist)).toEqual(true)
+
+  // Plugin hook was called.
+  expect(pluginMock).toHaveBeenCalled()
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain(newContents)
+
+  delete webpackConfig.after
 })

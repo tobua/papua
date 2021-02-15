@@ -122,7 +122,11 @@ If available papua will look for a HTML template in `index.html` and use a defau
 You can add a webpack configuration file in the root. This configuration will then be merged with the default configuration. If you provide a function it will receive the default configuration and the mode as parameters.
 
 ```js
-module.exports = (configuration, isDevelopment) => ({
+import { join } from 'path'
+
+// Custom webpack configuration to merge with papua default configuration.
+export default (configuration, isDevelopment) => ({
+  // Add mock API reusing the Webpack-Dev-Server Express instance.
   devServer: {
     before: (app) => {
       app.get('/say-hello', async (request, response) => {
@@ -133,4 +137,12 @@ module.exports = (configuration, isDevelopment) => ({
     },
   },
 })
+
+// Optionally edit the resulting configuration after merging.
+export const after = (configuration) => {
+  // Remove file-loader
+  configuration.module.rules.splice(2, 1)
+  // Return edited configuration
+  return configuration
+}
 ```
