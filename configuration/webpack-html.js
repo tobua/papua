@@ -11,6 +11,10 @@ const getHtmlWebpackPluginOptions = () => {
 
   if (existsSync(join(process.cwd(), './index.html'))) {
     htmlOptions.template = './index.html'
+  } else if (typeof jest !== 'undefined') {
+    htmlOptions.template = './../../../configuration/template.html'
+  } else {
+    htmlOptions.template = './node_modules/papua/configuration/template.html'
   }
 
   if (options().html && typeof options().html === 'object') {

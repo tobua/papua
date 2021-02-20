@@ -7,7 +7,12 @@ import {
   contentsForFilesMatching,
 } from './utility/helper.js'
 import { environment, prepare } from './utility/prepare.js'
-import { packageJson, indexJavaScript, pngLogo } from './utility/structures.js'
+import {
+  packageJson,
+  indexJavaScript,
+  pngLogo,
+  anyFile,
+} from './utility/structures.js'
 
 const [fixturePath] = environment('build')
 
@@ -98,4 +103,56 @@ test('Deep public path applied properly in bundle.', async () => {
   expect(htmlContents).toContain(`src="/${path}/${mainJsName}"`)
   // Proper path to logo.
   expect(mainJsContents).toContain(`"/${path}/${pngName}"`)
+})
+
+test('Papua html template is used.', async () => {
+  const title = 'The title hello'
+  const htmlTemplateStructure = [
+    packageJson('html-template', { title }),
+    indexJavaScript(),
+  ]
+
+  const { dist } = prepare(htmlTemplateStructure, fixturePath)
+
+  await build()
+
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+
+  // Custom papua template is used.
+  expect(htmlContents).toContain(title)
+  expect(htmlContents).toContain('width=device-width')
+})
+
+test('Html template can be customized.', async () => {
+  const title = 'The title hello'
+  const loadingMessage = 'Still loading, sorry for the inconvenience.'
+  const customTemplateStructure = [
+    packageJson('custom-template', { html: { template: 'custom.html' } }),
+    indexJavaScript(),
+    anyFile(
+      'custom.html',
+      `<html>
+  <body>
+    <p>${loadingMessage}</p>
+  </body>
+</html>`
+    ),
+  ]
+
+  const { dist } = prepare(customTemplateStructure, fixturePath)
+
+  await build()
+
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+
+  // Custom user template is used.
+  expect(htmlContents).not.toContain(title)
+  expect(htmlContents).toContain(loadingMessage)
+  expect(htmlContents).not.toContain('width=device-width')
 })
