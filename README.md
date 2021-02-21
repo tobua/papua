@@ -69,6 +69,14 @@ Arguments: `--open` open in default browser.
 
 Alternative to the `webpack-dev-server` in `papua start` much faster but still experimental. Likely to replace start once it's stable.
 
+### `npx papua eject [--template <type>] [--file <name>]`
+
+Eject certain files to allow for more fine grained configuration. If no default values are provided the plugin will prompt for values. The following templates are available:
+
+- HTML (index.html)
+- Icon (icon.svg)
+- Webpack (webpack.config.js)
+
 ## Configuration
 
 Most of the default configurations can easily be extended. To do that add

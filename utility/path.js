@@ -10,3 +10,13 @@ export const getProjectBasePath = () => {
 
   return currentWorkingDirectory
 }
+
+export const getPluginBasePath = () => {
+  const currentWorkingDirectory = process.cwd()
+
+  if (!currentWorkingDirectory.includes('node_modules/papua')) {
+    return join(currentWorkingDirectory, 'node_modules/papua')
+  }
+
+  return currentWorkingDirectory
+}
