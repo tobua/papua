@@ -1,4 +1,4 @@
-import { copyFileSync } from 'fs'
+import { copyFileSync, existsSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { Command } from 'commander'
 import prompts from 'prompts'
@@ -10,7 +10,6 @@ const program = new Command()
 const templates = {
   html: {
     title: 'HTML Template',
-    value: 'index.html',
     file: 'index.html',
     handler: (file = 'index.html') => {
       copyFileSync(
@@ -26,13 +25,47 @@ const templates = {
     },
   },
   icon: {
-    title: '',
-    value: 'icon.svg',
-    file: 'icon.svg',
+    title: 'Icon',
+    file: 'icon.png',
+    handler: (file = 'icon.png') => {
+      if (file !== 'icon.png' && file !== 'icon.svg') {
+        editPackageJson({ papua: { icon: file } })
+        log(`Icon configuration edited in package.json to point to ${file}`)
+      }
+
+      copyFileSync(
+        join(getPluginBasePath(), 'configuration/icon.png'),
+        join(getProjectBasePath(), file)
+      )
+
+      log(`Icon added in ${join(getProjectBasePath(), file)}`)
+    },
   },
   webpack: {
     title: 'webpack configuration',
-    value: 'webpack.config.js',
+    handler: () => {
+      const webpackConfigPath = join(getProjectBasePath(), 'webpack.config.js')
+      if (existsSync(webpackConfigPath)) {
+        log(`Configuration already exists in ${webpackConfigPath}`, 'error')
+        return
+      }
+
+      writeFileSync(
+        webpackConfigPath,
+        `// Custom webpack configuration to merge with papua default configuration.
+export default (configuration, isDevelopment) => ({
+  // Add webpack modifications here.
+})
+
+// Optionally edit the resulting configuration after merging.
+export const after = (configuration) => {
+  // Modify configuration.
+  return configuration
+}`
+      )
+
+      log(`Configuration created in ${webpackConfigPath}`)
+    },
   },
 }
 

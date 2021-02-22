@@ -4,9 +4,10 @@ import webpack from 'webpack'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
+import FaviconsWebpackPlugin from 'favicons-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
-import { getProjectBasePath } from '../utility/path.js'
+import { getProjectBasePath, getPluginBasePath } from '../utility/path.js'
 import { isTest } from '../utility/helper.js'
 
 const root = (folder) => resolve(process.cwd(), folder)
@@ -24,6 +25,31 @@ const getEntry = () => {
   return entry
 }
 
+const getIconPlugin = () => {
+  let path = join(getPluginBasePath(), 'configuration/logo.png')
+
+  const logoPngProjectPath = join(getProjectBasePath(), 'logo.png')
+  const logoSvgProjectPath = join(getProjectBasePath(), 'logo.svg')
+
+  if (existsSync(logoPngProjectPath)) {
+    path = logoPngProjectPath
+  }
+
+  if (existsSync(logoSvgProjectPath)) {
+    path = logoSvgProjectPath
+  }
+
+  if (options().icon) {
+    const customIconPath = join(getProjectBasePath(), options().icon)
+
+    if (existsSync(customIconPath)) {
+      path = customIconPath
+    }
+  }
+
+  return new FaviconsWebpackPlugin(path)
+}
+
 const getPlugins = (development) => {
   const plugins = [
     new MiniCssExtractPlugin({
@@ -34,6 +60,7 @@ const getPlugins = (development) => {
     new webpack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(options().publicPath),
     }),
+    getIconPlugin(),
   ]
 
   if (existsSync(join(process.cwd(), 'public'))) {
