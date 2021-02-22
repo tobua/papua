@@ -1,5 +1,10 @@
+import { readFileSync, writeFileSync } from 'fs'
+import { join } from 'path'
 import { create } from 'logua'
+import formatPackageJson from 'pakag'
 import getPort from 'get-port'
+import merge from 'deepmerge'
+import { getProjectBasePath } from './path.js'
 
 export const log = create('papua', 'blue')
 
@@ -33,3 +38,14 @@ export const freePort = async () =>
     port: getPort.makeRange(3000, 3100),
     host: '127.0.0.1',
   })
+
+export const editPackageJson = (edits = {}) => {
+  const packageJsonPath = join(getProjectBasePath(), 'package.json')
+  let packageContents = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+
+  packageContents = merge(packageContents, edits, { clone: false })
+
+  const formattedContents = formatPackageJson(JSON.stringify(packageContents))
+
+  writeFileSync(packageJsonPath, formattedContents)
+}

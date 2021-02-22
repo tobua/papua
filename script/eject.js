@@ -1,9 +1,11 @@
 import { copyFileSync } from 'fs'
 import { join } from 'path'
-import { program } from 'commander'
+import { Command } from 'commander'
 import prompts from 'prompts'
-import { log } from '../utility/helper.js'
+import { log, editPackageJson } from '../utility/helper.js'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path.js'
+
+const program = new Command()
 
 const templates = {
   html: {
@@ -13,9 +15,14 @@ const templates = {
     handler: (file = 'index.html') => {
       copyFileSync(
         join(getPluginBasePath(), 'configuration/template.html'),
-        join(getProjectBasePath, file)
+        join(getProjectBasePath(), file)
       )
-      log(`Template created in ${join(getProjectBasePath, file)}`)
+      log(`Template created in ${join(getProjectBasePath(), file)}`)
+
+      if (file !== 'index.html') {
+        editPackageJson({ papua: { html: { template: file } } })
+        log(`HTML configuration edited in package.json to point to ${file}`)
+      }
     },
   },
   icon: {
@@ -77,5 +84,9 @@ export default async (options) => {
     ).file
   }
 
-  action.handler(file)
+  console.log('')
+
+  if (action.handler) {
+    action.handler(file)
+  }
 }
