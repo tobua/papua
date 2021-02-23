@@ -47,7 +47,10 @@ const getIconPlugin = () => {
     }
   }
 
-  return new FaviconsWebpackPlugin(path)
+  return new FaviconsWebpackPlugin({
+    logo: path,
+    mode: 'light',
+  })
 }
 
 const getPlugins = (development) => {

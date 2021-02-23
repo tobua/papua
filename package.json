@@ -38,6 +38,7 @@
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "fast-glob": "^3.2.5",
+    "favicons": "^6.2.1",
     "favicons-webpack-plugin": "^5.0.1",
     "file-loader": "^6.2.0",
     "get-port": "^5.1.1",

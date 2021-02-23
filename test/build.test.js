@@ -156,3 +156,19 @@ test('Html template can be customized.', async () => {
   expect(htmlContents).toContain(loadingMessage)
   expect(htmlContents).not.toContain('width=device-width')
 })
+
+test('Generates and injects favicons.', async () => {
+  const customTemplateStructure = [packageJson('favicons'), indexJavaScript()]
+
+  const { dist } = prepare(customTemplateStructure, fixturePath)
+
+  await build()
+
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+
+  // Favicons are injected.
+  expect(htmlContents).toContain('assets/favicon.png')
+})
