@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.15](https://github.com/tobua/papua/compare/v0.1.14...v0.1.15) (2021-03-15)
+
+
+### Features
+
+* **html:** use custom papua html template ([1ce6532](https://github.com/tobua/papua/commit/1ce65323655b43f2e5b010866ff4c2e38cb8f67e))
+* **script:** new eject script to generate common templates ([266e7e9](https://github.com/tobua/papua/commit/266e7e989b6d91064df890c50b24443560eb95b4))
+* **webpack:** favicon generation and icon eject script ([c0737d0](https://github.com/tobua/papua/commit/c0737d0bb662a731cee3fa31eacaa172f6c4a045))
+
+
+### Bug Fixes
+
+* **eject:** improve html eject script ([dea2b07](https://github.com/tobua/papua/commit/dea2b0702503f7c22c8fa8b28666b0ae8a3d7847))
+
 ### [0.1.14](https://github.com/tobua/papua/compare/v0.1.13...v0.1.14) (2021-02-15)
 
 ### [0.1.13](https://github.com/tobua/papua/compare/v0.1.12...v0.1.13) (2021-02-08)
