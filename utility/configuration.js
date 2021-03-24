@@ -81,13 +81,12 @@ const createMultipleWebpackConfigurations = (
 export const loadWebpackConfig = async (development) => {
   let userConfiguration = {}
   let afterMergeConfiguration
+  const userConfigurationPath = join(getProjectBasePath(), 'webpack.config.js')
 
   try {
     // Works with module.exports = {} and export default {}.
     // The latter only if type in project is set to ES Modules.
-    userConfiguration = await import(
-      join(getProjectBasePath(), './webpack.config.js')
-    )
+    userConfiguration = await import(userConfigurationPath)
 
     if (
       userConfiguration.after &&
@@ -100,7 +99,14 @@ export const loadWebpackConfig = async (development) => {
       userConfiguration = userConfiguration.default
     }
   } catch (error) {
-    // No user configuration found.
+    if (existsSync(userConfigurationPath)) {
+      log(
+        `Failed to import user webpack configuration in ${userConfigurationPath}`,
+        'warning'
+      )
+    }
+
+    // Ignore, no user configuration found.
   }
 
   // User configuration can be a function and will receive the default config and the environment.

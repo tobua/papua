@@ -8,7 +8,7 @@ const { lint } = stylelint
 const configurationPath = './node_modules/papua/configuration'
 
 export default async () => {
-  log('formatting files..')
+  log('formatting files...')
   execSync(
     `prettier --write '**/*.{ts,tsx,js,jsx}' --config ${configurationPath}/.prettierrc.json --ignore-path ${configurationPath}/.prettierignore`,
     { stdio: 'inherit' }
@@ -16,7 +16,7 @@ export default async () => {
 
   console.log('')
 
-  log('linting files..')
+  log('linting files...')
 
   // ESLint
   const linter = new ESLint({
@@ -28,7 +28,9 @@ export default async () => {
   const formatter = await linter.loadFormatter('stylish')
   const resultText = formatter.format(eslintResults)
 
-  console.log(resultText)
+  if (resultText) {
+    console.log(resultText)
+  }
 
   // Stylelint
   const stylelintResults = await lint({
