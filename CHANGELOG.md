@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.16](https://github.com/tobua/papua/compare/v0.1.15...v0.1.16) (2021-04-11)
+
+
+### Bug Fixes
+
+* **serve:** apply public path and configure SPA in serve script ([de3bbb9](https://github.com/tobua/papua/commit/de3bbb9997df8e7e2c6831d4c25e8c2c0fdef483))
+
 ### [0.1.15](https://github.com/tobua/papua/compare/v0.1.14...v0.1.15) (2021-03-15)
 
 
