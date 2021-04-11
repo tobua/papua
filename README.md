@@ -103,6 +103,10 @@ a `papua` property to your `package.json` with the following options available:
     polyfills: ['core-js/stable', 'regenerator-runtime/runtime'],
     // Configure html file to be generated.
     html: { template: 'page.html', filename: 'modern.html', excludeChunks: ['polyfills'] }
+    // Passed to serve-handler in serve script.
+    serve: {
+      cleanUrls: false
+    }
   }
 }
 ```

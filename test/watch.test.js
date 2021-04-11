@@ -28,7 +28,7 @@ test('Watcher rebuilds on file change.', async () => {
   const watcher = await watch()
 
   // Wait for initial compilation to finish.
-  await wait(5)
+  await wait(10)
 
   expect(existsSync(dist)).toEqual(true)
 
