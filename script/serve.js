@@ -1,6 +1,9 @@
-import handler from 'serve-handler'
+import { join } from 'path'
 import http from 'http'
 import open from 'open'
+import rimraf from 'rimraf'
+import { moveSync } from 'fs-extra'
+import handler from 'serve-handler'
 import merge from 'deepmerge'
 import { log, freePort } from '../utility/helper.js'
 import { options } from '../utility/options.js'
@@ -13,23 +16,35 @@ export default async () => {
   log('Building...')
   await build(false)
 
+  // Wrap dist files in public path folder.
+  if (publicPath) {
+    moveSync(
+      options().output,
+      join('.temp', options().output, options().publicPath)
+    )
+    moveSync(join('.temp', options().output), join(options().output))
+    rimraf.sync('.temp')
+  }
+
   let configuration = {
     public: options().output,
+    // Rewrites for SPA
+    rewrites: [{ source: '/**', destination: '/index.html' }],
   }
 
   if (publicPath) {
     configuration.redirects = [{ source: '/', destination: publicPath }]
     configuration.rewrites = [
-      { source: `${publicPath}`, destination: '/index.html' },
-      { source: `${publicPath}/**/*`, destination: '/index.html' },
       {
-        source: `${publicPath}/:path/:name.:extension`,
-        destination: '/:path/:name.:extension',
+        source: `${publicPath}/**`,
+        destination: `${publicPath}/index.html`,
       },
     ]
   }
 
-  configuration = merge(configuration, options().serve)
+  if (typeof options().serve === 'object') {
+    configuration = merge(configuration, options().serve)
+  }
 
   const server = http.createServer((request, response) =>
     handler(request, response, configuration)

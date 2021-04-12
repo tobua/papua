@@ -41,6 +41,7 @@
     "favicons": "^6.2.1",
     "favicons-webpack-plugin": "^5.0.2",
     "file-loader": "^6.2.0",
+    "fs-extra": "^9.1.0",
     "get-port": "^5.1.1",
     "global-dirs": "^3.0.0",
     "html-webpack-plugin": "^5.3.1",
