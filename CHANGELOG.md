@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.17](https://github.com/tobua/papua/compare/v0.1.16...v0.1.17) (2021-04-12)
+
+
+### Bug Fixes
+
+* **serve:** mock public path in fs & avoid error when option undefined ([78a35bd](https://github.com/tobua/papua/commit/78a35bdef6dc71157fbd493ab69d1d986b2189b2))
+
 ### [0.1.16](https://github.com/tobua/papua/compare/v0.1.15...v0.1.16) (2021-04-11)
 
 
