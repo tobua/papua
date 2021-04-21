@@ -1,23 +1,22 @@
 import { execSync } from 'child_process'
-import { realpathSync } from 'fs'
+import { realpathSync, existsSync } from 'fs'
 import { join } from 'path'
-import isPathInside from 'is-path-inside'
 import globalDirs from 'global-dirs'
 import { log } from '../utility/helper.js'
 import { getProjectBasePath } from '../utility/path.js'
 import { options } from '../utility/options.js'
 
 const installCypressIfMissing = () => {
-  if (isPathInside('cypress', join(getProjectBasePath(), 'node_modules'))) {
+  if (existsSync(join(getProjectBasePath(), 'node_modules/cypress'))) {
     return
   }
 
-  // Adapted from is-installed-globally
-  if (isPathInside('cypress', realpathSync(globalDirs.npm.packages))) {
+  // Check if cypress package is installed globally (from is-installed-globally).
+  if (existsSync(join(realpathSync(globalDirs.npm.packages), 'cypress'))) {
     return
   }
 
-  if (isPathInside('cypress', globalDirs.yarn.packages)) {
+  if (existsSync(join(globalDirs.yarn.packages, 'cypress'))) {
     return
   }
 
@@ -27,8 +26,9 @@ const installCypressIfMissing = () => {
 }
 
 export default () => {
-  const hasJest = isPathInside(options().test, getProjectBasePath())
-  const hasCypress = isPathInside('cypress', getProjectBasePath())
+  const hasJest =
+    options().test && existsSync(join(getProjectBasePath(), options().test))
+  const hasCypress = existsSync(join(getProjectBasePath(), 'cypress'))
 
   const additionalArguments = process.argv.slice(3)
 
