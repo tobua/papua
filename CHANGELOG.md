@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.18](https://github.com/tobua/papua/compare/v0.1.17...v0.1.18) (2021-04-22)
+
+
+### Bug Fixes
+
+* **test:** proper check for cypress installation ([cd74653](https://github.com/tobua/papua/commit/cd74653483c3ea46cbe3e143af425521f48d430f))
+
 ### [0.1.17](https://github.com/tobua/papua/compare/v0.1.16...v0.1.17) (2021-04-12)
 
 

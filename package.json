@@ -1,7 +1,7 @@
 {
   "name": "papua",
   "description": "Setup and build modern web applications.",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "repository": "github:tobua/papua",
   "license": "MIT",
   "author": "Matthias Giger",
