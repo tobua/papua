@@ -26,9 +26,10 @@ export default async () => {
       options()
         .entry.map(
           (entry) =>
+            // JS, TS and TSX all need to be referenced as JS.
             `<script type="module" src="${entry.replace(
-              'jsx',
-              'js'
+              /\.(t|j)sx?$/,
+              '.js'
             )}"></script>`
         )
         .join('\n')
