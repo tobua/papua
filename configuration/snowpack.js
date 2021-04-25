@@ -4,7 +4,7 @@ import { options } from '../utility/options.js'
 export default async () => ({
   devOptions: {
     port: await freePort(),
-    open: true,
+    open: 'default',
   },
   buildOptions: {
     out: options().output,
