@@ -190,7 +190,7 @@ test('Custom plugins and loaders can be used.', async () => {
   }
 
   webpackConfig.after = (configuration) => {
-    configuration.module.rules.splice(2, 1)
+    configuration.module.rules.splice(1, 1)
     return configuration
   }
 

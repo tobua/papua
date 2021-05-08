@@ -120,15 +120,17 @@ export default (development) => ({
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: [
-              '@babel/preset-env',
+              '@babel/env',
+              // Removes TS annotations, but no type checking.
+              '@babel/typescript',
               [
-                '@babel/preset-react',
+                '@babel/react',
                 {
                   // React not required to be in scope for JSX.
                   runtime: 'automatic',
@@ -136,13 +138,6 @@ export default (development) => ({
               ],
             ],
           },
-        },
-      },
-      {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader',
         },
       },
       {
