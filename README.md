@@ -24,6 +24,7 @@ The following [templates](https://github.com/tobua/papua/tree/master/template) a
 - default (JS + React)
 - typescript (TS + React)
 - [pwa](https://github.com/tobua/papua/tree/master/template/pwa) (TS + React + Progressive Web App)
+- website (TS + React + MobX + Emotion)
 
 ```js
 npm init now papua [destination-directory] [template]
