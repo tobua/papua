@@ -86,6 +86,7 @@
     "*.js"
   ],
   "devDependencies": {
+    "jest-fixture": "^1.0.2",
     "standard-version": "^9.3.0",
     "tcp-port-used": "^1.0.2"
   },

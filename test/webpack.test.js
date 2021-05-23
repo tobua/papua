@@ -1,22 +1,24 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import { build } from '../index.js'
-import { readFile } from './utility/file.js'
-import { environment, prepare } from './utility/prepare.js'
 import {
+  environment,
+  prepare,
   packageJson,
-  javaScriptFile,
-  pngLogo,
-  indexJavaScript,
-  anyFile,
-} from './utility/structures.js'
-import {
+  file,
   listFilesMatching,
   contentsForFilesMatching,
-} from './utility/helper.js'
+  readFile,
+} from 'jest-fixture'
+import { build } from '../index.js'
 import { loadWebpackConfig } from '../utility/configuration.js'
+import { refresh } from '../utility/helper.js'
+
+// Build can take more than 5 seconds.
+jest.setTimeout(60000)
 
 const [fixturePath] = environment('webpack')
+
+beforeEach(refresh)
 
 const webpackConfig = {
   __esModule: true,
@@ -26,9 +28,11 @@ const webpackConfig = {
 test('Can disable html template.', async () => {
   const disableHtmlPluginStructure = [
     packageJson('disable-template', {
-      html: false,
+      papua: {
+        html: false,
+      },
     }),
-    indexJavaScript(`console.log('test')`),
+    file('index.js', `console.log('test')`),
   ]
   const { dist } = prepare(disableHtmlPluginStructure, fixturePath)
 
@@ -43,19 +47,6 @@ test('Multiple builds with different output locations.', async () => {
   jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
     virtual: true,
   })
-
-  const multipleBuildsStructure = [
-    packageJson('multiple-builds', {
-      entry: 'web.js',
-    }),
-    javaScriptFile('web.js', `console.log('web')`),
-    javaScriptFile('extension.js', `console.log('extension')`),
-    javaScriptFile(
-      'blog.js',
-      `import logo from 'logo.png'; console.log('blog', logo)`
-    ),
-    pngLogo,
-  ]
 
   webpackConfig.default = [
     {
@@ -87,7 +78,20 @@ test('Multiple builds with different output locations.', async () => {
     },
   ]
 
-  prepare(multipleBuildsStructure, fixturePath)
+  prepare([
+    packageJson('multiple-builds', {
+      papua: {
+        entry: 'web.js',
+      },
+    }),
+    file('web.js', `console.log('web')`),
+    file('extension.js', `console.log('extension')`),
+    file('blog.js', `import logo from 'logo.png'; console.log('blog', logo)`),
+    {
+      name: 'logo.png',
+      copy: 'test/asset/logo.png',
+    },
+  ])
 
   await build()
 
@@ -119,7 +123,7 @@ test('User can add loaders and plugins.', async () => {
 
   const loaderPluginMergeStructure = [
     packageJson('loader-plugin-merge'),
-    indexJavaScript(),
+    file('index.js', ''),
   ]
 
   prepare(loaderPluginMergeStructure, fixturePath)
@@ -166,10 +170,10 @@ test('Custom plugins and loaders can be used.', async () => {
   const newContents = 'empty now'
 
   const customLoaderPluginStructure = [
-    packageJson('custom-loader-and-plugin', {}, { type: 'module' }),
-    indexJavaScript(`import icon from 'icon.svg'; console.log(icon)`),
-    anyFile('icon.svg', 'iconista'),
-    anyFile(
+    packageJson('custom-loader-and-plugin', { type: 'module' }),
+    file('index.js', `import icon from 'icon.svg'; console.log(icon)`),
+    file('icon.svg', 'iconista'),
+    file(
       'loader.js',
       `export default function MyLoader(content) {
   // This will be the return value of the import.

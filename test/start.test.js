@@ -1,14 +1,29 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
 import tcpPortUsed from 'tcp-port-used'
+import {
+  environment,
+  prepare,
+  packageJson,
+  file,
+  listFilesMatching,
+  wait,
+} from 'jest-fixture'
 import { start } from '../index.js'
-import { wait, closeServer, listFilesMatching } from './utility/helper.js'
-import { environment, prepare } from './utility/prepare.js'
+import { refresh } from '../utility/helper.js'
 
-const [fixturePath] = environment('start')
+// Startup can take more than 5 seconds.
+jest.setTimeout(60000)
+
+environment('start')
+
+beforeEach(refresh)
 
 test('Start script builds assets and occupies port.', async () => {
-  const { dist } = prepare('build', fixturePath)
+  const { dist } = prepare([
+    packageJson('build'),
+    file('index.js', `console.log('test')`),
+  ])
 
   const { url, port, server } = await start({
     open: false,
@@ -32,5 +47,5 @@ test('Start script builds assets and occupies port.', async () => {
 
   expect(files.length).toBeGreaterThanOrEqual(0)
 
-  await closeServer(server)
+  await new Promise((done) => server.close(() => done()))
 })

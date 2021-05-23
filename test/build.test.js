@@ -1,23 +1,34 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import { build } from '../index.js'
-import { readFile } from './utility/file.js'
 import {
+  environment,
+  prepare,
+  packageJson,
+  file,
   listFilesMatching,
   contentsForFilesMatching,
-} from './utility/helper.js'
-import { environment, prepare } from './utility/prepare.js'
-import {
-  packageJson,
-  indexJavaScript,
-  pngLogo,
-  anyFile,
-} from './utility/structures.js'
+  readFile,
+} from 'jest-fixture'
+import { build } from '../index.js'
+import { refresh } from '../utility/helper.js'
 
-const [fixturePath] = environment('build')
+// Build can take more than 5 seconds.
+jest.setTimeout(60000)
+
+environment('build')
+
+beforeEach(refresh)
+
+const pngLogo = {
+  name: 'logo.png',
+  copy: 'test/asset/logo.png',
+}
 
 test('Builds without errors.', async () => {
-  const { dist } = prepare('build', fixturePath)
+  const { dist } = prepare([
+    packageJson('build'),
+    file('index.js', `console.log('test')`),
+  ])
 
   await build()
 
@@ -30,13 +41,11 @@ test('Builds without errors.', async () => {
 })
 
 test('No public path applied properly in bundle.', async () => {
-  const noPublicPathStructure = [
+  const { dist } = prepare([
     packageJson('publicpath'),
-    indexJavaScript(`import logo from 'logo.png'; console.log(logo)`),
+    file('index.js', `import logo from 'logo.png'; console.log(logo)`),
     pngLogo,
-  ]
-
-  const { dist } = prepare(noPublicPathStructure, fixturePath)
+  ])
 
   await build()
 
@@ -55,13 +64,11 @@ test('No public path applied properly in bundle.', async () => {
 })
 
 test('Root public path applied properly in bundle.', async () => {
-  const noPublicPathStructure = [
-    packageJson('publicpath', { publicPath: '/' }),
-    indexJavaScript(`import logo from 'logo.png'; console.log(logo)`),
+  const { dist } = prepare([
+    packageJson('publicpath', { papua: { publicPath: '/' } }),
+    file('index.js', `import logo from 'logo.png'; console.log(logo)`),
     pngLogo,
-  ]
-
-  const { dist } = prepare(noPublicPathStructure, fixturePath)
+  ])
 
   await build()
 
@@ -81,13 +88,11 @@ test('Root public path applied properly in bundle.', async () => {
 
 test('Deep public path applied properly in bundle.', async () => {
   const path = 'hello/world'
-  const noPublicPathStructure = [
-    packageJson('publicpath', { publicPath: path }),
-    indexJavaScript(`import logo from 'logo.png'; console.log(logo)`),
+  const { dist } = prepare([
+    packageJson('publicpath', { papua: { publicPath: path } }),
+    file('index.js', `import logo from 'logo.png'; console.log(logo)`),
     pngLogo,
-  ]
-
-  const { dist } = prepare(noPublicPathStructure, fixturePath)
+  ])
 
   await build()
 
@@ -107,12 +112,10 @@ test('Deep public path applied properly in bundle.', async () => {
 
 test('Papua html template is used.', async () => {
   const title = 'The title hello'
-  const htmlTemplateStructure = [
-    packageJson('html-template', { title }),
-    indexJavaScript(),
-  ]
-
-  const { dist } = prepare(htmlTemplateStructure, fixturePath)
+  const { dist } = prepare([
+    packageJson('html-template', { papua: { title } }),
+    file('index.js', ''),
+  ])
 
   await build()
 
@@ -129,10 +132,12 @@ test('Papua html template is used.', async () => {
 test('Html template can be customized.', async () => {
   const title = 'The title hello'
   const loadingMessage = 'Still loading, sorry for the inconvenience.'
-  const customTemplateStructure = [
-    packageJson('custom-template', { html: { template: 'custom.html' } }),
-    indexJavaScript(),
-    anyFile(
+  const { dist } = prepare([
+    packageJson('custom-template', {
+      papua: { html: { template: 'custom.html' } },
+    }),
+    file('index.js', ''),
+    file(
       'custom.html',
       `<html>
   <body>
@@ -140,9 +145,7 @@ test('Html template can be customized.', async () => {
   </body>
 </html>`
     ),
-  ]
-
-  const { dist } = prepare(customTemplateStructure, fixturePath)
+  ])
 
   await build()
 
@@ -158,9 +161,7 @@ test('Html template can be customized.', async () => {
 })
 
 test('Generates and injects favicons.', async () => {
-  const customTemplateStructure = [packageJson('favicons'), indexJavaScript()]
-
-  const { dist } = prepare(customTemplateStructure, fixturePath)
+  const { dist } = prepare([packageJson('favicons'), file('index.js', '')])
 
   await build()
 

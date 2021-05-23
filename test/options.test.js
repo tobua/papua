@@ -1,14 +1,13 @@
+import { environment, prepare, packageJson, file } from 'jest-fixture'
 import { options } from '../utility/options.js'
 import { refresh } from '../utility/helper.js'
-import { environment, prepare } from './utility/prepare.js'
-import { packageJson, javaScriptFile } from './utility/structures.js'
 
-const [fixturePath] = environment('options')
+environment('options')
 
-beforeEach(() => refresh())
+beforeEach(refresh)
 
 test('Options set correctly for simple project.', () => {
-  prepare('simple', fixturePath)
+  prepare([packageJson('simple')])
 
   const result = options()
 
@@ -18,7 +17,10 @@ test('Options set correctly for simple project.', () => {
 })
 
 test('Proper options for TS project.', () => {
-  prepare('typescript', fixturePath)
+  prepare([
+    packageJson('typescript'),
+    file('index.ts', `console.log('typescript')`),
+  ])
 
   const result = options()
 
@@ -28,13 +30,14 @@ test('Proper options for TS project.', () => {
 })
 
 test('Custom entry is used.', () => {
-  const customEntryStructure = [
+  prepare([
     packageJson('custom-entry', {
-      entry: './another.js',
+      papua: {
+        entry: './another.js',
+      },
     }),
-    javaScriptFile('another.js'),
-  ]
-  prepare(customEntryStructure, fixturePath)
+    file('another.js', ''),
+  ])
 
   const result = options()
 

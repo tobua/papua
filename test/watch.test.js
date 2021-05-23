@@ -1,27 +1,31 @@
 import { existsSync } from 'fs'
-import { watch } from '../index.js'
-import { writeFile } from './utility/file.js'
-import { environment, prepare } from './utility/prepare.js'
 import {
+  environment,
+  prepare,
   packageJson,
-  indexJavaScript,
-  javaScriptFile,
-  pngLogo,
-} from './utility/structures.js'
-import {
-  wait,
-  closeWatcher,
+  file,
   listFilesMatching,
   contentsForFilesMatching,
-} from './utility/helper.js'
+  writeFile,
+  wait,
+} from 'jest-fixture'
+import { watch } from '../index.js'
+import { refresh } from '../utility/helper.js'
+
+// Watcher can take more than 5 seconds.
+jest.setTimeout(60000)
+const closeWatcher = (watcher) =>
+  new Promise((done) => watcher.close(() => done()))
 
 const [fixturePath] = environment('watch')
+
+beforeEach(refresh)
 
 test('Watcher rebuilds on file change.', async () => {
   const watchRebuildStructure = [
     packageJson('watch-rebuild', { html: false }),
-    indexJavaScript(`import 'imported.js'; console.log('hello_index')`),
-    javaScriptFile('imported.js', `console.log('hello_imported')`),
+    file('index.js', `import 'imported.js'; console.log('hello_index')`),
+    file('imported.js', `console.log('hello_imported')`),
   ]
   const { dist } = prepare(watchRebuildStructure, fixturePath)
 
@@ -57,8 +61,11 @@ test('Watcher rebuilds on file change.', async () => {
 test('Removed imports are not removed from dist during watch.', async () => {
   const watchRebuildStructure = [
     packageJson('watch-remove-files', { html: false }),
-    indexJavaScript(`import logo from 'logo.png'; console.log(logo)`),
-    pngLogo,
+    file('index.js', `import logo from 'logo.png'; console.log(logo)`),
+    {
+      name: 'logo.png',
+      copy: 'test/asset/logo.png',
+    },
   ]
   const { dist } = prepare(watchRebuildStructure, fixturePath)
 
