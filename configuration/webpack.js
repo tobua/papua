@@ -5,6 +5,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin'
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
 import { getProjectBasePath, getPluginBasePath } from '../utility/path.js'
@@ -65,6 +66,10 @@ const getPlugins = (development) => {
     }),
     getIconPlugin(),
   ]
+
+  if (options().typescript) {
+    plugins.push(new ForkTsCheckerWebpackPlugin())
+  }
 
   if (existsSync(join(process.cwd(), 'public'))) {
     plugins.push(
