@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.20](https://github.com/tobua/papua/compare/v0.1.19...v0.1.20) (2021-05-24)
+
+
+### Bug Fixes
+
+* **typescript:** jsx without React import in file ([c8bf2e2](https://github.com/tobua/papua/commit/c8bf2e25d288e40793d2ad136ba74a54db1cfb3e))
+
 ### [0.1.19](https://github.com/tobua/papua/compare/v0.1.18...v0.1.19) (2021-05-23)
 
 
