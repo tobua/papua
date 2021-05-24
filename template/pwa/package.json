@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "mobx": "^6.3.0",
-    "mobx-react": "^7.1.0",
+    "mobx": "^6.3.2",
+    "mobx-react": "^7.2.0",
     "papua": "^0.1.18",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

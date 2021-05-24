@@ -9,7 +9,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
   // The local tsconfig in this package will be written and the user config is extending it.
   const packageTSConfig = {
     compilerOptions: {
-      jsx: 'react',
+      jsx: 'react-jsx',
       esModuleInterop: true,
       outDir: `../../../${options().output}`,
       baseUrl: '../../..',
