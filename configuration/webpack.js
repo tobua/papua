@@ -60,7 +60,7 @@ const getPlugins = (development) => {
       filename: development ? '[name].css' : '[name].[contenthash].css',
       chunkFilename: development ? '[id].css' : '[id].[contenthash].css',
     }),
-    new LocalDependenciesPlugin(),
+    new LocalDependenciesPlugin({ watch: true }),
     new webpack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(options().publicPath),
     }),

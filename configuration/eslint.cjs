@@ -58,7 +58,13 @@ module.exports = {
   env: {
     browser: true,
   },
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
+  parserOptions: {
+    babelOptions: {
+      // TODO breaks local babel usage.
+      configFile: './node_modules/papua/configuration/.babelrc',
+    },
+  },
   settings: customSettings,
   overrides: [
     {

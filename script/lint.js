@@ -1,3 +1,4 @@
+import { join } from 'path'
 import eslint from 'eslint'
 import stylelint from 'stylelint'
 import { execSync } from 'child_process'
@@ -5,13 +6,21 @@ import { log } from '../utility/helper.js'
 
 const { ESLint } = eslint
 const { lint } = stylelint
-const configurationPath = './node_modules/papua/configuration'
 
 export default async () => {
+  const configurationPath = join(
+    process.cwd(),
+    'node_modules/papua/configuration'
+  )
+
   log('formatting files...')
+
+  const configPath = join(configurationPath, '.prettierrc.json')
+  const ignorePath = join(configurationPath, '.prettierignore')
+
   execSync(
-    `prettier --write '**/*.{ts,tsx,js,jsx}' --config ${configurationPath}/.prettierrc.json --ignore-path ${configurationPath}/.prettierignore`,
-    { stdio: 'inherit' }
+    `prettier --write '**/*.{ts,tsx,js,jsx}' --config ${configPath} --ignore-path ${ignorePath}`,
+    { stdio: 'inherit', cwd: process.cwd() }
   )
 
   console.log('')
