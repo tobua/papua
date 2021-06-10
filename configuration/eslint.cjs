@@ -60,9 +60,20 @@ module.exports = {
   },
   parser: '@babel/eslint-parser',
   parserOptions: {
+    requireConfigFile: false,
+    // Inline babel configuration as configFile options wouldn't allow sharing between
+    // local development and published package (only works for either).
     babelOptions: {
-      // TODO breaks local babel usage.
-      configFile: './node_modules/papua/configuration/.babelrc',
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            targets: {
+              node: 'current',
+            },
+          },
+        ],
+      ],
     },
   },
   settings: customSettings,

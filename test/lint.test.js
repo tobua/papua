@@ -35,7 +35,6 @@ afterAll(() => {
 })
 
 let eslintConfig = readFile('configuration/eslint.cjs')
-const babelConfig = readFile('configuration/.babelrc')
 const prettierConfig = readFile('configuration/.prettierrc.json')
 const prettierIgnore = readFile('configuration/.prettierignore')
 const stylelintConfig = readFile('configuration/stylelint.cjs')
@@ -79,12 +78,9 @@ const second = css\`
 console.log(first, second)`
     ),
     file('node_modules/papua/configuration/eslint.cjs', eslintConfig),
-    file('node_modules/papua/configuration/.babelrc', babelConfig),
     file('node_modules/papua/configuration/.prettierrc.json', prettierConfig),
     file('node_modules/papua/configuration/.prettierignore', prettierIgnore),
     file('node_modules/papua/configuration/stylelint.cjs', stylelintConfig),
-    file('node_modules/papua/configuration/tsconfig.json', '{}'),
-    file('tsconfig.json', '{}'),
   ])
 
   writeConfiguration()
