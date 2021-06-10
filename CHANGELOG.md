@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.21](https://github.com/tobua/papua/compare/v0.1.20...v0.1.21) (2021-06-10)
+
+
+### Bug Fixes
+
+* **lint:** replace deprecated babel-eslint and add lint test ([c2912d0](https://github.com/tobua/papua/commit/c2912d05cd1414b015091f63213dd513341f0d52))
+* **webpack:** polyfills can be removed ([788da80](https://github.com/tobua/papua/commit/788da80326bdd797b940cabd3b410323a4d34452))
+
 ### [0.1.20](https://github.com/tobua/papua/compare/v0.1.19...v0.1.20) (2021-05-24)
 
 
