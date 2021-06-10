@@ -16,8 +16,12 @@ const root = (folder) => resolve(process.cwd(), folder)
 const getEntry = () => {
   const entry = {}
 
-  // Do not include polyfills for tests.
-  if (!isTest) {
+  if (
+    // Do not include polyfills for tests.
+    !isTest &&
+    options().polyfills &&
+    (!Array.isArray(options().polyfills) || options().polyfills.length)
+  ) {
     entry.polyfills = options().polyfills
   }
 
