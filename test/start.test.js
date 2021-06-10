@@ -7,6 +7,7 @@ import {
   packageJson,
   file,
   listFilesMatching,
+  contentsForFilesMatching,
   wait,
 } from 'jest-fixture'
 import { start } from '../index.js'
@@ -22,7 +23,7 @@ beforeEach(refresh)
 test('Start script builds assets and occupies port.', async () => {
   const { dist } = prepare([
     packageJson('build'),
-    file('index.js', `console.log('test')`),
+    file('index.js', `console.log('start-script')`),
   ])
 
   const { url, port, server } = await start({
@@ -39,13 +40,16 @@ test('Start script builds assets and occupies port.', async () => {
 
   expect(portInUse).toEqual(true)
 
-  // NOTE not yet working (memory-fs throws an error with jest).
-  expect(existsSync(dist)).toEqual(false)
-  expect(existsSync(join(dist, 'index.html'))).toEqual(false)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
   const files = listFilesMatching('*', dist)
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
 
-  expect(files.length).toBeGreaterThanOrEqual(0)
+  // HTML, JS & MAP
+  expect(files.length).toBe(3)
 
-  await new Promise((done) => server.close(() => done()))
+  expect(mainJsContents).toContain('start-script')
+
+  await new Promise((done) => server.close(done))
 })
