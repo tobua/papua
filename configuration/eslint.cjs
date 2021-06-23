@@ -73,6 +73,7 @@ module.exports = {
             },
           },
         ],
+        '@babel/react',
       ],
     },
   },
