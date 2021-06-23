@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 import { Todo } from 'data/todo'
 
 const styles = { position: 'relative', width: '100%', marginBottom: 20 }
