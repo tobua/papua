@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.22](https://github.com/tobua/papua/compare/v0.1.21...v0.1.22) (2021-06-23)
+
+
+### Bug Fixes
+
+* **lint:** add jsx preset for eslint ([a84527b](https://github.com/tobua/papua/commit/a84527b4ceabddda3fea6728622d9d18949096f0))
+* **template:** update and add missing dependencies ([dac6c2b](https://github.com/tobua/papua/commit/dac6c2b210342307f15d16f3af011f523cedcb30))
+
 ### [0.1.21](https://github.com/tobua/papua/compare/v0.1.20...v0.1.21) (2021-06-10)
 
 
