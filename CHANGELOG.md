@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.23](https://github.com/tobua/papua/compare/v0.1.22...v0.1.23) (2021-07-05)
+
+
+### Features
+
+* **test:** configuration override options for cypress ([6e0cb6e](https://github.com/tobua/papua/commit/6e0cb6e3cd32f25d88fd562052e5c9a68ca65ea8))
+* **webpack:** allow additional babel configuration for webpack ([9377516](https://github.com/tobua/papua/commit/93775160661a22f46f2761210bee12896d652ddb))
+
 ### [0.1.22](https://github.com/tobua/papua/compare/v0.1.21...v0.1.22) (2021-06-23)
 
 
