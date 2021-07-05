@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.24](https://github.com/tobua/papua/compare/v0.1.23...v0.1.24) (2021-07-05)
+
+
+### Features
+
+* **test:** eslint support for chai assertions in cypress ([c8b4a6f](https://github.com/tobua/papua/commit/c8b4a6f08fda8c8595eb98990dc1ae70bed4c13c))
+
 ### [0.1.23](https://github.com/tobua/papua/compare/v0.1.22...v0.1.23) (2021-07-05)
 
 
