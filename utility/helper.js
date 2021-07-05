@@ -49,3 +49,6 @@ export const editPackageJson = (edits = {}) => {
 
   writeFileSync(packageJsonPath, formattedContents)
 }
+
+export const getConfigurationFilePath = (filename) =>
+  join(getProjectBasePath(), `./node_modules/papua/configuration/${filename}`)

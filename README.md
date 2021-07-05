@@ -107,6 +107,10 @@ a `papua` property to your `package.json` with the following options available:
     // Passed to serve-handler in serve script.
     serve: {
       cleanUrls: false
+    },
+    // Configure cypress front end tests.
+    cypress: {
+      defaultCommandTimeout: 6000
     }
   }
 }

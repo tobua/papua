@@ -20,7 +20,7 @@ import webpackConfig from '../configuration/webpack.js'
 import { webpackServer } from '../configuration/webpack-server.js'
 import { html } from '../configuration/webpack-html.js'
 import snowpackConfig from '../configuration/snowpack.js'
-import { log, isPlugin } from './helper.js'
+import { log, isPlugin, getConfigurationFilePath } from './helper.js'
 import { options } from './options.js'
 import { getProjectBasePath } from './path.js'
 
@@ -246,10 +246,7 @@ const writePackageAndUserFile = (
   userConfigOverrides
 ) => {
   const userTSConfigPath = join(getProjectBasePath(), `./${filename}`)
-  const packageTSConfigPath = join(
-    getProjectBasePath(),
-    `./node_modules/papua/configuration/${filename}`
-  )
+  const packageTSConfigPath = getConfigurationFilePath(filename)
 
   if (shouldRemove) {
     if (existsSync(userTSConfigPath)) {

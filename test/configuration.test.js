@@ -1,10 +1,11 @@
-import { existsSync, readFileSync, mkdirSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import {
   environment,
   prepare,
   packageJson,
   file,
+  json,
   readFile,
   writeFile,
 } from 'jest-fixture'
@@ -14,8 +15,9 @@ import {
   writeTSConfig,
   writePackageJson,
 } from '../utility/configuration.js'
-
+import { configureCypress } from '../script/test.js'
 import { refresh } from '../utility/helper.js'
+import { createConfigurationDirectory } from './utility/create-configuration-directory.js'
 
 const [fixturePath] = environment('configuration')
 
@@ -109,13 +111,7 @@ test('Generates jsconfig extending package config.', () => {
     fixturePath,
     'node_modules/papua/configuration/jsconfig.json'
   )
-  const packageConfigDirectory = join(
-    fixturePath,
-    'node_modules/papua/configuration'
-  )
-
-  // Create empty node_module package config to local fixture, so it can be modified.
-  mkdirSync(packageConfigDirectory, { recursive: true })
+  createConfigurationDirectory(fixturePath)
   writeFile('node_modules/papua/configuration/jsconfig.json', {})
 
   writeJSConfig({})
@@ -159,13 +155,7 @@ test('Generates tsconfig extending package config.', () => {
     fixturePath,
     'node_modules/papua/configuration/tsconfig.json'
   )
-  const packageConfigDirectory = join(
-    fixturePath,
-    'node_modules/papua/configuration'
-  )
-
-  // Create empty node_module package config to local fixture, so it can be modified.
-  mkdirSync(packageConfigDirectory, { recursive: true })
+  createConfigurationDirectory(fixturePath)
   writeFile('node_modules/papua/configuration/tsconfig.json', {})
 
   writeTSConfig({})
@@ -260,4 +250,87 @@ test('Generates proper gitignore for typescript.', () => {
       '\r\n'
     )
   )
+})
+
+test('Creates cypress.json with project default properties.', () => {
+  prepare([packageJson('cypress')])
+
+  const packageCypressConfigurationPath = join(
+    fixturePath,
+    'node_modules/papua/configuration/cypress.json'
+  )
+  createConfigurationDirectory(fixturePath)
+  writeFile('node_modules/papua/configuration/cypress.json', {})
+
+  configureCypress()
+
+  expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
+  const contents = readFile(packageCypressConfigurationPath)
+  expect(contents.chromeWebSecurity).toEqual(false)
+})
+
+test('Root cypress.json will extend package configuration.', () => {
+  prepare([
+    packageJson('cypress'),
+    json('cypress.json', {
+      chromeWebSecurity: true,
+      firefoxGcInterval: {
+        runMode: 1,
+      },
+    }),
+  ])
+
+  const userCypressConfigurationPath = join(fixturePath, 'cypress.json')
+  const packageCypressConfigurationPath = join(
+    fixturePath,
+    'node_modules/papua/configuration/cypress.json'
+  )
+  createConfigurationDirectory(fixturePath)
+  writeFile('node_modules/papua/configuration/cypress.json', {})
+
+  const userContentsBefore = readFile(userCypressConfigurationPath)
+
+  configureCypress()
+
+  expect(existsSync(userCypressConfigurationPath)).toEqual(true)
+  expect(readFile(userCypressConfigurationPath)).toEqual(userContentsBefore)
+  expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
+  const contents = readFile(packageCypressConfigurationPath)
+  expect(contents.chromeWebSecurity).toEqual(true)
+  expect(contents.firefoxGcInterval.runMode).toEqual(1)
+})
+
+test('package.json cypress configuration will override cypress.json.', () => {
+  prepare([
+    packageJson('cypress', {
+      papua: {
+        cypress: {
+          defaultCommandTimeout: 6000,
+          firefoxGcInterval: {
+            runMode: 2,
+          },
+        },
+      },
+    }),
+    json('cypress.json', {
+      chromeWebSecurity: true,
+      firefoxGcInterval: {
+        runMode: 1,
+      },
+    }),
+  ])
+
+  const packageCypressConfigurationPath = join(
+    fixturePath,
+    'node_modules/papua/configuration/cypress.json'
+  )
+  createConfigurationDirectory(fixturePath)
+  writeFile('node_modules/papua/configuration/cypress.json', {})
+
+  configureCypress()
+
+  const contents = readFile(packageCypressConfigurationPath)
+  expect(contents.chromeWebSecurity).toEqual(true)
+  expect(contents.defaultCommandTimeout).toEqual(6000)
+  expect(contents.firefoxGcInterval.runMode).toEqual(2)
 })
