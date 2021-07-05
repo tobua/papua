@@ -10,6 +10,7 @@ import { LocalDependenciesPlugin } from 'synec'
 import { options } from '../utility/options.js'
 import { getProjectBasePath, getPluginBasePath } from '../utility/path.js'
 import { isTest } from '../utility/helper.js'
+import objectAssignDeep from 'object-assign-deep'
 
 const root = (folder) => resolve(process.cwd(), folder)
 
@@ -56,6 +57,32 @@ const getIconPlugin = () => {
     logo: path,
     mode: 'light',
   })
+}
+
+const getBabelOptions = () => {
+  const defaultOptions = {
+    presets: [
+      '@babel/env',
+      // Removes TS annotations, but no type checking.
+      '@babel/typescript',
+      [
+        '@babel/react',
+        {
+          // React not required to be in scope for JSX.
+          runtime: 'automatic',
+        },
+      ],
+    ],
+  }
+
+  if (typeof options().babel === 'object') {
+    // Merge arrays to preserve default presets.
+    objectAssignDeep.withOptions(defaultOptions, [options().babel], {
+      arrayBehaviour: 'merge',
+    })
+  }
+
+  return defaultOptions
 }
 
 const getPlugins = (development) => {
@@ -114,6 +141,7 @@ const getPublicPath = () => {
     return publicPathWithSlashes
   }
 
+  // TODO test with "webpack v5 uses publicPath: "auto" by default"
   return ''
 }
 
@@ -133,20 +161,7 @@ export default (development) => ({
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: [
-              '@babel/env',
-              // Removes TS annotations, but no type checking.
-              '@babel/typescript',
-              [
-                '@babel/react',
-                {
-                  // React not required to be in scope for JSX.
-                  runtime: 'automatic',
-                },
-              ],
-            ],
-          },
+          options: getBabelOptions(),
         },
       },
       {

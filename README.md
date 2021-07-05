@@ -111,6 +111,10 @@ a `papua` property to your `package.json` with the following options available:
     // Configure cypress front end tests.
     cypress: {
       defaultCommandTimeout: 6000
+    },
+    // Additional babel configuration.
+    babel: {
+      plugins: ['@emotion']
     }
   }
 }

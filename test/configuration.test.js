@@ -16,6 +16,7 @@ import {
   writePackageJson,
 } from '../utility/configuration.js'
 import { configureCypress } from '../script/test.js'
+import webpack from '../configuration/webpack.js'
 import { refresh } from '../utility/helper.js'
 import { createConfigurationDirectory } from './utility/create-configuration-directory.js'
 
@@ -333,4 +334,31 @@ test('package.json cypress configuration will override cypress.json.', () => {
   expect(contents.chromeWebSecurity).toEqual(true)
   expect(contents.defaultCommandTimeout).toEqual(6000)
   expect(contents.firefoxGcInterval.runMode).toEqual(2)
+})
+
+test('webpack babel configuration can be extended in package.json.', () => {
+  prepare([
+    packageJson('webpack-babel', {
+      papua: {
+        babel: {
+          presets: ['@babel/whatever'],
+          plugins: ['@emotion'],
+        },
+      },
+    }),
+  ])
+
+  const configuration = webpack(true)
+
+  expect(configuration.module.rules[0].use.options).toBeDefined()
+  expect(configuration.module.rules[0].use.options.plugins).toEqual([
+    '@emotion',
+  ])
+  expect(configuration.module.rules[0].use.options.presets).toContain(
+    '@babel/whatever'
+  )
+  // Additional presets are merged with existing one's.
+  expect(configuration.module.rules[0].use.options.presets).toContain(
+    '@babel/env'
+  )
 })
