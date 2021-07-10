@@ -59,10 +59,13 @@ export const configureCypress = () => {
   )
 }
 
+export const hasCypressTests = () =>
+  existsSync(join(getProjectBasePath(), 'cypress'))
+
 export default () => {
   const hasJest =
     options().test && existsSync(join(getProjectBasePath(), options().test))
-  const hasCypress = existsSync(join(getProjectBasePath(), 'cypress'))
+  const hasCypress = hasCypressTests()
 
   const additionalArguments = process.argv.slice(3)
 
