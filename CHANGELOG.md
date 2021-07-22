@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.26](https://github.com/tobua/papua/compare/v0.1.25...v0.1.26) (2021-07-22)
+
+
+### Features
+
+* **webpack:** allow adding options to workbox plugin ([4bbdc23](https://github.com/tobua/papua/commit/4bbdc23d8dbd7d740e6d49ef5ece3befc3dbcd5a))
+
+
+### Bug Fixes
+
+* **package:** update dependencies ([8e6446c](https://github.com/tobua/papua/commit/8e6446c8be05c90e0748407238fbbbb69562e977))
+
 ### [0.1.25](https://github.com/tobua/papua/compare/v0.1.24...v0.1.25) (2021-07-10)
 
 
