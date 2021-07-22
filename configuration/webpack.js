@@ -119,8 +119,23 @@ const getPlugins = (development) => {
   )
 
   if (existsSync(serviceWorkerSourcePath)) {
+    // TODO optional papua.config.js to allow non JSON values and avoid transform.
+    if (options().workbox.include && Array.isArray(options().workbox.include)) {
+      options().workbox.include = options().workbox.include.map(
+        (value) => new RegExp(value)
+      )
+    }
+
+    if (options().workbox.exclude && Array.isArray(options().workbox.exclude)) {
+      options().workbox.exclude = options().workbox.exclude.map(
+        (value) => new RegExp(value)
+      )
+    }
+
+    // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.InjectManifest#InjectManifest
     const workboxOptions = {
       swSrc: serviceWorkerSourcePath,
+      ...options().workbox,
     }
 
     // Prevent max file size warning in development (files not minified etc.).

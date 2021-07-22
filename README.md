@@ -115,6 +115,10 @@ a `papua` property to your `package.json` with the following options available:
     // Additional babel configuration.
     babel: {
       plugins: ['@emotion']
+    },
+    // Options for workbox-webpack-plugin InjectManifest
+    workbox: {
+      exclude: ['extension/dist']
     }
   }
 }
