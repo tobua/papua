@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.27](https://github.com/tobua/papua/compare/v0.1.26...v0.1.27) (2021-07-23)
+
+
+### Features
+
+* **snowpack:** automatic React import also for snowpack ([6ef2303](https://github.com/tobua/papua/commit/6ef2303ee2874996985fe2045d4a3e33e43c6178))
+
 ### [0.1.26](https://github.com/tobua/papua/compare/v0.1.25...v0.1.26) (2021-07-22)
 
 
