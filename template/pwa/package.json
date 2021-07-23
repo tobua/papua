@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "@types/react": "^17.0.11",
-    "@types/react-dom": "^17.0.8",
-    "@types/url-join": "^4.0.0",
+    "@types/react": "^17.0.14",
+    "@types/react-dom": "^17.0.9",
+    "@types/url-join": "^4.0.1",
     "mobx": "^6.3.2",
     "mobx-react-lite": "^3.2.0",
-    "papua": "^0.1.21",
+    "papua": "^0.1.26",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "url-join": "^4.0.1",

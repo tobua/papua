@@ -10,5 +10,6 @@ export default async () => ({
     out: options().output,
     baseUrl: options().publicPath,
     sourceMaps: true,
+    jsxInject: options().react ? `import React from 'react'` : undefined,
   },
 })

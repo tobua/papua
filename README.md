@@ -68,7 +68,7 @@ Arguments: `--open` open in default browser.
 
 ### `npx papua snow`
 
-Alternative to the `webpack-dev-server` in `papua start` much faster but still experimental. Likely to replace start once it's stable.
+Alternative to the `webpack-dev-server` in `papua start` much faster but still experimental. Likely to replace start once it's stable. Will eject an `index.html` with necessary imports pointing to your entry points. Import to entrypoints from `index.html` always point to the JavaScript file that will be generated during the build `*.js`. It will automatically find the matching `jsx`, `ts` or `tsx` file.
 
 ### `npx papua eject [--template <type>] [--file <name>]`
 
