@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.28](https://github.com/tobua/papua/compare/v0.1.27...v0.1.28) (2021-08-18)
+
+
+### Bug Fixes
+
+* **package:** update dependencies ([175c9bb](https://github.com/tobua/papua/commit/175c9bba13b44a693de3f943c93628aee9dc3cb8))
+
 ### [0.1.27](https://github.com/tobua/papua/compare/v0.1.26...v0.1.27) (2021-07-23)
 
 
