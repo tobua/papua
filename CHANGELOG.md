@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.30](https://github.com/tobua/papua/compare/v0.1.29...v0.1.30) (2021-09-08)
+
+
+### Bug Fixes
+
+* **start:** migrate configuration for publicPath option ([42d3c9a](https://github.com/tobua/papua/commit/42d3c9aa21c00c8372f5e4b7ff3f560c8c7d8906))
+
 ### [0.1.29](https://github.com/tobua/papua/compare/v0.1.28...v0.1.29) (2021-09-08)
 
 
