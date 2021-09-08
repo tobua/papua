@@ -33,6 +33,11 @@ export default async (options) => {
     objectAssignDeep(devServerConfiguration, options)
   }
 
+  // Webpack-Dev-Server logs hidden through webpack logger.
+  configuration.infrastructureLogging = {
+    level: 'warn',
+  }
+
   let compiler
   try {
     compiler = webpack(configuration)
@@ -52,25 +57,31 @@ export default async (options) => {
     }
   })
 
-  const server = new WebpackDevServer(compiler, devServerConfiguration)
-  const port = devServerConfiguration.port || (await freePort())
-  const host = devServerConfiguration.host || 'localhost'
-  const url = `${host}:${port}`
+  if (!devServerConfiguration.port) {
+    devServerConfiguration.port = await freePort()
+  }
+
+  if (!devServerConfiguration.host) {
+    devServerConfiguration.host = 'localhost'
+  }
+
+  const server = new WebpackDevServer(devServerConfiguration, compiler)
+  const url = `${devServerConfiguration.host}:${devServerConfiguration.port}`
 
   attachDoneSignals(server)
 
-  server.listen(port, host, (error) => {
-    if (error) {
-      console.log(error)
-      return
-    }
+  try {
+    await server.start()
+  } catch (error) {
+    console.error(error)
+    return {}
+  }
 
-    startServer(url)
-  })
+  startServer(url)
 
   return {
     url,
-    port,
+    port: devServerConfiguration.port,
     server,
   }
 }

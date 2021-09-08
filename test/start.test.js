@@ -28,7 +28,9 @@ test('Start script builds assets and occupies port.', async () => {
 
   const { url, port, server } = await start({
     open: false,
-    writeToDisk: true,
+    devMiddleware: {
+      writeToDisk: true,
+    },
   })
 
   expect(url).toEqual(`localhost:${port}`)
@@ -51,5 +53,5 @@ test('Start script builds assets and occupies port.', async () => {
 
   expect(mainJsContents).toContain('start-script')
 
-  await new Promise((done) => server.close(done))
+  await server.stop()
 })

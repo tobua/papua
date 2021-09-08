@@ -153,8 +153,8 @@ import { join } from 'path'
 export default (configuration, isDevelopment) => ({
   // Add mock API reusing the Webpack-Dev-Server Express instance.
   devServer: {
-    before: (app) => {
-      app.get('/say-hello', async (request, response) => {
+    onBeforeSetupMiddleware: (devServer) => {
+      devServer.app.get('/say-hello', async (request, response) => {
         response.json({
           hello: 'world',
         })
