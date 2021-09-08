@@ -8,12 +8,24 @@ import merge from 'deepmerge'
 import { log, freePort } from '../utility/helper.js'
 import { options } from '../utility/options.js'
 import build from './build.js'
+import { getProjectBasePath } from '../utility/path.js'
+
+const addLeadingSlash = (path) => {
+  if (path.startsWith('/')) {
+    return path
+  }
+
+  return `/${path}`
+}
 
 export default async () => {
   const additionalArguments = process.argv.slice(3)
-  const publicPath = options().publicPath ? `/${options().publicPath}` : ''
+  const publicPath = options().publicPath
+    ? addLeadingSlash(options().publicPath)
+    : ''
 
   log('Building...')
+  rimraf.sync(join(getProjectBasePath(), options().output))
   await build(false)
 
   // Wrap dist files in public path folder.
