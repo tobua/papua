@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.31](https://github.com/tobua/papua/compare/v0.1.30...v0.1.31) (2021-09-11)
+
+
+### Bug Fixes
+
+* **template:** migrate outdated types in PWA template and update ([cfe2498](https://github.com/tobua/papua/commit/cfe2498bbe030c6fa0c5b655dc897436e5245bc1))
+
 ### [0.1.30](https://github.com/tobua/papua/compare/v0.1.29...v0.1.30) (2021-09-08)
 
 
