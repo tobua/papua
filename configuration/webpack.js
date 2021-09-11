@@ -7,10 +7,10 @@ import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import { LocalDependenciesPlugin } from 'synec'
+import objectAssignDeep from 'object-assign-deep'
 import { options } from '../utility/options.js'
 import { getProjectBasePath, getPluginBasePath } from '../utility/path.js'
 import { isTest } from '../utility/helper.js'
-import objectAssignDeep from 'object-assign-deep'
 
 const root = (folder) => resolve(process.cwd(), folder)
 

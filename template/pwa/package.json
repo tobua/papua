@@ -1,18 +1,18 @@
 {
   "dependencies": {
-    "@types/react": "^17.0.18",
+    "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
     "@types/url-join": "^4.0.1",
-    "mobx": "^6.3.2",
-    "mobx-react-lite": "^3.2.0",
-    "papua": "^0.1.27",
+    "mobx": "^6.3.3",
+    "mobx-react-lite": "^3.2.1",
+    "papua": "^0.1.30",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "url-join": "^4.0.1",
-    "workbox-core": "^6.2.4",
-    "workbox-expiration": "^6.2.4",
-    "workbox-precaching": "^6.2.4",
-    "workbox-routing": "^6.2.4",
-    "workbox-strategies": "^6.2.4"
+    "workbox-core": "^6.3.0",
+    "workbox-expiration": "^6.3.0",
+    "workbox-precaching": "^6.3.0",
+    "workbox-routing": "^6.3.0",
+    "workbox-strategies": "^6.3.0"
   }
 }

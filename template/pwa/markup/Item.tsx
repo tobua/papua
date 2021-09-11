@@ -1,36 +1,37 @@
-import { useState } from 'react'
-import * as React from 'react'
+import { useState, CSSProperties } from 'react'
 import { Todo, TodoStore } from 'data/todo'
 
-const styles = (active: boolean) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  marginBottom: 10,
-  outline: 'none',
-  ...(active && {
-    fontWeight: 'bold',
-  }),
-})
+const styles = (active: boolean) =>
+  ({
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    outline: 'none',
+    ...(active && {
+      fontWeight: 'bold',
+    }),
+  } as CSSProperties)
 
-const buttonStyles = (active: boolean) => ({
-  appearance: 'none',
-  background: 'black',
-  color: 'white',
-  border: 'none',
-  borderRadius: 50,
-  opacity: 0.2,
-  cursor: 'pointer',
-  outline: 'none',
-  ...(active && {
-    opacity: 1,
-  }),
-})
+const buttonStyles = (active: boolean) =>
+  ({
+    appearance: 'none',
+    background: 'black',
+    color: 'white',
+    border: 'none',
+    borderRadius: 50,
+    opacity: 0.2,
+    cursor: 'pointer',
+    outline: 'none',
+    ...(active && {
+      opacity: 1,
+    }),
+  } as CSSProperties)
 
 interface Props {
   todo: TodoStore
 }
 
-export const Item = ({ todo }: Props & React.ReactElement) => {
+export const Item = ({ todo }: Props) => {
   const [active, setActive] = useState(false)
   return (
     <div

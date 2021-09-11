@@ -19,6 +19,7 @@ const defaultOptions = {
   entry: [],
   publicPath: '',
   polyfills: ['core-js/stable', 'regenerator-runtime/runtime'],
+  workbox: {},
 }
 
 // Get the options for this project, either from the filesystem or explicit configuration.

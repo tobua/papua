@@ -1,38 +1,44 @@
-import { useState } from 'react'
+import { useState, CSSProperties } from 'react'
 import { observer } from 'mobx-react-lite'
 import { Todo } from 'data/todo'
 
-const styles = { position: 'relative', width: '100%', marginBottom: 20 }
+const styles: CSSProperties = {
+  position: 'relative',
+  width: '100%',
+  marginBottom: 20,
+}
 
-const inputStyles = (active: boolean) => ({
-  width: 'calc(100% - 20px)',
-  borderWidth: 1,
-  borderStyle: 'solid',
-  borderColor: 'black',
-  borderRadius: 10,
-  outline: 'none',
-  padding: 10,
-  ...(active && {
-    borderWidth: 2,
-    marginTop: -1,
-    marginBottom: -1,
-  }),
-})
+const inputStyles = (active: boolean) =>
+  ({
+    width: 'calc(100% - 20px)',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'black',
+    borderRadius: 10,
+    outline: 'none',
+    padding: 10,
+    ...(active && {
+      borderWidth: 2,
+      marginTop: -1,
+      marginBottom: -1,
+    }),
+  } as CSSProperties)
 
-const buttonStyles = (active: boolean) => ({
-  position: 'absolute',
-  right: 10,
-  top: 10,
-  bottom: 10,
-  appearance: 'none',
-  background: 'none',
-  border: 'none',
-  outline: 'none',
-  cursor: 'pointer',
-  ...(active && {
-    fontWeight: 'bold',
-  }),
-})
+const buttonStyles = (active: boolean) =>
+  ({
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    bottom: 10,
+    appearance: 'none',
+    background: 'none',
+    border: 'none',
+    outline: 'none',
+    cursor: 'pointer',
+    ...(active && {
+      fontWeight: 'bold',
+    }),
+  } as CSSProperties)
 
 export const Input = observer(() => {
   const [active, setActive] = useState(false)

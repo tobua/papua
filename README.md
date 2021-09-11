@@ -23,7 +23,7 @@ The following [templates](https://github.com/tobua/papua/tree/master/template) a
 
 - default (JS + React)
 - typescript (TS + React)
-- [pwa](https://github.com/tobua/papua/tree/master/template/pwa) (TS + React + Progressive Web App)
+- [pwa](https://github.com/tobua/papua/tree/master/template/pwa) (TS + React + Progressive Web App) [Demo](https://papua-pwa.vercel.app)
 - website (TS + React + MobX + Emotion)
 
 ```js
@@ -40,11 +40,11 @@ This will automatically adapt your `package.json` configuration to work with `pa
 
 ## Usage
 
-### `npm start`
+### `npm start | npx papua start`
 
 Builds the application and opens it in the browser.
 
-### `npm test`
+### `npm test | npx papua test`
 
 Run tests if there are any.
 
@@ -77,6 +77,10 @@ Eject certain files to allow for more fine grained configuration. If no default 
 - HTML (index.html)
 - Icon (icon.svg)
 - Webpack (webpack.config.js)
+
+### `npx papua watch`
+
+Builds application in watch mode for development without opening it in the browser.
 
 ## Configuration
 
@@ -119,6 +123,13 @@ a `papua` property to your `package.json` with the following options available:
     // Options for workbox-webpack-plugin InjectManifest
     workbox: {
       exclude: ['extension/dist']
+    },
+    // Added to tsconfig.json, jsconfig.json.
+    jsconfig: {},
+    tsconfig: {
+      compilerOptions: {
+        removeComments: true
+      }
     }
   }
 }
@@ -126,25 +137,25 @@ a `papua` property to your `package.json` with the following options available:
 
 ### JavaScript / TypeScript
 
-`index.js` / `index.ts`
+`index.js` / `index.ts` / `index.jsx` / `index.tsx`
 
-If there is a `index.ts` file available in the root the project will be configured for TypeScript.
+If there is a `index.ts` / `index.tsx` file available in the root the project will be configured for TypeScript.
 
 `jsconfig.json` / `tsconfig.json`
 
-To override the default configurations add the respective file with the changes. When building the app the file will be adapted to extend the default configuration.
+One of these files will automatically be created extending the default configuration. Options added to `package.json` will automatically be added. However, additions to the file can also be made manually and committed by removing the file from `.gitignore` if desired.
 
 ### Template
 
 `index.html`
 
-If available papua will look for a HTML template in `index.html` and use a default fallback if none is available.
+If available papua will look for a HTML template in `index.html` and use a default fallback if none is available. Use the `package.json` → `papua` → `html` option to configure the template to look for and other options passed to `html-webpack-plugin`.
 
 ### webpack
 
 `webpack.config.js`
 
-You can add a webpack configuration file in the root. This configuration will then be merged with the default configuration. If you provide a function it will receive the default configuration and the mode as parameters.
+A webpack configuration file can be added in the root. This configuration will then be merged with the default configuration. If a function is exported the default configuration will be received with the mode as a parameter.
 
 ```js
 import { join } from 'path'
