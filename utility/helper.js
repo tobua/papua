@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { create } from 'logua'
 import formatPackageJson from 'pakag'
-import getPort from 'get-port'
+import getPort, { portNumbers } from 'get-port'
 import merge from 'deepmerge'
 import { getProjectBasePath } from './path.js'
 
@@ -35,7 +35,7 @@ export const removeLeadingSlash = (path) => path.replace(/^\/*/, '')
 
 export const freePort = async () =>
   getPort({
-    port: getPort.makeRange(3000, 3100),
+    port: portNumbers(3000, 3100),
     host: '127.0.0.1',
   })
 
