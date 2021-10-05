@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.32](https://github.com/tobua/papua/compare/v0.1.31...v0.1.32) (2021-10-05)
+
+
+### Features
+
+* **configuration:** change prettier printWidth to 100 characters ([7881f0f](https://github.com/tobua/papua/commit/7881f0f119af09b2ba4cb0d844eda5a5bed1e76d))
+
 ### [0.1.31](https://github.com/tobua/papua/compare/v0.1.30...v0.1.31) (2021-09-11)
 
 
