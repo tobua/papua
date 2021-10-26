@@ -18,7 +18,7 @@ export const packageJson = () => {
     },
   }
 
-  if (options().test) {
+  if (options().hasTest) {
     pkg.scripts.test = 'papua test'
     pkg.jest = {
       transform: {},

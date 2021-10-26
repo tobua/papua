@@ -19,7 +19,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
     include: ['./global.d.ts'],
   }
 
-  if (options().test) {
+  if (options().hasTest) {
     packageTSConfig.include.push('../../../test')
   }
 

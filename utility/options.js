@@ -116,11 +116,7 @@ export const options = cache(() => {
     cwd: getProjectBasePath(),
   })
 
-  if (testFiles.length > 0) {
-    result.test = true
-  } else {
-    result.test = false
-  }
+  result.hasTest = testFiles.length > 0
 
   if (!result.title) {
     result.title = `${packageContents.name || 'papua'} App`
