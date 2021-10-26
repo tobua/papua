@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/tobua/papua/raw/master/logo.svg" alt="papua" width="500">
+  <img src="https://github.com/tobua/papua/raw/main/logo.svg" alt="papua" width="500">
 </p>
 
 # papua
@@ -19,11 +19,11 @@ npm init now papua ./my-project
 npm init now papua . typescript
 ```
 
-The following [templates](https://github.com/tobua/papua/tree/master/template) are available:
+The following [templates](https://github.com/tobua/papua/tree/main/template) are available:
 
 - default (JS + React)
 - typescript (TS + React)
-- [pwa](https://github.com/tobua/papua/tree/master/template/pwa) (TS + React + Progressive Web App) [Demo](https://papua-pwa.vercel.app)
+- [pwa](https://github.com/tobua/papua/tree/main/template/pwa) (TS + React + Progressive Web App) [Demo](https://papua-pwa.vercel.app)
 - website (TS + React + MobX + Emotion)
 
 ```js

@@ -1,13 +1,12 @@
 {
   "name": "papua",
   "description": "Setup and build modern web applications.",
-  "version": "0.1.32",
+  "version": "0.0.0-development",
   "repository": "github:tobua/papua",
   "license": "MIT",
   "author": "Matthias Giger",
   "scripts": {
     "postinstall": "node ./installation.js",
-    "release": "standard-version",
     "test": "jest"
   },
   "dependencies": {
@@ -88,7 +87,6 @@
   ],
   "devDependencies": {
     "jest-fixture": "^3.0.0",
-    "standard-version": "^9.3.2",
     "tcp-port-used": "^1.0.2"
   },
   "prettier": "./configuration/.prettierrc.json",
