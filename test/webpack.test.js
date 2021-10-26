@@ -121,10 +121,7 @@ test('User can add loaders and plugins.', async () => {
     virtual: true,
   })
 
-  const loaderPluginMergeStructure = [
-    packageJson('loader-plugin-merge'),
-    file('index.js', ''),
-  ]
+  const loaderPluginMergeStructure = [packageJson('loader-plugin-merge'), file('index.js', '')]
 
   prepare(loaderPluginMergeStructure, fixturePath)
 

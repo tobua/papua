@@ -17,10 +17,7 @@ test('Options set correctly for simple project.', () => {
 })
 
 test('Proper options for TS project.', () => {
-  prepare([
-    packageJson('typescript'),
-    file('index.ts', `console.log('typescript')`),
-  ])
+  prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
   const result = options()
 

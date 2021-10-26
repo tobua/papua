@@ -25,10 +25,7 @@ const pngLogo = {
 }
 
 test('Builds without errors.', async () => {
-  const { dist } = prepare([
-    packageJson('build'),
-    file('index.js', `console.log('test')`),
-  ])
+  const { dist } = prepare([packageJson('build'), file('index.js', `console.log('test')`)])
 
   await build()
 

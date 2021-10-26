@@ -21,10 +21,7 @@ environment('start')
 beforeEach(refresh)
 
 test('Start script builds assets and occupies port.', async () => {
-  const { dist } = prepare([
-    packageJson('build'),
-    file('index.js', `console.log('start-script')`),
-  ])
+  const { dist } = prepare([packageJson('build'), file('index.js', `console.log('start-script')`)])
 
   const { url, port, server } = await start({
     open: false,
@@ -36,7 +33,7 @@ test('Start script builds assets and occupies port.', async () => {
   expect(url).toEqual(`localhost:${port}`)
 
   // Wait until first compilation is done.
-  await wait(10)
+  await wait(20)
 
   const portInUse = await tcpPortUsed.check(port)
 

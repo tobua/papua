@@ -1,14 +1,6 @@
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
-import {
-  environment,
-  prepare,
-  packageJson,
-  file,
-  json,
-  readFile,
-  writeFile,
-} from 'jest-fixture'
+import { environment, prepare, packageJson, file, json, readFile, writeFile } from 'jest-fixture'
 import {
   writeGitIgnore,
   writeJSConfig,
@@ -38,9 +30,7 @@ test('Adds necessary package json properties.', () => {
   // No tests available.
   expect(pkg.scripts.test).toEqual(undefined)
   expect(Object.keys(pkg.scripts).length).toEqual(1)
-  expect(pkg.prettier && pkg.eslintConfig && pkg.stylelint && true).toEqual(
-    true
-  )
+  expect(pkg.prettier && pkg.eslintConfig && pkg.stylelint && true).toEqual(true)
 })
 
 test('Updates old package json properties.', () => {
@@ -108,10 +98,7 @@ test('Generates jsconfig extending package config.', () => {
   prepare([packageJson('simple')])
 
   const jsconfigPath = join(fixturePath, 'jsconfig.json')
-  const packageConfigPath = join(
-    fixturePath,
-    'node_modules/papua/configuration/jsconfig.json'
-  )
+  const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/jsconfig.json')
   createConfigurationDirectory(fixturePath)
   writeFile('node_modules/papua/configuration/jsconfig.json', {})
 
@@ -121,9 +108,7 @@ test('Generates jsconfig extending package config.', () => {
   expect(existsSync(packageConfigPath)).toEqual(true)
 
   const contents = readFileSync(jsconfigPath, 'utf8')
-  const contentsPackage = readFile(
-    'node_modules/papua/configuration/jsconfig.json'
-  )
+  const contentsPackage = readFile('node_modules/papua/configuration/jsconfig.json')
 
   // Prettier formatting is applied.
   expect(contents).toEqual(`{
@@ -136,9 +121,7 @@ test('Generates jsconfig extending package config.', () => {
   writeJSConfig({ compilerOptions: { jsx: 'react' } })
 
   const contentsWithOptions = readFile('jsconfig.json')
-  const contentsPackageWithOptions = readFile(
-    'node_modules/papua/configuration/jsconfig.json'
-  )
+  const contentsPackageWithOptions = readFile('node_modules/papua/configuration/jsconfig.json')
 
   expect(contentsPackage).toEqual(contentsPackageWithOptions)
   expect(contentsWithOptions.compilerOptions.jsx).toEqual('react')
@@ -146,16 +129,10 @@ test('Generates jsconfig extending package config.', () => {
 })
 
 test('Generates tsconfig extending package config.', () => {
-  prepare([
-    packageJson('typescript'),
-    file('index.ts', `console.log('typescript')`),
-  ])
+  prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
   const tsconfigPath = join(fixturePath, 'tsconfig.json')
-  const packageConfigPath = join(
-    fixturePath,
-    'node_modules/papua/configuration/tsconfig.json'
-  )
+  const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/tsconfig.json')
   createConfigurationDirectory(fixturePath)
   writeFile('node_modules/papua/configuration/tsconfig.json', {})
 
@@ -165,9 +142,7 @@ test('Generates tsconfig extending package config.', () => {
   expect(existsSync(packageConfigPath)).toEqual(true)
 
   const contents = readFileSync(tsconfigPath, 'utf8')
-  const contentsPackage = readFile(
-    'node_modules/papua/configuration/tsconfig.json'
-  )
+  const contentsPackage = readFile('node_modules/papua/configuration/tsconfig.json')
 
   expect(contents).toEqual(`{
   "extends": "papua/configuration/tsconfig"
@@ -180,9 +155,7 @@ test('Generates tsconfig extending package config.', () => {
   writeTSConfig({ compilerOptions: { module: 'commonjs' } })
 
   const contentsWithOptions = readFile('tsconfig.json')
-  const contentsPackageWithOptions = readFile(
-    'node_modules/papua/configuration/tsconfig.json'
-  )
+  const contentsPackageWithOptions = readFile('node_modules/papua/configuration/tsconfig.json')
 
   expect(contentsPackage).toEqual(contentsPackageWithOptions)
   expect(contentsWithOptions.compilerOptions.module).toEqual('commonjs')
@@ -190,16 +163,10 @@ test('Generates tsconfig extending package config.', () => {
 })
 
 test('Fallback to put whole tsconfig into user folder if not writable.', () => {
-  prepare([
-    packageJson('typescript'),
-    file('index.ts', `console.log('typescript')`),
-  ])
+  prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
   const tsconfigPath = join(fixturePath, 'tsconfig.json')
-  const packageConfigPath = join(
-    fixturePath,
-    'node_modules/papua/configuration/tsconfig.json'
-  )
+  const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/tsconfig.json')
 
   writeTSConfig({ compilerOptions: { module: 'commonjs' } })
 
@@ -226,17 +193,12 @@ test('Generates gitignore with default entries.', () => {
   const contents = readFile('.gitignore')
 
   expect(contents).toEqual(
-    ['node_modules', 'package-lock.json', 'jsconfig.json', 'dist', ''].join(
-      '\r\n'
-    )
+    ['node_modules', 'package-lock.json', 'jsconfig.json', 'dist', ''].join('\r\n')
   )
 })
 
 test('Generates proper gitignore for typescript.', () => {
-  prepare([
-    packageJson('typescript'),
-    file('index.ts', `console.log('typescript')`),
-  ])
+  prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
   const gitignorePath = join(fixturePath, '.gitignore')
 
@@ -247,9 +209,7 @@ test('Generates proper gitignore for typescript.', () => {
   const contents = readFile('.gitignore')
 
   expect(contents).toEqual(
-    ['node_modules', 'package-lock.json', 'tsconfig.json', 'dist', ''].join(
-      '\r\n'
-    )
+    ['node_modules', 'package-lock.json', 'tsconfig.json', 'dist', ''].join('\r\n')
   )
 })
 
@@ -351,14 +311,8 @@ test('webpack babel configuration can be extended in package.json.', () => {
   const configuration = webpack(true)
 
   expect(configuration.module.rules[0].use.options).toBeDefined()
-  expect(configuration.module.rules[0].use.options.plugins).toEqual([
-    '@emotion',
-  ])
-  expect(configuration.module.rules[0].use.options.presets).toContain(
-    '@babel/whatever'
-  )
+  expect(configuration.module.rules[0].use.options.plugins).toEqual(['@emotion'])
+  expect(configuration.module.rules[0].use.options.presets).toContain('@babel/whatever')
   // Additional presets are merged with existing one's.
-  expect(configuration.module.rules[0].use.options.presets).toContain(
-    '@babel/env'
-  )
+  expect(configuration.module.rules[0].use.options.presets).toContain('@babel/env')
 })

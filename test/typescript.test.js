@@ -1,5 +1,4 @@
 import { existsSync } from 'fs'
-import { join } from 'path'
 import { environment, prepare, packageJson, file } from 'jest-fixture'
 import { build, configure } from '../index.js'
 import { refresh } from '../utility/helper.js'

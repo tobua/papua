@@ -1,12 +1,6 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import {
-  environment,
-  prepare,
-  packageJson,
-  file,
-  listFilesMatching,
-} from 'jest-fixture'
+import { environment, prepare, packageJson, file, listFilesMatching } from 'jest-fixture'
 import { build } from '../index.js'
 import { refresh } from '../utility/helper.js'
 

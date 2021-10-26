@@ -12,10 +12,7 @@ const logChunkEntrySizes = (entry, chunkName, logChunk) => {
   let entries = entry.dependencies
     .map((dep) => dep.request || dep.userRequest)
     .filter(
-      (_entry) =>
-        !_entry.match(
-          /core-js\/stable|regenerator-runtime\/runtime|webpack-dev-server/
-        )
+      (_entry) => !_entry.match(/core-js\/stable|regenerator-runtime\/runtime|webpack-dev-server/)
     )
 
   // Remove duplicates

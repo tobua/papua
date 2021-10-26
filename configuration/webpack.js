@@ -110,26 +110,17 @@ const getPlugins = (development) => {
     )
   }
 
-  const serviceWorkerFileName = `service-worker.${
-    options().typescript ? 'ts' : 'js'
-  }`
-  const serviceWorkerSourcePath = join(
-    getProjectBasePath(),
-    serviceWorkerFileName
-  )
+  const serviceWorkerFileName = `service-worker.${options().typescript ? 'ts' : 'js'}`
+  const serviceWorkerSourcePath = join(getProjectBasePath(), serviceWorkerFileName)
 
   if (existsSync(serviceWorkerSourcePath)) {
     // TODO optional papua.config.js to allow non JSON values and avoid transform.
     if (options().workbox.include && Array.isArray(options().workbox.include)) {
-      options().workbox.include = options().workbox.include.map(
-        (value) => new RegExp(value)
-      )
+      options().workbox.include = options().workbox.include.map((value) => new RegExp(value))
     }
 
     if (options().workbox.exclude && Array.isArray(options().workbox.exclude)) {
-      options().workbox.exclude = options().workbox.exclude.map(
-        (value) => new RegExp(value)
-      )
+      options().workbox.exclude = options().workbox.exclude.map((value) => new RegExp(value))
     }
 
     // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.InjectManifest#InjectManifest
@@ -167,6 +158,9 @@ export default (development) => ({
     filename: development ? '[name].js' : '[name].[contenthash].js',
     path: join(getProjectBasePath(), options().output),
     publicPath: getPublicPath(),
+    // For node 17 compatibility, will be included in next webpack major release.
+    hashFunction: 'xxhash64',
+    hashDigestLength: 16,
   },
   devtool: 'source-map',
   module: {

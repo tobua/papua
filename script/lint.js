@@ -8,10 +8,7 @@ const { ESLint } = eslint
 const { lint } = stylelint
 
 export default async () => {
-  const configurationPath = join(
-    process.cwd(),
-    'node_modules/papua/configuration'
-  )
+  const configurationPath = join(process.cwd(), 'node_modules/papua/configuration')
 
   log('formatting files...')
 

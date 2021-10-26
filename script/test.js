@@ -38,10 +38,7 @@ export const configureCypress = () => {
       const contents = JSON.parse(readFileSync(cypressJsonPath, 'utf8'))
       objectAssignDeep(userConfiguration, contents)
     } catch (error) {
-      log(
-        `Failed to read user cypress configuration from ${cypressJsonPath}.`,
-        'warning'
-      )
+      log(`Failed to read user cypress configuration from ${cypressJsonPath}.`, 'warning')
     }
   }
 
@@ -59,12 +56,10 @@ export const configureCypress = () => {
   )
 }
 
-export const hasCypressTests = () =>
-  existsSync(join(getProjectBasePath(), 'cypress'))
+export const hasCypressTests = () => existsSync(join(getProjectBasePath(), 'cypress'))
 
 export default () => {
-  const hasJest =
-    options().test && existsSync(join(getProjectBasePath(), options().test))
+  const hasJest = options().test && existsSync(join(getProjectBasePath(), options().test))
   const hasCypress = hasCypressTests()
 
   const additionalArguments = process.argv.slice(3)
@@ -78,17 +73,14 @@ export default () => {
     log('running cypress...')
     installCypressIfMissing()
     configureCypress()
-    execSync(
-      `cypress open --config-file ./node_modules/papua/configuration/cypress.json`,
-      { stdio: 'inherit' }
-    )
+    execSync(`cypress open --config-file ./node_modules/papua/configuration/cypress.json`, {
+      stdio: 'inherit',
+    })
   }
 
   if (!hasJest && !hasCypress) {
     log(
-      `No tests found add tests inside /${
-        options().test
-      } for Jest or inside /cypress for Cypress`,
+      `No tests found add tests inside /${options().test} for Jest or inside /cypress for Cypress`,
       'warning'
     )
   }

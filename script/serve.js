@@ -20,9 +20,7 @@ const addLeadingSlash = (path) => {
 
 export default async () => {
   const additionalArguments = process.argv.slice(3)
-  const publicPath = options().publicPath
-    ? addLeadingSlash(options().publicPath)
-    : ''
+  const publicPath = options().publicPath ? addLeadingSlash(options().publicPath) : ''
 
   log('Building...')
   rimraf.sync(join(getProjectBasePath(), options().output))
@@ -30,10 +28,7 @@ export default async () => {
 
   // Wrap dist files in public path folder.
   if (publicPath) {
-    moveSync(
-      options().output,
-      join('.temp', options().output, options().publicPath)
-    )
+    moveSync(options().output, join('.temp', options().output, options().publicPath))
     moveSync(join('.temp', options().output), join(options().output))
     rimraf.sync('.temp')
   }
@@ -58,9 +53,7 @@ export default async () => {
     configuration = merge(configuration, options().serve)
   }
 
-  const server = http.createServer((request, response) =>
-    handler(request, response, configuration)
-  )
+  const server = http.createServer((request, response) => handler(request, response, configuration))
 
   const port = await freePort()
 

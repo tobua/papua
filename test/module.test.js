@@ -1,11 +1,5 @@
 import { existsSync } from 'fs'
-import {
-  environment,
-  prepare,
-  packageJson,
-  file,
-  contentsForFilesMatching,
-} from 'jest-fixture'
+import { environment, prepare, packageJson, file, contentsForFilesMatching } from 'jest-fixture'
 import { build } from '../index.js'
 import { refresh } from '../utility/helper.js'
 
@@ -40,10 +34,7 @@ test('Works with ES Module packages.', async () => {
     packageJson('esmodule'),
     file('index.js', `import 'my-module';`),
     file('node_modules/my-module/index.js', `import 'my-imported-module'`),
-    file(
-      'node_modules/my-imported-module/index.js',
-      `export default console.log('hello again')`
-    ),
+    file('node_modules/my-imported-module/index.js', `export default console.log('hello again')`),
   ])
 
   await build()

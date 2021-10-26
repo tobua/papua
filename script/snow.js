@@ -27,10 +27,7 @@ export default async () => {
         .entry.map(
           (entry) =>
             // JS, TS and TSX all need to be referenced as JS.
-            `<script type="module" src="${entry.replace(
-              /\.(t|j)sx?$/,
-              '.js'
-            )}"></script>`
+            `<script type="module" src="${entry.replace(/\.(t|j)sx?$/, '.js')}"></script>`
         )
         .join('\n')
     )

@@ -2,12 +2,7 @@ import webpack from 'webpack'
 import WebpackDevServer from 'webpack-dev-server'
 import objectAssignDeep from 'object-assign-deep'
 import { loadWebpackConfig } from '../utility/configuration.js'
-import {
-  startServer,
-  recompiling,
-  logStats,
-  logError,
-} from '../utility/stats.js'
+import { startServer, recompiling, logStats, logError } from '../utility/stats.js'
 import { freePort } from '../utility/helper.js'
 
 const attachDoneSignals = (server) => {

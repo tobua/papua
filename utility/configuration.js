@@ -1,11 +1,4 @@
-import {
-  accessSync,
-  existsSync,
-  constants,
-  readFileSync,
-  writeFileSync,
-  unlinkSync,
-} from 'fs'
+import { accessSync, existsSync, constants, readFileSync, writeFileSync, unlinkSync } from 'fs'
 import { join } from 'path'
 import merge from 'deepmerge'
 import formatJson from 'pakag'
@@ -38,13 +31,8 @@ const createSingleWebpackConfiguration = (
   configuration = merge(configuration, userConfiguration, { clone: false })
 
   // Allows the user to configure different html templates.
-  if (
-    userConfiguration.html !== false &&
-    (options().html !== false || index > 0)
-  ) {
-    configuration.plugins.unshift(
-      html(userConfiguration.html || options().html)
-    )
+  if (userConfiguration.html !== false && (options().html !== false || index > 0)) {
+    configuration.plugins.unshift(html(userConfiguration.html || options().html))
   }
 
   delete configuration.html
@@ -67,12 +55,7 @@ const createMultipleWebpackConfigurations = (
   afterMergeConfiguration
 ) => {
   const configurations = userConfigurations.map((userConfiguration, index) =>
-    createSingleWebpackConfiguration(
-      userConfiguration,
-      development,
-      afterMergeConfiguration,
-      index
-    )
+    createSingleWebpackConfiguration(userConfiguration, development, afterMergeConfiguration, index)
   )
 
   return configurations
@@ -89,10 +72,7 @@ export const loadWebpackConfig = async (development) => {
     // The latter only if type in project is set to ES Modules.
     userConfiguration = await import(userConfigurationPath)
 
-    if (
-      userConfiguration.after &&
-      typeof userConfiguration.after === 'function'
-    ) {
+    if (userConfiguration.after && typeof userConfiguration.after === 'function') {
       afterMergeConfiguration = userConfiguration.after
     }
 
@@ -101,10 +81,7 @@ export const loadWebpackConfig = async (development) => {
     }
   } catch (error) {
     if (existsSync(userConfigurationPath)) {
-      log(
-        `Failed to import user webpack configuration in ${userConfigurationPath}`,
-        'warning'
-      )
+      log(`Failed to import user webpack configuration in ${userConfigurationPath}`, 'warning')
     }
 
     // Ignore, no user configuration found.
@@ -112,10 +89,7 @@ export const loadWebpackConfig = async (development) => {
 
   // User configuration can be a function and will receive the default config and the environment.
   if (typeof userConfiguration === 'function') {
-    userConfiguration = userConfiguration(
-      webpackConfig(development),
-      development
-    )
+    userConfiguration = userConfiguration(webpackConfig(development), development)
   }
 
   let configuration
@@ -139,9 +113,7 @@ export const loadWebpackConfig = async (development) => {
     : configuration.devServer
 
   if (Array.isArray(configuration)) {
-    configuration.forEach(
-      (currentConfiguration) => delete currentConfiguration.devServer
-    )
+    configuration.forEach((currentConfiguration) => delete currentConfiguration.devServer)
   } else {
     delete configuration.devServer
   }
@@ -156,9 +128,7 @@ export const loadSnowpackConfig = async () => {
   try {
     // Works with module.exports = {} and export default {}.
     // The latter only if type in project is set to ES Modules.
-    userConfiguration = await import(
-      join(getProjectBasePath(), './snowpack.config.js')
-    )
+    userConfiguration = await import(join(getProjectBasePath(), './snowpack.config.js'))
 
     if (userConfiguration.default) {
       userConfiguration = userConfiguration.default
@@ -185,19 +155,10 @@ const writeUserAndPackageConfig = (
   packageTSConfigPath
 ) => {
   try {
-    writeFileSync(
-      packageTSConfigPath,
-      formatJson(JSON.stringify(packageConfig), { sort: false })
-    )
-    writeFileSync(
-      userTSConfigPath,
-      formatJson(JSON.stringify(userConfig), { sort: false })
-    )
+    writeFileSync(packageTSConfigPath, formatJson(JSON.stringify(packageConfig), { sort: false }))
+    writeFileSync(userTSConfigPath, formatJson(JSON.stringify(userConfig), { sort: false }))
   } catch (_) {
-    log(
-      `Couldn't write ${filename}, therefore this plugin might not work as expected`,
-      'warning'
-    )
+    log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
   }
 }
 
@@ -217,35 +178,19 @@ const adaptConfigToRoot = (packageConfig) => {
   })
 }
 
-const writeOnlyUserConfig = (
-  filename,
-  userConfig,
-  packageConfig,
-  userTSConfigPath
-) => {
+const writeOnlyUserConfig = (filename, userConfig, packageConfig, userTSConfigPath) => {
   try {
     // eslint-disable-next-line no-param-reassign
     delete userConfig.extends
     adaptConfigToRoot(packageConfig)
     const mergedUserConfig = merge(userConfig, packageConfig, { clone: false })
-    writeFileSync(
-      userTSConfigPath,
-      formatJson(JSON.stringify(mergedUserConfig), { sort: false })
-    )
+    writeFileSync(userTSConfigPath, formatJson(JSON.stringify(mergedUserConfig), { sort: false }))
   } catch (_) {
-    log(
-      `Couldn't write ${filename}, therefore this plugin might not work as expected`,
-      'warning'
-    )
+    log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
   }
 }
 
-const writePackageAndUserFile = (
-  shouldRemove,
-  filename,
-  getConfiguration,
-  userConfigOverrides
-) => {
+const writePackageAndUserFile = (shouldRemove, filename, getConfiguration, userConfigOverrides) => {
   const userTSConfigPath = join(getProjectBasePath(), `./${filename}`)
   const packageTSConfigPath = getConfigurationFilePath(filename)
 
@@ -280,21 +225,11 @@ const writePackageAndUserFile = (
 }
 
 export const writeTSConfig = (tsConfigUserOverrides = {}) => {
-  writePackageAndUserFile(
-    !options().typescript,
-    'tsconfig.json',
-    tsconfig,
-    tsConfigUserOverrides
-  )
+  writePackageAndUserFile(!options().typescript, 'tsconfig.json', tsconfig, tsConfigUserOverrides)
 }
 
 export const writeJSConfig = (jsConfigUserOverrides = {}) => {
-  writePackageAndUserFile(
-    options().typescript,
-    'jsconfig.json',
-    jsconfig,
-    jsConfigUserOverrides
-  )
+  writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
 }
 
 export const writeGitIgnore = (gitIgnoreOverrides = []) => {
@@ -359,10 +294,7 @@ export const writePackageJson = (postinstall) => {
   objectAssignDeep(generatedPackageJson, packageContents)
 
   // Format with prettier and sort before writing.
-  writeFileSync(
-    packageJsonPath,
-    formatJson(JSON.stringify(generatedPackageJson))
-  )
+  writeFileSync(packageJsonPath, formatJson(JSON.stringify(generatedPackageJson)))
 
   if (!generatedPackageJson.papua) {
     generatedPackageJson.papua = {}

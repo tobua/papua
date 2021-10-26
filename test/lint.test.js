@@ -1,12 +1,5 @@
 import { join } from 'path'
-import {
-  environment,
-  prepare,
-  packageJson,
-  file,
-  readFile,
-  writeFile,
-} from 'jest-fixture'
+import { environment, prepare, packageJson, file, readFile, writeFile } from 'jest-fixture'
 // Direct import to avoid loading snowpack, which requires setImmediate from node testEnvironment.
 import lint from '../script/lint.js'
 import { refresh } from '../utility/helper.js'

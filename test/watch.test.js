@@ -14,8 +14,7 @@ import { refresh } from '../utility/helper.js'
 
 // Watcher can take more than 5 seconds.
 jest.setTimeout(60000)
-const closeWatcher = (watcher) =>
-  new Promise((done) => watcher.close(() => done()))
+const closeWatcher = (watcher) => new Promise((done) => watcher.close(() => done()))
 
 const [fixturePath] = environment('watch')
 

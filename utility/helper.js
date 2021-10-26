@@ -26,8 +26,7 @@ export const cache = (method) => () => {
 
 export const refresh = () => results.clear()
 
-export const isPlugin = (packageContents) =>
-  packageContents.main && packageContents.version
+export const isPlugin = (packageContents) => packageContents.main && packageContents.version
 
 export const isTest = typeof jest !== 'undefined'
 
