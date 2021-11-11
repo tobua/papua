@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import tcpPortUsed from 'tcp-port-used'
+import { check } from 'tcp-port-used'
 import {
   environment,
   prepare,
@@ -33,20 +33,22 @@ test('Start script builds assets and occupies port.', async () => {
   expect(url).toEqual(`localhost:${port}`)
 
   // Wait until first compilation is done.
-  await wait(20)
+  await wait(30)
 
-  const portInUse = await tcpPortUsed.check(port)
-
+  const portInUse = await check(port, 'localhost')
   expect(portInUse).toEqual(true)
 
   expect(existsSync(dist)).toEqual(true)
   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
   const files = listFilesMatching('*', dist)
-  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  const mainJsContents = contentsForFilesMatching('main.js', dist)[0].contents
 
   // HTML, JS & MAP
-  expect(files.length).toBe(3)
+  expect(files).toContain('index.html')
+  expect(files).toContain('main.js')
+  expect(files).toContain('main.js.map')
+  expect(files.filter((fileName) => !fileName.includes('hot-update')).length).toBe(3)
 
   expect(mainJsContents).toContain('start-script')
 
