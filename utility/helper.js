@@ -32,11 +32,7 @@ export const isTest = typeof jest !== 'undefined'
 
 export const removeLeadingSlash = (path) => path.replace(/^\/*/, '')
 
-export const freePort = async () =>
-  getPort({
-    port: portNumbers(3000, 3100),
-    host: '127.0.0.1',
-  })
+export const freePort = async () => getPort({ port: portNumbers(3000, 3100) })
 
 export const editPackageJson = (edits = {}) => {
   const packageJsonPath = join(getProjectBasePath(), 'package.json')
