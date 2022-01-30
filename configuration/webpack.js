@@ -87,16 +87,21 @@ const getBabelOptions = () => {
 
 const getPlugins = (development) => {
   const plugins = [
-    new MiniCssExtractPlugin({
-      filename: development ? '[name].css' : '[name].[contenthash].css',
-      chunkFilename: development ? '[id].css' : '[id].[contenthash].css',
-    }),
     new LocalDependenciesPlugin({ watch: true }),
     new webpack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(options().publicPath),
     }),
     getIconPlugin(),
   ]
+
+  if (!development) {
+    plugins.push(
+      new MiniCssExtractPlugin({
+        filename: development ? '[name].css' : '[name].[contenthash].css',
+        chunkFilename: development ? '[id].css' : '[id].[contenthash].css',
+      })
+    )
+  }
 
   if (options().typescript) {
     plugins.push(new ForkTsCheckerWebpackPlugin())
@@ -186,7 +191,7 @@ export default (development) => ({
       },
       {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [development ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
   },
