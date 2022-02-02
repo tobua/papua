@@ -191,6 +191,8 @@ export default (development) => ({
       },
       {
         test: /\.css$/i,
+        // https://github.com/facebook/create-react-app/blob/5614c87bfbaae0ce52ac15aedd2cd0f91ffd420d/packages/react-scripts/config/webpack.config.js#L526
+        sideEffects: true,
         use: [development ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
