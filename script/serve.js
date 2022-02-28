@@ -2,7 +2,7 @@ import { join } from 'path'
 import http from 'http'
 import open from 'open'
 import rimraf from 'rimraf'
-import { moveSync } from 'fs-extra'
+import fsExtra from 'fs-extra'
 import handler from 'serve-handler'
 import merge from 'deepmerge'
 import { log, freePort } from '../utility/helper.js'
@@ -28,8 +28,8 @@ export default async () => {
 
   // Wrap dist files in public path folder.
   if (publicPath) {
-    moveSync(options().output, join('.temp', options().output, options().publicPath))
-    moveSync(join('.temp', options().output), join(options().output))
+    fsExtra.moveSync(options().output, join('.temp', options().output, options().publicPath))
+    fsExtra.moveSync(join('.temp', options().output), join(options().output))
     rimraf.sync('.temp')
   }
 
