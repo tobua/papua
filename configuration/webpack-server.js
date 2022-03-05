@@ -16,7 +16,7 @@ export const webpackServer = () => {
 
   if (options().publicPath) {
     // Won't work with leading slash.
-    baseConfiguration.open = removeLeadingSlash(options().publicPath)
+    baseConfiguration.open = removeLeadingSlash(options().publicPath) || '/'
     // Leading and trailing slashes required.
     // Leading slash for bundle and trailing for assets.
     const publicPathWithSlashes = join('/', options().publicPath, '/')
