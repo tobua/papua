@@ -1,6 +1,11 @@
 import { Command } from 'commander'
 
 export const getInputs = (options, specification) => {
+  // Not run through papua CLI, skip parsing arguments.
+  if (!process.argv[1].endsWith('papua')) {
+    return options || {}
+  }
+
   const program = new Command()
   program.version('1.0.0')
   Object.keys(specification).forEach((name) => {
