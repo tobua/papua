@@ -1,6 +1,6 @@
 import { join } from 'path'
 import http from 'http'
-import open from 'open'
+import openBrowser from 'open'
 import rimraf from 'rimraf'
 import fsExtra from 'fs-extra'
 import handler from 'serve-handler'
@@ -9,6 +9,7 @@ import { log, freePort } from '../utility/helper.js'
 import { options } from '../utility/options.js'
 import build from './build.js'
 import { getProjectBasePath } from '../utility/path.js'
+import { getInputs } from '../utility/input.js'
 
 const addLeadingSlash = (path) => {
   if (path.startsWith('/')) {
@@ -18,8 +19,8 @@ const addLeadingSlash = (path) => {
   return `/${path}`
 }
 
-export default async () => {
-  const additionalArguments = process.argv.slice(3)
+export default async (inputs) => {
+  const { port = await freePort(), open } = getInputs(inputs, { port: 'number', open: 'boolean' })
   const publicPath = options().publicPath ? addLeadingSlash(options().publicPath) : ''
 
   log('Building...')
@@ -55,13 +56,11 @@ export default async () => {
 
   const server = http.createServer((request, response) => handler(request, response, configuration))
 
-  const port = await freePort()
-
   server.listen(port, () => {
     log(`Serving /${configuration.public} from localhost:${port}${publicPath}`)
 
-    if (additionalArguments.includes('--open')) {
-      open(`http://localhost:${port}${publicPath}`)
+    if (open) {
+      openBrowser(`http://localhost:${port}${publicPath}`)
     }
   })
 }

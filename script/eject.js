@@ -1,17 +1,15 @@
 import { copyFileSync, existsSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { Command } from 'commander'
 import prompts from 'prompts'
 import { log, editPackageJson } from '../utility/helper.js'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path.js'
-
-const program = new Command()
+import { getInputs } from '../utility/input.js'
 
 const templates = {
   html: {
     title: 'HTML Template',
     file: 'index.html',
-    handler: (file = 'index.html') => {
+    handler: (file) => {
       copyFileSync(
         join(getPluginBasePath(), 'configuration/template.html'),
         join(getProjectBasePath(), file)
@@ -26,15 +24,15 @@ const templates = {
   },
   icon: {
     title: 'Icon',
-    file: 'icon.png',
-    handler: (file = 'icon.png') => {
-      if (file !== 'icon.png' && file !== 'icon.svg') {
+    file: 'logo.png',
+    handler: (file) => {
+      if (file !== 'logo.png' && file !== 'logo.svg') {
         editPackageJson({ papua: { icon: file } })
         log(`Icon configuration edited in package.json to point to ${file}`)
       }
 
       copyFileSync(
-        join(getPluginBasePath(), 'configuration/icon.png'),
+        join(getPluginBasePath(), 'configuration/logo.png'),
         join(getProjectBasePath(), file)
       )
 
@@ -69,20 +67,8 @@ export const after = (configuration) => {
   },
 }
 
-export default async (options) => {
-  program.version('1.0.0')
-  program.option('-t --template <name>', 'name of the template')
-  program.option('-f --file <name>', 'name of the generated entity')
-  program.parse(process.argv)
-
-  // 3 Input methods: Programmatic (options argument), CLI (argv) or
-  // User prompt if previous input methods empty.
-  if (!options || typeof options !== 'object') {
-    // eslint-disable-next-line no-param-reassign
-    options = program.opts()
-  }
-
-  let { template, file } = options
+export default async (inputs) => {
+  let { template, file } = getInputs(inputs, { template: 'string', file: 'string' })
 
   if (!template) {
     template = (
@@ -90,7 +76,6 @@ export default async (options) => {
         type: 'select',
         name: 'template',
         message: 'Pick a template to eject',
-        // TODO better assignment.
         choices: Object.keys(templates).map((key) => ({
           title: templates[key].title,
           value: key,
@@ -102,7 +87,7 @@ export default async (options) => {
   const action = templates[template]
 
   if (!action) {
-    log('Unable to get template from options', 'error')
+    log(`Template ${template} doesn't exist`, 'error')
     return
   }
 
@@ -111,7 +96,7 @@ export default async (options) => {
       await prompts({
         type: 'text',
         name: 'file',
-        message: 'How do you want to name the context?',
+        message: 'How do you want to name the file?',
         initial: action.file,
       })
     ).file
@@ -120,6 +105,6 @@ export default async (options) => {
   console.log('')
 
   if (action.handler) {
-    action.handler(file)
+    action.handler(file || action.file)
   }
 }

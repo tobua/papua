@@ -4,6 +4,7 @@ import objectAssignDeep from 'object-assign-deep'
 import { loadWebpackConfig } from '../utility/configuration.js'
 import { startServer, recompiling, logStats, logError } from '../utility/stats.js'
 import { freePort } from '../utility/helper.js'
+import { getInputs } from '../utility/input.js'
 
 const attachDoneSignals = (server) => {
   const doneSignals = ['SIGINT', 'SIGTERM']
@@ -21,7 +22,11 @@ const attachDoneSignals = (server) => {
   })
 }
 
-export default async (options) => {
+export default async (options, inputs) => {
+  const { port = await freePort(), headless } = getInputs(inputs, {
+    port: 'number',
+    headless: 'boolean',
+  })
   const [configuration, devServerConfiguration] = await loadWebpackConfig(true)
 
   if (typeof options === 'object') {
@@ -53,11 +58,15 @@ export default async (options) => {
   })
 
   if (!devServerConfiguration.port) {
-    devServerConfiguration.port = await freePort()
+    devServerConfiguration.port = port
   }
 
   if (!devServerConfiguration.host) {
     devServerConfiguration.host = 'localhost'
+  }
+
+  if (headless) {
+    devServerConfiguration.open = false
   }
 
   const server = new WebpackDevServer(devServerConfiguration, compiler)

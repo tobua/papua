@@ -40,9 +40,9 @@ This will automatically adapt your `package.json` configuration to work with `pa
 
 ## Usage
 
-### `npm start | npx papua start`
+### `npm start | npx papua start [--port <number>] [--headless]`
 
-Builds the application and opens it in the browser.
+Builds the application and opens it in the browser. Optionally a port can be set and the `--headless` flag won't open the page in a browser automatically.
 
 ### `npm test | npx papua test`
 
@@ -60,23 +60,23 @@ Lints the code and prints errors.
 
 Checks if there are updates to any npm packages and automatically updates them.
 
-### `npx papua serve`
+### `npx papua serve [--port <number>] [--open]`
 
 Builds the production assets and serves them. Can be configured through the `papua.serve` property in `package.json` see [Serve](https://github.com/vercel/serve-handler#options) for available options.
 
-Arguments: `--open` open in default browser.
+Arguments: `--open` open in default browser, `--port 5000` specify a port.
 
 ### `npx papua snow`
 
 Alternative to the `webpack-dev-server` in `papua start` much faster but still experimental. Likely to replace start once it's stable. Will eject an `index.html` with necessary imports pointing to your entry points. Import to entrypoints from `index.html` always point to the JavaScript file that will be generated during the build `*.js`. It will automatically find the matching `jsx`, `ts` or `tsx` file.
 
-### `npx papua eject [--template <type>] [--file <name>]`
+### `npx papua eject [--template <html | icon | webpack>] [--file <name>]`
 
 Eject certain files to allow for more fine grained configuration. If no default values are provided the plugin will prompt for values. The following templates are available:
 
 - HTML (index.html)
-- Icon (icon.svg)
-- Webpack (webpack.config.js)
+- Icon (logo.png)
+- Webpack (webpack.config.js - file cannot be set)
 
 ### `npx papua watch`
 
