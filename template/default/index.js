@@ -1,3 +1,3 @@
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
-render(<div>React App</div>, document.body)
+createRoot(document.body).render(<div>React App</div>)

@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react'
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { Todo } from 'markup/Todo'
 import { register } from 'background/registration'
 
@@ -13,7 +13,7 @@ const styles: CSSProperties = {
 
 const contentStyles = { width: 600, maxWidth: '100%' }
 
-render(
+createRoot(document.body).render(
   <div style={styles}>
     <header style={styles}>
       <img alt="logo" src="logo512.png" width="100" />
@@ -22,8 +22,7 @@ render(
     <main style={contentStyles}>
       <Todo />
     </main>
-  </div>,
-  document.body
+  </div>
 )
 
 register({})

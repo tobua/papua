@@ -206,10 +206,6 @@ export default (development) => ({
     extensions: ['.js', '.jsx', '.ts', '.tsx']
       .filter((extension) => options().typescript || !extension.includes('ts'))
       .concat('.json', '.mjs', '.wasm'),
-    alias: {
-      'react/jsx-dev-runtime': 'react/jsx-dev-runtime.js',
-      'react/jsx-runtime': 'react/jsx-runtime.js',
-    },
   },
   performance: {
     hints: false,

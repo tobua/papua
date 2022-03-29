@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import styled from '@emotion/styled'
@@ -39,12 +39,11 @@ const additionalHeadingStyles = css`
   color: #abdee6;
 `
 
-render(
+createRoot(document.body).render(
   <>
     <Main>
       <Heading cssStyles={additionalHeadingStyles}>React App</Heading>
       <Counter />
     </Main>
-  </>,
-  document.body
+  </>
 )
