@@ -248,7 +248,6 @@ export const writeGitIgnore = (gitIgnoreOverrides = []) => {
   writeFileSync(gitIgnorePath, entries.join('\r\n'))
 }
 
-// TODO simplify and make configurable.
 export const removePropertiesToUpdate = (pkg) => {
   if (typeof pkg.engines === 'object') {
     delete pkg.engines.node
