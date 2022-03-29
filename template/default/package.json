@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "papua": "^0.2.0",
+    "papua": "^1.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   }
