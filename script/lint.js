@@ -3,6 +3,7 @@ import eslint from 'eslint'
 import stylelint from 'stylelint'
 import { execSync } from 'child_process'
 import { log } from '../utility/helper.js'
+import { options } from '../utility/options.js'
 
 const { ESLint } = eslint
 const { lint } = stylelint
@@ -16,7 +17,7 @@ export default async () => {
   const ignorePath = join(configurationPath, '.prettierignore')
 
   execSync(
-    `prettier --write '**/*.{ts,tsx,js,jsx}' --config ${configPath} --ignore-path ${ignorePath}`,
+    `prettier --write "**/*.{ts,tsx,js,jsx}" --config "${configPath}" --ignore-path "${ignorePath}"`,
     { stdio: 'inherit', cwd: process.cwd() }
   )
 
@@ -42,6 +43,7 @@ export default async () => {
   const stylelintResults = await lint({
     files: '**/*.{js,jsx,ts,tsx}',
     formatter: 'verbose',
+    ignorePattern: options().output
   })
 
   console.log(stylelintResults.output)

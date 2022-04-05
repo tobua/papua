@@ -77,10 +77,17 @@ test('Root public path applied properly in bundle.', async () => {
   const mainJsName = listFilesMatching('*.js', dist)[0]
   const pngName = listFilesMatching('*.png', dist)[0]
 
-  // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="/${mainJsName}"`)
-  // Proper path to logo.
-  expect(mainJsContents).toContain(`"/${pngName}"`)
+  if (process.platform === 'win32') {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="\\/${mainJsName}"`)
+    // Proper path to logo.
+    expect(mainJsContents).toContain(`"\\\\${pngName}"`)
+  } else {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="/${mainJsName}"`)
+    // Proper path to logo.
+    expect(mainJsContents).toContain(`"/${pngName}"`)
+  }
 })
 
 test('Deep public path applied properly in bundle.', async () => {
@@ -101,10 +108,17 @@ test('Deep public path applied properly in bundle.', async () => {
   const mainJsName = listFilesMatching('*.js', dist)[0]
   const pngName = listFilesMatching('*.png', dist)[0]
 
-  // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="/${path}/${mainJsName}"`)
-  // Proper path to logo.
-  expect(mainJsContents).toContain(`"/${path}/${pngName}"`)
+  if (process.platform === 'win32') {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="\\hello\\world\\/${mainJsName}"`)
+    // Proper path to logo.
+    expect(mainJsContents).toContain(`"\\\\hello\\\\world\\\\${pngName}"`)
+  } else {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="/${path}/${mainJsName}"`)
+    // Proper path to logo.
+    expect(mainJsContents).toContain(`"/${path}/${pngName}"`)
+  }
 })
 
 test('Papua html template is used.', async () => {
