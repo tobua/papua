@@ -118,7 +118,7 @@ const getPlugins = (development) => {
   const serviceWorkerFileName = `service-worker.${options().typescript ? 'ts' : 'js'}`
   const serviceWorkerSourcePath = join(getProjectBasePath(), serviceWorkerFileName)
 
-  if (existsSync(serviceWorkerSourcePath)) {
+  if (existsSync(serviceWorkerSourcePath) && !development) {
     // TODO optional papua.config.js to allow non JSON values and avoid transform.
     if (options().workbox.include && Array.isArray(options().workbox.include)) {
       options().workbox.include = options().workbox.include.map((value) => new RegExp(value))
