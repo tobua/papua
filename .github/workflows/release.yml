@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install
+      - run: npm install --legacy-peer-deps
       - name: 🧪 Test
         run: npm test -- --forceExit
       - uses: tobua/release-npm-action@v1
