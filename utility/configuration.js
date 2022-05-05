@@ -66,11 +66,12 @@ export const loadWebpackConfig = async (development) => {
   let userConfiguration = {}
   let afterMergeConfiguration
   const userConfigurationPath = join(getProjectBasePath(), 'webpack.config.js')
+  const windowsFileProtocol = process.platform === "win32" ? 'file://' : ''
 
   try {
     // Works with module.exports = {} and export default {}.
     // The latter only if type in project is set to ES Modules.
-    userConfiguration = await import(userConfigurationPath)
+    userConfiguration = await import(`${windowsFileProtocol}${userConfigurationPath}`)
 
     if (userConfiguration.after && typeof userConfiguration.after === 'function') {
       afterMergeConfiguration = userConfiguration.after
@@ -124,11 +125,12 @@ export const loadWebpackConfig = async (development) => {
 export const loadSnowpackConfig = async () => {
   let configuration = await snowpackConfig()
   let userConfiguration = {}
+  const windowsFileProtocol = process.platform === "win32" ? 'file://' : ''
 
   try {
     // Works with module.exports = {} and export default {}.
     // The latter only if type in project is set to ES Modules.
-    userConfiguration = await import(join(getProjectBasePath(), './snowpack.config.js'))
+    userConfiguration = await import(`${windowsFileProtocol}${join(getProjectBasePath(), './snowpack.config.js')}`)
 
     if (userConfiguration.default) {
       userConfiguration = userConfiguration.default
