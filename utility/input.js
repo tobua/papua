@@ -1,8 +1,9 @@
+import { sep } from 'path'
 import { Command } from 'commander'
 
 export const getInputs = (options, specification) => {
   // Not run through papua CLI, skip parsing arguments.
-  if (!process.argv[1].endsWith('papua')) {
+  if (!(process.argv[1].endsWith('papua') || process.argv[1].endsWith(`papua${sep}cli.js`))) {
     return options || {}
   }
 
