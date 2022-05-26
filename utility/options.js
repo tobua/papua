@@ -32,7 +32,7 @@ export const options = cache(() => {
     packageContents = readFileSync(packageJsonPath, 'utf8')
     packageContents = JSON.parse(packageContents)
   } catch (error) {
-    log('unable to load package.json', 'error')
+    log('Unable to load package.json', 'error')
   }
 
   if (typeof packageContents.papua === 'object') {

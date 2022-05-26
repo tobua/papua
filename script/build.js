@@ -24,5 +24,7 @@ export default async () => {
     done()
   }
 
-  return new Promise((done) => compiler.run(handler.bind(null, done)))
+  return new Promise((done) => {
+    compiler.run(handler.bind(null, done))
+  })
 }
