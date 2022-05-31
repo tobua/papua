@@ -241,7 +241,8 @@ export const writeGitIgnore = (gitIgnoreOverrides = []) => {
   let entries = []
 
   if (existsSync(gitIgnorePath)) {
-    entries = entries.concat(parse(readFileSync(gitIgnorePath, 'utf8')))
+    const existingGitignoreLines = parse(readFileSync(gitIgnorePath, 'utf8')).patterns
+    entries = entries.concat(existingGitignoreLines)
   }
 
   entries = entries.concat(gitignore(gitIgnoreOverrides))
