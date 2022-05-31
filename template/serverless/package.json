@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "deploy": "vercel deploy",
+    "build": "papua build"
+  },
+  "papua": {
+    "output": "public"
+  },
+  "dependencies": {
+    "papua": "^1.1.4",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
+  },
+  "devDependencies": {
+    "vercel": "^24.2.4"
+  }
+}
