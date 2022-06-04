@@ -16,7 +16,6 @@ import snowpackConfig from '../configuration/snowpack.js'
 import { log, isPlugin, getConfigurationFilePath } from './helper.js'
 import { options } from './options.js'
 import { getProjectBasePath } from './path.js'
-import { configureCypress, hasCypressTests } from '../script/test.js'
 
 const createSingleWebpackConfiguration = (
   userConfiguration,
@@ -318,12 +317,6 @@ export const writeConfiguration = (postinstall) => {
   writeJSConfig(packageContents.papua.jsconfig)
   writeTSConfig(packageContents.papua.tsconfig)
   writeGitIgnore(packageContents.papua.gitignore)
-
-  // Cypress configured before 'npm test' and on install to ensure
-  // configuration available for use with cypress github action.
-  if (postinstall && hasCypressTests()) {
-    configureCypress()
-  }
 
   return { packageContents }
 }

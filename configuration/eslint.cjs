@@ -75,6 +75,7 @@ module.exports = {
         ],
         '@babel/react',
       ],
+      plugins: ['@babel/plugin-syntax-import-assertions'],
     },
   },
   settings: customSettings,
@@ -89,7 +90,7 @@ module.exports = {
     },
     {
       // Cypress Integration Tests
-      files: ['cypress/**/*.spec.js', 'cypress/**/*.spec.ts'],
+      files: ['cypress/**/*.cy.js', 'cypress/**/*.cy.ts'],
       plugins: ['cypress', 'chai-friendly'],
       rules: {
         'no-unused-expressions': 0,

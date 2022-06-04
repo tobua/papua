@@ -25,6 +25,7 @@ The following [templates](https://github.com/tobua/papua/tree/main/template) are
 - typescript (TS + React)
 - [pwa](https://github.com/tobua/papua/tree/main/template/pwa) (TS + React + Progressive Web App) [Demo](https://papua-pwa.vercel.app)
 - website (TS + React + MobX + Emotion)
+- serverless (JS + React + Serverless Function)
 
 ```js
 npm init now papua [destination-directory] [template]
