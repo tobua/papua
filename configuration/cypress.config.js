@@ -1,9 +1,7 @@
-import { existsSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { defineConfig } from 'cypress'
 import objectAssignDeep from 'object-assign-deep'
-// eslint-disable-next-line import/no-unresolved
-import packageJson from '../../../package.json' assert { type: 'json' }
 import { log } from '../utility/helper.js'
 
 const importFileContents = async (fileName, readableName) => {
@@ -12,7 +10,13 @@ const importFileContents = async (fileName, readableName) => {
 
   if (existsSync(filePath)) {
     try {
-      result = await import(filePath)
+      if (filePath.endsWith('.json')) {
+        // Dynamic import would either require assert which fails on older node versions
+        // or throws ERR_UNKNOWN_FILE_EXTENSION due to JSON on older < 16.15 node.
+        result = JSON.parse(readFileSync(filePath))
+      } else {
+        result = await import(filePath)
+      }
     } catch (error) {
       console.log(error)
       log(`Failed to read ${readableName} from ${filePath}.`, 'warning')
@@ -32,6 +36,7 @@ const plugin = await importFileContents(
   'cypress/plugins/index.cjs',
   'package cypress configuration'
 )
+const packageJson = await importFileContents('package.json', 'package.json')
 
 let packageJsonConfig = {}
 
@@ -45,7 +50,6 @@ const defaults = {
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
-      console.log('setup', plugin)
       return plugin && plugin(on, config)
     },
   },

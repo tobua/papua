@@ -75,7 +75,6 @@ module.exports = {
         ],
         '@babel/react',
       ],
-      plugins: ['@babel/plugin-syntax-import-assertions'],
     },
   },
   settings: customSettings,
