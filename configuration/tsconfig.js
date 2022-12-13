@@ -13,6 +13,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
       esModuleInterop: true,
       outDir: `../../../${options().output}`,
       baseUrl: '../../..',
+      lib: ['esnext', 'dom'],
     },
     files: options().entry.map((entry) => `../../../${entry}`),
     exclude: [`../../../${options().output}`],

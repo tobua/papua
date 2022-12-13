@@ -1,9 +1,7 @@
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import styled from '@emotion/styled'
-import { css, SerializedStyles } from '@emotion/react'
+import { styled } from '@stitches/react'
 
 const State = new (class StateModel {
   count = 0
@@ -26,24 +24,21 @@ const Counter = observer(() => (
   </>
 ))
 
-const Main = styled.main`
-  font-family: Arial, sans-serif;
-`
+const Main = styled('main', {
+  fontFamily: 'Arial, sans-serif',
+})
 
-const Heading = styled.h1<{ cssStyles?: SerializedStyles }>`
-  text-decoration: underline;
-  ${({ cssStyles }) => cssStyles}
-`
+const Heading = styled('h1', {
+  textDecoration: 'underline',
+})
 
-const additionalHeadingStyles = css`
-  color: #abdee6;
-`
+const additionalHeadingStyles = {
+  color: '#abdee6',
+}
 
 createRoot(document.body).render(
-  <>
-    <Main>
-      <Heading cssStyles={additionalHeadingStyles}>React App</Heading>
-      <Counter />
-    </Main>
-  </>
+  <Main>
+    <Heading css={additionalHeadingStyles}>React App</Heading>
+    <Counter />
+  </Main>
 )

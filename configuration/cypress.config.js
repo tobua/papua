@@ -52,6 +52,7 @@ const defaults = {
     setupNodeEvents(on, config) {
       return plugin && plugin(on, config)
     },
+    testIsolation: false,
   },
 }
 

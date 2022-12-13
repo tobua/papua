@@ -7,11 +7,11 @@
     "output": "public"
   },
   "dependencies": {
-    "papua": "^1.1.4",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "papua": "^3.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "vercel": "^24.2.4"
+    "vercel": "^28.8.0"
   }
 }
