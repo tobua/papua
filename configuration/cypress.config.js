@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'fs'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { defineConfig } from 'cypress'
 import objectAssignDeep from 'object-assign-deep'
-import { log } from '../utility/helper.js'
+import { log } from '../utility/helper'
 
 const importFileContents = async (fileName, readableName) => {
   let result = {}
