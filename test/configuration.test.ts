@@ -1,102 +1,144 @@
 import { copyFileSync, existsSync, readFileSync } from 'fs'
 import { join } from 'path'
-import { test, expect, beforeEach } from 'vitest'
-import { environment, prepare, packageJson, file, json, readFile, writeFile } from 'jest-fixture'
+import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import {
+  registerVitest,
+  environment,
+  prepare,
+  packageJson,
+  file,
+  json,
+  readFile,
+  writeFile,
+} from 'jest-fixture'
 import {
   writeGitIgnore,
   writeJSConfig,
   writeTSConfig,
   writePackageJson,
+  writeConfiguration,
 } from '../utility/configuration'
-import webpack from '../configuration/webpack'
+// import webpack from '../configuration/webpack'
 import { refresh } from '../utility/helper'
 import { createConfigurationDirectory } from './utility/create-configuration-directory'
 
-// const [fixturePath] = environment('configuration')
+registerVitest(beforeEach, afterEach, vi)
+
+const [fixturePath] = environment('configuration')
 
 beforeEach(refresh)
 
-test('basic', () => {
-  expect(true).toBe(true)
+test('Adds necessary package json properties.', async () => {
+  prepare([packageJson('simple')])
+
+  const { packageContents } = await writePackageJson(false)
+
+  expect(typeof packageContents.papua).toEqual('object')
+
+  const pkg = readFile('package.json')
+
+  expect(packageContents.papua).toEqual({})
+  expect({ ...pkg, papua: {} }).toEqual(packageContents)
+  // No tests available.
+  expect(pkg.scripts.test).toEqual(undefined)
+  expect(Object.keys(pkg.scripts).length).toEqual(1)
+  expect(pkg.prettier && pkg.eslintConfig && pkg.stylelint && true).toEqual(true)
 })
 
-// test('Adds necessary package json properties.', () => {
-//   prepare([packageJson('simple')])
+test('Configures multiple packages in workspaces setup.', async () => {
+  prepare([
+    packageJson('workspaces', {
+      workspaces: ['demo/*', 'plugin'],
+    }),
+    json('demo/vite/package.json', {
+      name: 'demo-vite',
+      dependencies: {
+        papua: 'latest',
+      },
+    }),
+    json('demo/svelte/package.json', {
+      name: 'demo-svelte',
+      dependencies: {
+        missing: 'latest',
+      },
+    }),
+    json('demo/vue/package.json', {
+      name: 'demo-vue',
+      devDependencies: {
+        papua: 'latest',
+      },
+    }),
+    json('build/package.json', {
+      name: 'build-external',
+      dependencies: {
+        papua: 'latest',
+      },
+    }),
+    json('plugin/package.json', {
+      name: 'plugin',
+      dependencies: {
+        papua: 'latest',
+      },
+    }),
+  ])
 
-//   const { packageContents } = writePackageJson()
+  await writeConfiguration(false)
 
-//   expect(typeof packageContents.papua).toEqual('object')
+  const vitePackage = readFile('demo/vite/package.json')
 
-//   const pkg = readFile('package.json')
+  expect(vitePackage.name).toEqual('demo-vite')
+  expect(vitePackage.scripts.start).toEqual('papua start')
+})
 
-//   expect(packageContents.papua).toEqual({})
-//   expect({ ...pkg, papua: {} }).toEqual(packageContents)
-//   // No tests available.
-//   expect(pkg.scripts.test).toEqual(undefined)
-//   expect(Object.keys(pkg.scripts).length).toEqual(1)
-//   expect(pkg.prettier && pkg.eslintConfig && pkg.stylelint && true).toEqual(true)
-// })
+test('Updates old package json properties.', async () => {
+  prepare([
+    packageJson('outdated', {
+      engines: {
+        test: 'hello',
+        node: '>= 13.2.0',
+      },
+      stylelint: {
+        extends: 'papua/configuration/stylelint.js',
+      },
+    }),
+    file('index.ts', ''),
+    file('test/basic.test.ts', "test('hello', () => {})"),
+  ])
 
-// test('Updates old package json properties.', () => {
-//   prepare([
-//     packageJson('outdated', {
-//       engines: {
-//         test: 'hello',
-//         node: '>= 13.2.0',
-//       },
-//       jest: {
-//         globals: {
-//           'ts-jest': {
-//             tsConfig: './node_modules/papua/configuration/tsconfig.json',
-//           },
-//         },
-//       },
-//       stylelint: {
-//         extends: 'papua/configuration/stylelint.js',
-//       },
-//     }),
-//     file('index.ts', ''),
-//     file('test/basic.test.ts', "test('hello', () => {})"),
-//   ])
+  let pkg = readFile('package.json')
 
-//   let pkg = readFile('package.json')
+  expect(pkg.engines.test).toEqual('hello')
+  expect(pkg.engines.node).toEqual('>= 13.2.0')
+  expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.js')
 
-//   expect(pkg.engines.test).toEqual('hello')
-//   expect(pkg.engines.node).toEqual('>= 13.2.0')
-//   expect(pkg.jest.globals['ts-jest'].tsConfig).toBeDefined()
-//   expect(pkg.jest.globals['ts-jest'].tsconfig).not.toBeDefined()
-//   expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.js')
+  await writePackageJson(false)
 
-//   writePackageJson()
+  pkg = readFile('package.json')
 
-//   pkg = readFile('package.json')
+  expect(pkg.engines.node).toEqual('>= 14')
+  // expect(pkg.engines.test).toEqual('hello')
+  expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.cjs')
+})
 
-//   expect(pkg.engines.node).toEqual('>= 14')
-//   expect(pkg.engines.test).toEqual('hello')
-//   expect(pkg.jest.globals['ts-jest'].tsConfig).not.toBeDefined()
-//   expect(pkg.jest.globals['ts-jest'].tsconfig).toBeDefined()
-//   expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.cjs')
-// })
+test('Adds an empty package.json if none can be found.', async () => {
+  prepare([
+    {
+      name: '.gitkeep',
+    },
+  ])
 
-// test('Adds an empty package.json if none can be found.', () => {
-//   prepare([
-//     {
-//       name: '.gitkeep',
-//     },
-//   ])
+  const packageJsonPath = join(fixturePath, 'package.json')
 
-//   const packageJsonPath = join(fixturePath, 'package.json')
+  expect(existsSync(packageJsonPath)).toEqual(false)
 
-//   expect(existsSync(packageJsonPath)).toEqual(false)
+  await writePackageJson(false)
 
-//   writePackageJson()
+  expect(existsSync(packageJsonPath)).toEqual(true)
 
-//   expect(existsSync(packageJsonPath)).toEqual(true)
+  const pkg = readFile('package.json')
 
-//   const pkg = readFile('package.json')
-
-//   expect(Object.keys(pkg.scripts).length).toEqual(1)
-// })
+  expect(Object.keys(pkg.scripts).length).toEqual(1)
+})
 
 // test('Generates jsconfig extending package config.', () => {
 //   prepare([packageJson('simple')])

@@ -4,6 +4,6 @@ import { writeConfiguration } from './utility/configuration'
 
 skip()
 
-writeConfiguration(true)
+await writeConfiguration(true)
 
 log('installed successfully')

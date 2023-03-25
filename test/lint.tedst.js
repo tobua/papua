@@ -75,7 +75,7 @@ console.log(first, second)`
     file('node_modules/papua/configuration/stylelint.cjs', stylelintConfig),
   ])
 
-  writeConfiguration()
+  await writeConfiguration()
   await lint()
 
   const formattedIndexJs = readFile('index.js')

@@ -2,8 +2,7 @@ import { accessSync, existsSync, constants, readFileSync, writeFileSync, unlinkS
 import { join } from 'path'
 // import merge from 'deepmerge'
 import formatJson from 'pakag'
-import objectAssignDeep from 'object-assign-deep'
-import readPackageJsonFast from 'read-package-json-fast'
+import merge from 'deepmerge'
 // TODO has no types...
 // import deepForEach from 'deep-for-each'
 // import parse from 'parse-gitignore'
@@ -15,8 +14,8 @@ import { packageJson } from '../configuration/package'
 // import { webpackServer } from '../configuration/webpack-server'
 // import { html } from '../configuration/webpack-html'
 import { log, isPlugin, getConfigurationFilePath } from './helper'
-// import { options } from './options'
-import { getProjectBasePath } from './path'
+import { options } from './options'
+import { getProjectBasePath, getWorkspacePaths } from './path'
 
 // const createSingleWebpackConfiguration = (
 //   userConfiguration,
@@ -203,9 +202,9 @@ import { getProjectBasePath } from './path'
 //   writePackageAndUserFile(!options().typescript, 'tsconfig.json', tsconfig, tsConfigUserOverrides)
 // }
 
-// export const writeJSConfig = (jsConfigUserOverrides = {}) => {
-//   writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
-// }
+export const writeJSConfig = (jsConfigUserOverrides = {}) => {
+  // writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
+}
 
 // export const writeGitIgnore = (gitIgnoreOverrides = []) => {
 //   const gitIgnorePath = join(getProjectBasePath(), '.gitignore')
@@ -224,34 +223,26 @@ import { getProjectBasePath } from './path'
 //   writeFileSync(gitIgnorePath, entries.join('\r\n'))
 // }
 
-// export const removePropertiesToUpdate = (pkg) => {
-//   if (typeof pkg.engines === 'object') {
-//     delete pkg.engines.node
-//   }
+export const removePropertiesToUpdate = (pkg) => {
+  if (typeof pkg.engines === 'object') {
+    delete pkg.engines.node
+  }
 
-//   if (typeof pkg.jest === 'object') {
-//     if (typeof pkg.jest.globals === 'object') {
-//       if (typeof pkg.jest.globals['ts-jest'] === 'object') {
-//         // Old property no longer used.
-//         delete pkg.jest.globals['ts-jest'].tsConfig
-//       }
-//     }
-//   }
+  // TODO still necessary?
+  if (typeof pkg.stylelint === 'object') {
+    // Switches from JS to CJS (JS file no longer available).
+    delete pkg.stylelint.extends
+  }
+}
 
-//   if (typeof pkg.stylelint === 'object') {
-//     // Switches from JS to CJS (JS file no longer available).
-//     delete pkg.stylelint.extends
-//   }
-// }
-
-export const writePackageJson = (postinstall: boolean) => {
-  const packageJsonPath = join(getProjectBasePath(), './package.json')
+export const writePackageJson = async (postinstall: boolean, workspacePath = '.') => {
+  const packageJsonPath = join(getProjectBasePath(), workspacePath, './package.json')
 
   if (!existsSync(packageJsonPath)) {
     writeFileSync(packageJsonPath, `{\n}\n`)
   }
 
-  const packageContents = readPackageJsonFast(packageJsonPath)
+  const packageContents = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
 
   if (postinstall && isPlugin(packageContents)) {
     return { packageContents }
@@ -260,32 +251,38 @@ export const writePackageJson = (postinstall: boolean) => {
   const generatedPackageJson = packageJson()
 
   // Remove properties that should be kept up-to-date.
-  // removePropertiesToUpdate(packageContents)
+  removePropertiesToUpdate(packageContents)
 
   // Merge existing configuration with additional required attributes.
   // Existing properties override generated configuration to allow
   // the user to configure it their way.
-  objectAssignDeep(generatedPackageJson, packageContents)
+  const mergedPackageJson = merge(generatedPackageJson, packageContents)
 
   // Format with prettier and sort before writing.
-  writeFileSync(packageJsonPath, formatJson(JSON.stringify(generatedPackageJson)))
+  writeFileSync(packageJsonPath, formatJson(JSON.stringify(mergedPackageJson)))
 
-  if (!generatedPackageJson.papua) {
-    generatedPackageJson.papua = {}
+  if (!mergedPackageJson.papua) {
+    mergedPackageJson.papua = {}
   }
 
-  return { packageContents: generatedPackageJson }
+  return { packageContents: mergedPackageJson }
 }
 
-export const writeConfiguration = (postinstall = false) => {
-  const { packageContents } = writePackageJson(postinstall)
-  // Skip modifying the project in case it's being installed for later programmatic use by a plugin.
-  if (postinstall && isPlugin(packageContents)) {
-    return null
-  }
-  // writeJSConfig(packageContents.papua.jsconfig)
-  // writeTSConfig(packageContents.papua.tsconfig)
-  // writeGitIgnore(packageContents.papua.gitignore)
-  // return { packageContents }
-  return null
+export const writeConfiguration = async (postinstall = false) => {
+  const workspaces = await getWorkspacePaths()
+
+  await Promise.all(
+    workspaces.map(async (workspacePath) => {
+      const { packageContents } = await writePackageJson(postinstall, workspacePath)
+      // Skip modifying the project in case it's being installed for later programmatic use by a plugin.
+      if (postinstall && isPlugin(packageContents)) {
+        return null
+      }
+      // writeJSConfig(packageContents.papua.jsconfig)
+      // writeTSConfig(packageContents.papua.tsconfig)
+      // writeGitIgnore(packageContents.papua.gitignore)
+      // return { packageContents }
+      return null
+    })
+  )
 }
