@@ -3,6 +3,7 @@ import { join } from 'path'
 // import merge from 'deepmerge'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
+import { RspackOptions } from '@rspack/core'
 // TODO has no types...
 // import deepForEach from 'deep-for-each'
 // import parse from 'parse-gitignore'
@@ -10,6 +11,7 @@ import merge from 'deepmerge'
 // import { jsconfig } from '../configuration/jsconfig'
 import { packageJson } from '../configuration/package'
 // import { gitignore } from '../configuration/gitignore'
+import rspackConfig from '../configuration/rspack'
 // import webpackConfig from '../configuration/webpack'
 // import { webpackServer } from '../configuration/webpack-server'
 // import { html } from '../configuration/webpack-html'
@@ -17,36 +19,37 @@ import { log, isPlugin, getConfigurationFilePath } from './helper'
 import { options } from './options'
 import { getProjectBasePath, getWorkspacePaths } from './path'
 
-// const createSingleWebpackConfiguration = (
-//   userConfiguration,
-//   development,
-//   afterMergeConfiguration,
-//   index
-// ) => {
-//   let configuration = webpackConfig(development)
-//   configuration.devServer = webpackServer()
+type UserConfiguration = RspackOptions & { after?: Function }
 
-//   // With clone plugins etc. (non-serializable properties) will be gone.
-//   configuration = merge(configuration, userConfiguration, { clone: false })
+const createSingleWebpackConfiguration = (
+  baseConfiguration: RspackOptions,
+  userConfiguration: UserConfiguration,
+  afterMergeConfiguration
+) => {
+  // let configuration = webpackConfig(development)
+  // configuration.devServer = webpackServer()
 
-//   // Allows the user to configure different html templates.
-//   if (userConfiguration.html !== false && (options().html !== false || index > 0)) {
-//     configuration.plugins.unshift(html(userConfiguration.html || options().html))
-//   }
+  // With clone plugins etc. (non-serializable properties) will be gone.
+  let configuration = merge(baseConfiguration, userConfiguration, { clone: false })
 
-//   delete configuration.html
+  // Allows the user to configure different html templates.
+  // if (userConfiguration.html !== false && (options().html !== false || index > 0)) {
+  //   configuration.plugins.unshift(html(userConfiguration.html || options().html))
+  // }
 
-//   // Apply user edits.
-//   if (afterMergeConfiguration) {
-//     const resultingConfiguration = afterMergeConfiguration(configuration)
-//     // If no return value assume in place edits without return.
-//     if (typeof resultingConfiguration === 'object') {
-//       configuration = resultingConfiguration
-//     }
-//   }
+  // delete configuration.html
 
-//   return configuration
-// }
+  // Apply user edits.
+  if (afterMergeConfiguration) {
+    const resultingConfiguration = afterMergeConfiguration(configuration)
+    // If no return value assume in place edits without return.
+    if (typeof resultingConfiguration === 'object') {
+      configuration = resultingConfiguration
+    }
+  }
+
+  return configuration
+}
 
 // const createMultipleWebpackConfigurations = (
 //   userConfigurations,
@@ -59,6 +62,70 @@ import { getProjectBasePath, getWorkspacePaths } from './path'
 
 //   return configurations
 // }
+
+export const loadRspackConfig = async (development: boolean) => {
+  let userConfiguration: UserConfiguration & { default?: any } = {}
+  let afterMergeConfiguration
+  const userConfigurationPath = join(getProjectBasePath(), 'rspack.config.js')
+  const windowsFileProtocol = process.platform === 'win32' ? 'file://' : ''
+
+  try {
+    // Works with module.exports = {} and export default {}.
+    // The latter only if type in project is set to ES Modules.
+    userConfiguration = await import(`${windowsFileProtocol}${userConfigurationPath}`)
+
+    if (userConfiguration.after && typeof userConfiguration.after === 'function') {
+      afterMergeConfiguration = userConfiguration.after
+    }
+
+    if (userConfiguration.default) {
+      userConfiguration = userConfiguration.default
+    }
+  } catch (error) {
+    if (existsSync(userConfigurationPath)) {
+      log(`Failed to import user rspack configuration in ${userConfigurationPath}`, 'warning')
+    }
+
+    // Ignore, no user configuration found.
+  }
+
+  const baseConfiguration = rspackConfig(development)
+
+  // User configuration can be a function and will receive the default config and the environment.
+  if (typeof userConfiguration === 'function') {
+    // @ts-ignore
+    userConfiguration = userConfiguration(baseConfiguration, development)
+  }
+
+  // TODO array configurations
+  // if (!Array.isArray(userConfiguration)) {
+  const configuration = createSingleWebpackConfiguration(
+    baseConfiguration,
+    userConfiguration,
+    afterMergeConfiguration
+  )
+  // } else {
+  //   configuration = createMultipleWebpackConfigurations(
+  //     userConfiguration,
+  //     development,
+  //     afterMergeConfiguration
+  //   )
+  // }
+
+  const devServerConfiguration = null
+
+  // const devServerConfiguration = Array.isArray(configuration)
+  //   ? configuration[0].devServer
+  //   : configuration.devServer
+
+  // if (Array.isArray(configuration)) {
+  //   configuration.forEach((currentConfiguration) => delete currentConfiguration.devServer)
+  // } else {
+  //   delete configuration.devServer
+  // }
+
+  return [configuration, devServerConfiguration]
+}
 
 // Merges the default webpack config with user additions.
 // export const loadWebpackConfig = async (development) => {

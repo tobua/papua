@@ -7,7 +7,7 @@
   "author": "Matthias Giger",
   "scripts": {
     "build": "padua build",
-    "postinstall": "node ./installation.js",
+    "postinstall": "skip-local-postinstall ./dist/installation.js",
     "start": "padua watch",
     "test": "vitest run --no-threads --dir test"
   },
@@ -61,7 +61,7 @@
     "logua": "^2.2.0",
     "node-html-parser": "^6.1.5",
     "object-assign-deep": "^0.4.0",
-    "open": "^9.0.0",
+    "open": "^9.1.0",
     "pakag": "^2.7.0",
     "parse-gitignore": "^2.0.0",
     "prettier": "^2.8.7",

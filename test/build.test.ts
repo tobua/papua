@@ -30,7 +30,7 @@ test('Builds without errors.', async () => {
 
   expect(true).toBe(true)
 
-  await build()
+  await build(false)
 
   expect(existsSync(dist)).toEqual(true)
   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
@@ -124,24 +124,24 @@ test('Builds without errors.', async () => {
 //   }
 // })
 
-// test('Papua html template is used.', async () => {
-//   const title = 'The title hello'
-//   const { dist } = prepare([
-//     packageJson('html-template', { papua: { title } }),
-//     file('index.js', ''),
-//   ])
+test('Papua html template is used.', async () => {
+  const title = 'The title hello'
+  const { dist } = prepare([
+    packageJson('html-template', { papua: { title } }),
+    file('index.js', ''),
+  ])
 
-//   await build()
+  await build(false)
 
-//   expect(existsSync(dist)).toEqual(true)
-//   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-//   const htmlContents = readFile(join(dist, 'index.html'))
+  const htmlContents = readFile(join(dist, 'index.html'))
 
-//   // Custom papua template is used.
-//   expect(htmlContents).toContain(title)
-//   expect(htmlContents).toContain('width=device-width')
-// })
+  // Custom papua template is used.
+  expect(htmlContents).toContain('Papua App') // TODO read title from options.
+  expect(htmlContents).toContain('width=device-width')
+})
 
 // test('Html template can be customized.', async () => {
 //   const title = 'The title hello'

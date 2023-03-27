@@ -1,25 +1,14 @@
 import { rspack } from '@rspack/core'
-import HtmlRspackPlugin from '@rspack/plugin-html'
-// import { loadWebpackConfig } from '../utility/configuration'
+import { loadRspackConfig } from '../utility/configuration'
 import { logStats, logError } from '../utility/stats'
 
 // DOC https://github.com/web-infra-dev/rspack/blob/main/packages/rspack-cli/src/rspack-cli.ts
-export default async () =>
-  new Promise<void>((done) => {
-    const compiler = rspack(
-      {
-        entry: {
-          main: './index.js',
-        },
-        output: {
-          filename: 'main.js',
-        },
-        devtool: 'source-map', // 'cheap-module-source-map' for development
-        plugins: [new HtmlRspackPlugin()],
-      },
-      () => done()
-    )
+export default async (development: boolean) => {
+  const [configuration] = await loadRspackConfig(development)
+  return new Promise<void>((done) => {
+    const compiler = rspack(configuration, () => done())
   })
+}
 // const [configuration] = await loadWebpackConfig(false)
 
 // let compiler
