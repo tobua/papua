@@ -8,7 +8,7 @@ export const start = (options, inputs) => scripts.start(options, inputs)
 
 export const build = (development: boolean) => scripts.build(development)
 
-export const watch = () => scripts.watch()
+export const watch = (development: boolean) => scripts.watch(development)
 
 export const test = () => scripts.test()
 

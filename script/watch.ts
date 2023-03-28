@@ -1,27 +1,26 @@
-import webpack from 'webpack'
-import { loadWebpackConfig } from '../utility/configuration'
-import { logStats, logError, recompiling } from '../utility/stats'
+import { rspack } from '@rspack/core'
+import { loadRspackConfig } from '../utility/configuration'
+import { log } from '../utility/helper'
+import { logStats, logError } from '../utility/stats'
 
-export default async () => {
-  const [configuration] = await loadWebpackConfig(true)
+// DOC https://github.com/web-infra-dev/rspack/blob/main/packages/rspack-cli/src/rspack-cli.ts
+export default async (development: boolean) => {
+  const [configuration] = await loadRspackConfig(development)
 
-  let compiler
-  try {
-    compiler = webpack(configuration)
-  } catch (error) {
-    logError(error)
-    process.exit(1)
-  }
-
-  compiler.hooks.invalid.tap('invalid', recompiling)
-
-  return compiler.watch({}, (error, stats) => {
-    if (error) {
-      logError(error)
-    } else if (stats.stats && Array.isArray(stats.stats)) {
-      stats.stats.forEach((stat) => logStats(stat, true))
-    } else {
-      logStats(stats, true)
+  const compiler = rspack(configuration, (buildError, buildStats) => {
+    if (buildError) {
+      log('Build error', 'error')
     }
+
+    compiler.watch({}, (error, stats) => {
+      if (error) {
+        log('Watch error', 'error')
+      }
+
+      // console.log('watch', stats)
+    })
   })
+
+  // eslint-disable-next-line no-promise-executor-return
+  return () => new Promise((done) => compiler.close(done))
 }
