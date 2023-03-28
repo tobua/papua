@@ -139,7 +139,7 @@ test('Papua html template is used.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
 
   // Custom papua template is used.
-  expect(htmlContents).toContain('Papua App') // TODO read title from options.
+  expect(htmlContents).toContain(title)
   expect(htmlContents).toContain('width=device-width')
 })
 

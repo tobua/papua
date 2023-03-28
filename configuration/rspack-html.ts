@@ -1,12 +1,12 @@
 // import { existsSync } from 'fs'
 import HtmlRspackPlugin, { Options } from '@rspack/plugin-html'
 // import merge from 'deepmerge'
-// import { options } from '../utility/options.js'
+import { options } from '../utility/options.js'
 
 export const htmlPlugin = () => {
   const htmlOptions: Options = {
     template: './../../../configuration/template.html',
-    title: 'Papua App',
+    title: options().title,
   }
 
   return new HtmlRspackPlugin(htmlOptions)

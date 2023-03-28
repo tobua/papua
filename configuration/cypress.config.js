@@ -1,8 +1,7 @@
 import { existsSync, readFileSync } from 'fs'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { defineConfig } from 'cypress'
-import objectAssignDeep from 'object-assign-deep'
-import { log } from '../utility/helper'
+import merge from 'deepmerge'
 
 const importFileContents = async (fileName, readableName) => {
   let result = {}
@@ -19,7 +18,7 @@ const importFileContents = async (fileName, readableName) => {
       }
     } catch (error) {
       console.log(error)
-      log(`Failed to read ${readableName} from ${filePath}.`, 'warning')
+      console.warn(`Failed to read ${readableName} from ${filePath}.`)
     }
   }
 
@@ -56,6 +55,7 @@ const defaults = {
   },
 }
 
-const result = objectAssignDeep(defaults, packageJsonConfig, userConfig)
+let result = merge(defaults, packageJsonConfig, { clone: false })
+result = merge(result, userConfig, { clone: false })
 
 export default defineConfig(result)

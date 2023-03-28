@@ -1,4 +1,4 @@
-import objectAssignDeep from 'object-assign-deep'
+import merge from 'deepmerge'
 
 export const jsconfig = (jsconfigUserOverrides = {}) => {
   const userJSConfig = {
@@ -13,7 +13,7 @@ export const jsconfig = (jsconfigUserOverrides = {}) => {
     },
   }
 
-  objectAssignDeep(userJSConfig, jsconfigUserOverrides)
+  merge(userJSConfig, jsconfigUserOverrides, { clone: false })
 
   return [userJSConfig, packageJSConfig]
 }

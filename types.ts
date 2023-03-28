@@ -3,6 +3,7 @@ export interface Package {
   version?: string
   papua?: Object
   dependencies?: Object
+  devDependencies?: Object
   peerDependencies?: Object
   scripts?: {
     start?: string
@@ -23,12 +24,25 @@ export interface Package {
   }
 }
 
+// TODO types for user facing options??
+// export interface Options {
+//   test: false | string
+//   entry: string[]
+//   output: string
+//   pkg: Package
+//   tsconfig?: Object
+//   gitignore?: string[]
+//   hash: string
+// }
+
 export interface Options {
-  test: false | string
-  entry: string[]
   output: string
-  pkg: Package
-  tsconfig?: Object
-  gitignore?: string[]
-  hash: string
+  react: boolean
+  entry: string[]
+  typescript: boolean
+  test: false | string
+  publicPath: string
+  workbox: Object
+  hasTest: boolean
+  title: string
 }

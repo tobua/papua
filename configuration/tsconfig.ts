@@ -1,4 +1,4 @@
-import objectAssignDeep from 'object-assign-deep'
+import merge from 'deepmerge'
 import { options } from '../utility/options'
 
 export const tsconfig = (tsconfigUserOverrides = {}) => {
@@ -24,7 +24,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
     packageTSConfig.include.push('../../../test')
   }
 
-  objectAssignDeep(userTSConfig, tsconfigUserOverrides)
+  merge(userTSConfig, tsconfigUserOverrides, { clone: false })
 
   return [userTSConfig, packageTSConfig]
 }

@@ -1,43 +1,45 @@
 import { join } from 'path'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import glob from 'fast-glob'
-import objectAssignDeep from 'object-assign-deep'
+import merge from 'deepmerge'
 import { log, cache } from './helper'
 import { getProjectBasePath } from './path'
+import { Options, Package } from '../types'
 
 const emptyFileTemplate = `// This is the entry file for your application.
 // If you want to use TypeScript rename it to index.ts
 // To enable/disable React adapt the ending .jsx .tsx (React) .js .ts (no React)
 // or install React as a dependency.
 `
+
 // Default options.
-const defaultOptions = {
+const defaultOptions: Options = {
   output: 'dist',
   typescript: false,
   react: false,
   test: 'test',
   entry: [],
   publicPath: '',
-  polyfills: ['core-js/stable', 'regenerator-runtime/runtime'],
   workbox: {},
+  title: 'papua App',
+  hasTest: false,
 }
 
 // Get the options for this project, either from the filesystem or explicit configuration.
 export const options = cache(() => {
-  let packageContents
-  const result = objectAssignDeep({}, defaultOptions)
+  let packageContents: Package
+  let result: Options = merge({}, defaultOptions, { clone: false })
 
   try {
     const packageJsonPath = join(getProjectBasePath(), 'package.json')
-    packageContents = readFileSync(packageJsonPath, 'utf8')
-    packageContents = JSON.parse(packageContents)
+    packageContents = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
   } catch (error) {
     log('Unable to load package.json', 'error')
   }
 
   if (typeof packageContents.papua === 'object') {
     // Include project specific overrides
-    objectAssignDeep(result, packageContents.papua)
+    result = merge(result, packageContents.papua, { clone: false })
 
     if (typeof result.entry !== 'string' && !Array.isArray(result.entry)) {
       log(`Invalid 'entry' option provided`, 'error')
@@ -118,7 +120,7 @@ export const options = cache(() => {
 
   result.hasTest = testFiles.length > 0
 
-  if (!result.title) {
+  if (result.title === 'papua App') {
     result.title = `${packageContents.name || 'papua'} App`
   }
 
