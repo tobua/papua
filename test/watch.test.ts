@@ -28,7 +28,7 @@ test('Watcher rebuilds on file change.', async () => {
   ]
   const { dist } = prepare(watchRebuildStructure, fixturePath)
 
-  const closeWatcher = await watch(false)
+  const { close } = await watch(false)
 
   // Wait for initial compilation to finish.
   await wait(1)
@@ -66,7 +66,7 @@ test('Watcher rebuilds on file change.', async () => {
   expect(jsContents[0].contents).toContain('hello_newfile')
   expect(jsContents[0].contents).not.toContain('hello_new_imported')
 
-  await closeWatcher()
+  await close()
 })
 
 // NOTE useless test (expected opposite...) keeping for other purposes.

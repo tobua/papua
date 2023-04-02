@@ -7,20 +7,19 @@ import { logStats, logError } from '../utility/stats'
 export default async (development: boolean) => {
   const [configuration] = await loadRspackConfig(development)
 
-  const compiler = rspack(configuration, (buildError, buildStats) => {
-    if (buildError) {
-      log('Build error', 'error')
+  const compiler = rspack(configuration)
+
+  compiler.watch({}, (error, stats) => {
+    if (error) {
+      log('Compilation failed during watch', 'error')
     }
 
-    compiler.watch({}, (error, stats) => {
-      if (error) {
-        log('Watch error', 'error')
-      }
-
-      // console.log('watch', stats)
-    })
+    // console.log('watch', stats)
   })
 
-  // eslint-disable-next-line no-promise-executor-return
-  return () => new Promise((done) => compiler.close(done))
+  return {
+    // eslint-disable-next-line no-promise-executor-return
+    close: () => new Promise((done) => compiler.close(done)),
+    compiler,
+  }
 }

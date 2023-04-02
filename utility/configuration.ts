@@ -3,7 +3,7 @@ import { join } from 'path'
 // import merge from 'deepmerge'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
-import { RspackOptions } from '@rspack/core'
+import { MultiRspackOptions, RspackOptions } from '@rspack/core'
 // TODO has no types...
 // import deepForEach from 'deep-for-each'
 // import parse from 'parse-gitignore'
@@ -21,7 +21,7 @@ import { getProjectBasePath, getWorkspacePaths } from './path'
 
 type UserConfiguration = RspackOptions & { after?: Function }
 
-const createSingleWebpackConfiguration = (
+const createSingleRspackConfiguration = (
   baseConfiguration: RspackOptions,
   userConfiguration: UserConfiguration,
   afterMergeConfiguration
@@ -48,7 +48,7 @@ const createSingleWebpackConfiguration = (
     }
   }
 
-  return configuration
+  return configuration as unknown as MultiRspackOptions
 }
 
 // const createMultipleWebpackConfigurations = (
@@ -99,7 +99,7 @@ export const loadRspackConfig = async (development: boolean) => {
 
   // TODO array configurations
   // if (!Array.isArray(userConfiguration)) {
-  const configuration = createSingleWebpackConfiguration(
+  const configuration = createSingleRspackConfiguration(
     baseConfiguration,
     userConfiguration,
     afterMergeConfiguration
