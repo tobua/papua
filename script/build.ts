@@ -6,7 +6,13 @@ import { logStats, logError } from '../utility/stats'
 export default async (development: boolean) => {
   const [configuration] = await loadRspackConfig(development)
   return new Promise<MultiCompiler>((done) => {
-    const compiler = rspack(configuration, () => done(compiler))
+    const compiler = rspack(configuration, (error, stats) => {
+      if (error) {
+        console.log(error)
+      }
+
+      done(compiler)
+    })
   })
 }
 // const [configuration] = await loadWebpackConfig(false)

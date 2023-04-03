@@ -5,9 +5,8 @@ import formatJson from 'pakag'
 import merge from 'deepmerge'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
 // TODO has no types...
-// import deepForEach from 'deep-for-each'
 // import parse from 'parse-gitignore'
-// import { tsconfig } from '../configuration/tsconfig'
+import { tsconfig } from '../configuration/tsconfig.js'
 // import { jsconfig } from '../configuration/jsconfig'
 import { packageJson } from '../configuration/package'
 // import { gitignore } from '../configuration/gitignore'
@@ -15,7 +14,7 @@ import rspackConfig from '../configuration/rspack'
 // import webpackConfig from '../configuration/webpack'
 // import { webpackServer } from '../configuration/webpack-server'
 // import { html } from '../configuration/webpack-html'
-import { log, isPlugin, getConfigurationFilePath } from './helper'
+import { log, isPlugin, getConfigurationFilePath, deepForEach } from './helper'
 import { options } from './options'
 import { getProjectBasePath, getWorkspacePaths } from './path'
 
@@ -188,90 +187,100 @@ export const loadRspackConfig = async (development: boolean) => {
 //   return [configuration, devServerConfiguration]
 // }
 
-// const writeUserAndPackageConfig = (
-//   filename,
-//   userConfig,
-//   packageConfig,
-//   userTSConfigPath,
-//   packageTSConfigPath
-// ) => {
-//   try {
-//     writeFileSync(packageTSConfigPath, formatJson(JSON.stringify(packageConfig), { sort: false }))
-//     writeFileSync(userTSConfigPath, formatJson(JSON.stringify(userConfig), { sort: false }))
-//   } catch (_) {
-//     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
-//   }
-// }
+const writeUserAndPackageConfig = (
+  filename: string,
+  userConfig: object,
+  packageConfig: object,
+  userTSConfigPath: string,
+  packageTSConfigPath: string
+) => {
+  try {
+    writeFileSync(packageTSConfigPath, formatJson(JSON.stringify(packageConfig), { sort: false }))
+    writeFileSync(userTSConfigPath, formatJson(JSON.stringify(userConfig), { sort: false }))
+  } catch (_) {
+    log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
+  }
+}
 
 // remove ../../.. to place config in project root.
-// const adaptConfigToRoot = (packageConfig) => {
-//   deepForEach(packageConfig, (value, key, subject) => {
-//     const emptyBasePackagePath = '../../..'
-//     const baseFromPackagePath = '../../../'
-//     if (typeof value === 'string' && value.includes(baseFromPackagePath)) {
-//       // eslint-disable-next-line no-param-reassign
-//       subject[key] = value.replace(baseFromPackagePath, '')
-//     }
-//     if (typeof value === 'string' && value.includes(emptyBasePackagePath)) {
-//       // eslint-disable-next-line no-param-reassign
-//       subject[key] = value.replace(emptyBasePackagePath, '.')
-//     }
-//   })
-// }
-
-// const writeOnlyUserConfig = (filename, userConfig, packageConfig, userTSConfigPath) => {
-//   try {
-//     // eslint-disable-next-line no-param-reassign
-//     delete userConfig.extends
-//     adaptConfigToRoot(packageConfig)
-//     const mergedUserConfig = merge(userConfig, packageConfig, { clone: false })
-//     writeFileSync(userTSConfigPath, formatJson(JSON.stringify(mergedUserConfig), { sort: false }))
-//   } catch (_) {
-//     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
-//   }
-// }
-
-// const writePackageAndUserFile = (shouldRemove, filename, getConfiguration, userConfigOverrides) => {
-//   const userTSConfigPath = join(getProjectBasePath(), `./${filename}`)
-//   const packageTSConfigPath = getConfigurationFilePath(filename)
-
-//   if (shouldRemove) {
-//     if (existsSync(userTSConfigPath)) {
-//       unlinkSync(userTSConfigPath)
-//     }
-
-//     return
-//   }
-
-//   const [userConfig, packageConfig] = getConfiguration(userConfigOverrides)
-
-//   try {
-//     // If package tsconfig can be written, adapt it and only extend user config.
-//     accessSync(
-//       packageTSConfigPath,
-//       // eslint-disable-next-line no-bitwise
-//       constants.F_OK | constants.R_OK | constants.W_OK
-//     )
-//     writeUserAndPackageConfig(
-//       filename,
-//       userConfig,
-//       packageConfig,
-//       userTSConfigPath,
-//       packageTSConfigPath
-//     )
-//   } catch (_) {
-//     // Package config cannot be written, write full contents to user file.
-//     writeOnlyUserConfig(filename, userConfig, packageConfig, userTSConfigPath)
-//   }
-// }
-
-// export const writeTSConfig = (tsConfigUserOverrides = {}) => {
-//   writePackageAndUserFile(!options().typescript, 'tsconfig.json', tsconfig, tsConfigUserOverrides)
-// }
-
-export const writeJSConfig = (jsConfigUserOverrides = {}) => {
-  // writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
+const adaptConfigToRoot = (packageConfig: object) => {
+  deepForEach(packageConfig, (value, key, subject) => {
+    const emptyBasePackagePath = '../../..'
+    const baseFromPackagePath = '../../../'
+    if (typeof value === 'string' && value.includes(baseFromPackagePath)) {
+      // eslint-disable-next-line no-param-reassign
+      subject[key] = value.replace(baseFromPackagePath, '')
+    }
+    if (typeof value === 'string' && value.includes(emptyBasePackagePath)) {
+      // eslint-disable-next-line no-param-reassign
+      subject[key] = value.replace(emptyBasePackagePath, '.')
+    }
+  })
 }
+
+const writeOnlyUserConfig = (
+  filename: string,
+  userConfig: any,
+  packageConfig: object,
+  userTSConfigPath: string
+) => {
+  try {
+    // eslint-disable-next-line no-param-reassign
+    delete userConfig.extends
+    adaptConfigToRoot(packageConfig)
+    const mergedUserConfig = merge(userConfig, packageConfig, { clone: false })
+    writeFileSync(userTSConfigPath, formatJson(JSON.stringify(mergedUserConfig), { sort: false }))
+  } catch (_) {
+    log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
+  }
+}
+
+const writePackageAndUserFile = (
+  shouldRemove: boolean,
+  filename: string,
+  getConfiguration: Function,
+  userConfigOverrides: object
+) => {
+  const userTSConfigPath = join(getProjectBasePath(), `./${filename}`)
+  const packageTSConfigPath = getConfigurationFilePath(filename)
+
+  if (shouldRemove) {
+    if (existsSync(userTSConfigPath)) {
+      unlinkSync(userTSConfigPath)
+    }
+
+    return
+  }
+
+  const [userConfig, packageConfig] = getConfiguration(userConfigOverrides)
+
+  try {
+    // If package tsconfig can be written, adapt it and only extend user config.
+    accessSync(
+      packageTSConfigPath,
+      // eslint-disable-next-line no-bitwise
+      constants.F_OK | constants.R_OK | constants.W_OK
+    )
+    writeUserAndPackageConfig(
+      filename,
+      userConfig,
+      packageConfig,
+      userTSConfigPath,
+      packageTSConfigPath
+    )
+  } catch (_) {
+    // Package config cannot be written, write full contents to user file.
+    writeOnlyUserConfig(filename, userConfig, packageConfig, userTSConfigPath)
+  }
+}
+
+export const writeTSConfig = (tsConfigUserOverrides = {}) => {
+  writePackageAndUserFile(!options().typescript, 'tsconfig.json', tsconfig, tsConfigUserOverrides)
+}
+
+// export const writeJSConfig = (jsConfigUserOverrides = {}) => {
+//   // writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
+// }
 
 // export const writeGitIgnore = (gitIgnoreOverrides = []) => {
 //   const gitIgnorePath = join(getProjectBasePath(), '.gitignore')
@@ -346,7 +355,7 @@ export const writeConfiguration = async (postinstall = false) => {
         return null
       }
       // writeJSConfig(packageContents.papua.jsconfig)
-      // writeTSConfig(packageContents.papua.tsconfig)
+      writeTSConfig(packageContents.papua.tsconfig)
       // writeGitIgnore(packageContents.papua.gitignore)
       // return { packageContents }
       return null

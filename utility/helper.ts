@@ -4,6 +4,7 @@ import { create } from 'logua'
 import formatPackageJson from 'pakag'
 import getPort, { portNumbers } from 'get-port'
 import merge from 'deepmerge'
+import isPlainObject from 'lodash.isplainobject'
 import { getProjectBasePath } from './path'
 import { Package } from '../types'
 
@@ -54,3 +55,37 @@ export const editPackageJson = (edits = {}) => {
 
 export const getConfigurationFilePath = (filename: string) =>
   join(getProjectBasePath(), `./node_modules/papua/configuration/${filename}`)
+
+type DeepForEachCallback = (value: any, key: string, subject: any, path: string) => void
+
+function forEachObject(obj: object, callback: DeepForEachCallback, path: string) {
+  // eslint-disable-next-line no-restricted-syntax, guard-for-in
+  for (const key in obj) {
+    const deepPath = path ? `${path}.${key}` : key
+
+    // Note that we always use obj[key] because it might be mutated by forEach
+    callback.call(obj, obj[key], key, obj, deepPath)
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    deepForEach(obj[key], callback, deepPath)
+  }
+}
+
+function forEachArray(array: any[], callback: DeepForEachCallback, path: string) {
+  array.forEach((value, index, arr) => {
+    const deepPath = `${path}[${index}]`
+
+    callback.call(arr, value, index, arr, deepPath)
+    // Note that we use arr[index] because it might be mutated by forEach
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    deepForEach(arr[index], callback, deepPath)
+  })
+}
+
+// Ported from https://www.npmjs.com/package/deep-for-each due to missing types.
+export const deepForEach = (value: object | any[], callback: DeepForEachCallback, path = '') => {
+  if (Array.isArray(value)) {
+    forEachArray(value, callback, path)
+  } else if (isPlainObject(value)) {
+    forEachObject(value, callback, path)
+  }
+}
