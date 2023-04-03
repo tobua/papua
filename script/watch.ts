@@ -4,7 +4,7 @@ import { log } from '../utility/helper'
 import { logStats, logError } from '../utility/stats'
 
 // DOC https://github.com/web-infra-dev/rspack/blob/main/packages/rspack-cli/src/rspack-cli.ts
-export default async (development: boolean) => {
+export default async (development = true) => {
   const [configuration] = await loadRspackConfig(development)
 
   const compiler = rspack(configuration)

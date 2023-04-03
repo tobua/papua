@@ -1,10 +1,17 @@
 import { existsSync } from 'fs'
-import { environment, prepare, packageJson, file, contentsForFilesMatching } from 'jest-fixture'
+import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import {
+  registerVitest,
+  environment,
+  prepare,
+  packageJson,
+  file,
+  contentsForFilesMatching,
+} from 'jest-fixture'
 import { build } from '../index'
 import { refresh } from '../utility/helper'
 
-// Build can take more than 5 seconds.
-jest.setTimeout(60000)
+registerVitest(beforeEach, afterEach, vi)
 
 environment('module')
 
@@ -17,7 +24,7 @@ test('Can import node modules.', async () => {
     file('node_modules/my-module/index.js', `console.log('hello');`),
   ])
 
-  await build()
+  await build(false)
 
   expect(existsSync(dist)).toEqual(true)
 
@@ -37,7 +44,7 @@ test('Works with ES Module packages.', async () => {
     file('node_modules/my-imported-module/index.js', `export default console.log('hello again')`),
   ])
 
-  await build()
+  await build(false)
 
   expect(existsSync(dist)).toEqual(true)
 
@@ -59,7 +66,7 @@ test('Tree-shaking is applied to ES Modules.', async () => {
     ),
   ])
 
-  await build()
+  await build(false)
 
   expect(existsSync(dist)).toEqual(true)
 

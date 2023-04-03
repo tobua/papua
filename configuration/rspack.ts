@@ -7,7 +7,7 @@ export default (development: boolean) =>
       main: './index.js',
     },
     output: {
-      filename: 'main.js',
+      filename: development ? '[name].js' : '[name].[contenthash].js',
     },
     devtool: development ? 'cheap-module-source-map' : 'source-map',
     plugins: [htmlPlugin()],

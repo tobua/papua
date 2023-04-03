@@ -28,7 +28,8 @@ test('Watcher rebuilds on file change.', async () => {
   ]
   const { dist } = prepare(watchRebuildStructure, fixturePath)
 
-  const { close } = await watch(false)
+  // Development to avoid generating new hash on rebuild.
+  const { close } = await watch()
 
   // Wait for initial compilation to finish.
   await wait(1)

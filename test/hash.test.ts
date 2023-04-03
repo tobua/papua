@@ -1,11 +1,18 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import { environment, prepare, packageJson, file, listFilesMatching } from 'jest-fixture'
+import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import {
+  registerVitest,
+  environment,
+  prepare,
+  packageJson,
+  file,
+  listFilesMatching,
+} from 'jest-fixture'
 import { build } from '../index'
 import { refresh } from '../utility/helper'
 
-// Build can take more than 5 seconds.
-jest.setTimeout(60000)
+registerVitest(beforeEach, afterEach, vi)
 
 environment('hash')
 
@@ -28,7 +35,7 @@ test('Various production file types contain content hashes.', async () => {
     },
   ])
 
-  await build()
+  await build(false)
 
   expect(existsSync(dist)).toEqual(true)
   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
@@ -36,7 +43,7 @@ test('Various production file types contain content hashes.', async () => {
   const mainJsFiles = listFilesMatching('main.*.js', dist)
   const mainJsMapFiles = listFilesMatching('main.*.js.map', dist)
   const stylesFiles = listFilesMatching('*.css', dist)
-  const imagesFiles = listFilesMatching('*.png')
+  const imagesFiles = listFilesMatching('*.png') // TODO images should move to dist or public folder, with hash.
 
   // JS and map for main chunk are available.
   expect(mainJsFiles.length).toEqual(1)
