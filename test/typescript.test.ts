@@ -21,10 +21,10 @@ test('Build with typescript errors fails.', async () => {
   const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {})
 
   configure()
-  await build(true)
+  await build(false)
 
   // Build doesn't fail, but prints error.
   expect(mockExit).not.toHaveBeenCalled()
   // No dist files generated.
-  expect(existsSync(dist)).toEqual(true) // TODO TS checker plugin not yet compatible.
+  expect(existsSync(dist)).toEqual(true) // NOTE builds even with errors.
 })
