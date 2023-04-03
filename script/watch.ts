@@ -11,10 +11,11 @@ export default async (development = true) => {
 
   compiler.watch({}, (error, stats) => {
     if (error) {
+      logError(error)
       log('Compilation failed during watch', 'error')
     }
 
-    // console.log('watch', stats)
+    logStats(stats, development)
   })
 
   return {

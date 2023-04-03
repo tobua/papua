@@ -10,6 +10,9 @@ environment('typescript')
 
 beforeEach(refresh)
 
+const consoleLogMock = vi.fn()
+console.log = consoleLogMock
+
 test('Build with typescript errors fails.', async () => {
   const { dist } = prepare([
     packageJson('typescript'),
@@ -27,4 +30,9 @@ test('Build with typescript errors fails.', async () => {
   expect(mockExit).not.toHaveBeenCalled()
   // No dist files generated.
   expect(existsSync(dist)).toEqual(true) // NOTE builds even with errors.
+
+  // Output includes TypeScript error.
+  expect(consoleLogMock.mock.calls[7][0]).toContain(
+    "Type 'string' is not assignable to type 'number'."
+  )
 })

@@ -8,34 +8,13 @@ export default async (development: boolean) => {
   return new Promise<MultiCompiler>((done) => {
     const compiler = rspack(configuration, (error, stats) => {
       if (error) {
-        console.log(error)
+        logError(error)
+        process.exit(1)
       }
+
+      logStats(stats, development)
 
       done(compiler)
     })
   })
 }
-// const [configuration] = await loadWebpackConfig(false)
-
-// let compiler
-// try {
-//   compiler = webpack(configuration)
-// } catch (error) {
-//   logError(error)
-//   process.exit(1)
-// }
-
-// const handler = (done, error, stats) => {
-//   if (error) {
-//     logError(error)
-//   } else if (stats.stats && Array.isArray(stats.stats)) {
-//     stats.stats.forEach((stat) => logStats(stat, false))
-//   } else {
-//     logStats(stats, false)
-//   }
-//   done()
-// }
-
-// return new Promise((done) => {
-//   compiler.run(handler.bind(null, done))
-// })
