@@ -1,11 +1,19 @@
 import { join } from 'path'
-import { environment, prepare, packageJson, file, readFile, writeFile } from 'jest-fixture'
+import {
+  registerVitest,
+  environment,
+  prepare,
+  packageJson,
+  file,
+  readFile,
+  writeFile,
+} from 'jest-fixture'
+import { test, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest'
 import lint from '../script/lint'
 import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
 
-// Build can take more than 5 seconds.
-jest.setTimeout(60000)
+registerVitest(beforeEach, afterEach, vi)
 
 const initialCwd = process.cwd()
 let packageContents = {}
@@ -14,7 +22,7 @@ let packageContents = {}
 // otherwise be picked up, since it's closer to the root.
 beforeAll(() => {
   packageContents = readFile('package.json')
-  const copy = { ...packageContents }
+  const copy: any = { ...packageContents }
   delete copy.eslintConfig
   delete copy.prettier
 
@@ -26,22 +34,17 @@ afterAll(() => {
   writeFile(join(initialCwd, 'package.json'), packageContents)
 })
 
-let eslintConfig = readFile('configuration/eslint.cjs')
+const eslintConfig = readFile('configuration/eslint.cjs')
 const prettierConfig = readFile('configuration/.prettierrc.json')
 const prettierIgnore = readFile('configuration/.prettierignore')
 const stylelintConfig = readFile('configuration/stylelint.cjs')
-
-// babelrc defined in eslintconfig is looked up from root in tests.
-eslintConfig = eslintConfig.replace(
-  './node_modules/papua/configuration/.babelrc',
-  './configuration/.babelrc'
-)
 
 environment('lint')
 
 beforeEach(refresh)
 
-console.log = jest.fn()
+const consoleLogMock = vi.fn()
+console.log = consoleLogMock
 
 test('Basic check of all three linters.', async () => {
   const initialIndexJs = `import { styles } from './cli.js'; console.log('test')`
@@ -75,7 +78,7 @@ console.log(first, second)`
     file('node_modules/papua/configuration/stylelint.cjs', stylelintConfig),
   ])
 
-  await writeConfiguration()
+  await writeConfiguration(false)
   await lint()
 
   const formattedIndexJs = readFile('index.js')
@@ -84,17 +87,21 @@ console.log(first, second)`
   expect(initialIndexJs).not.toContain('\n')
   expect(formattedIndexJs).toContain('\n')
 
-  expect(console.log.mock.calls.length).toEqual(5)
+  expect(consoleLogMock.mock.calls.length).toEqual(5)
 
   // ESLint
-  const eslintMessages = console.log.mock.calls[3][0]
+  const eslintMessages = consoleLogMock.mock.calls[3][0]
 
   expect(eslintMessages).toContain('no-unused-vars')
+  expect(eslintMessages).toContain('no-console')
+  expect(eslintMessages).toContain('warning')
+  expect(eslintMessages).toContain('error')
+  expect(eslintMessages).toContain('/cli.js')
+  expect(eslintMessages).toContain('/index.js')
 
   // Stylelint
-  // TODO does not yet work in test environment.
-  // Finds files in fixture but looks at contents in root.
-  const stylelintMessages = console.log.mock.calls[4][0]
+  const stylelintMessages = consoleLogMock.mock.calls[4][0]
 
-  console.warn(stylelintMessages)
-})
+  expect(stylelintMessages).toContain('Unexpected unknown unit "fh"')
+  expect(stylelintMessages).toContain('2 errors found')
+}, 10000)

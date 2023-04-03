@@ -43,7 +43,8 @@ export default async () => {
   const stylelintResults = await lint({
     files: '**/*.{js,jsx,ts,tsx}',
     formatter: 'verbose',
-    ignorePattern: options().output,
+    ignorePattern: [options().output],
+    customSyntax: 'postcss-styled',
   })
 
   console.log(stylelintResults.output)

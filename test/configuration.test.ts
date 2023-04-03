@@ -115,7 +115,7 @@ test('Updates old package json properties.', async () => {
 
   pkg = readFile('package.json')
 
-  expect(pkg.engines.node).toEqual('>= 14')
+  expect(pkg.engines.node).toEqual('>= 16')
   // expect(pkg.engines.test).toEqual('hello')
   expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.cjs')
 })

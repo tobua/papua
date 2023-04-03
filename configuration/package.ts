@@ -8,7 +8,7 @@ export const packageJson = () => {
     },
     type: 'module',
     engines: {
-      node: '>= 14',
+      node: '>= 16',
     },
     prettier: 'papua/configuration/.prettierrc.json',
     eslintConfig: {
