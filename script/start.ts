@@ -1,23 +1,37 @@
+import { rspack } from '@rspack/core'
 import { RspackDevServer, Configuration } from '@rspack/dev-server'
-// import { startServer, recompiling, logStats, logError } from '../utility/stats'
+import merge from 'deepmerge'
+import { startServer, recompiling, logStats, logError } from '../utility/stats'
 import { freePort, log } from '../utility/helper'
 import { getInputs } from '../utility/input'
-import watch from './watch'
+import { loadRspackConfig } from '../utility/configuration'
+import { devServer } from '../configuration/rspack-server'
 
-export default async (options: Configuration, inputs = {}) => {
+export default async (options: Configuration = {}, inputs = {}) => {
   const { port = await freePort(), headless } = getInputs(inputs, {
     port: 'number',
     headless: 'boolean',
   })
 
-  const { compiler } = await watch(true)
+  const [configuration] = await loadRspackConfig(true)
 
-  const devServerConfiguration = {
-    port,
-    open: !headless && process.env.NODE_ENV !== 'test',
-    host: 'localhost',
-    ...options,
-  } satisfies Configuration
+  // Webpack-Dev-Server logs hidden through webpack logger.
+  configuration.infrastructureLogging = {
+    level: 'warn',
+  }
+
+  const compiler = rspack(configuration)
+
+  const devServerConfiguration: Configuration = merge(devServer(port, headless), options, {
+    clone: false,
+  })
+
+  // Run webpack with webpack-dev-server.
+  compiler.hooks.invalid.tap('invalid', recompiling)
+
+  compiler.hooks.done.tap('done', (stats) => {
+    logStats(stats, true)
+  })
 
   let server: RspackDevServer
 
@@ -27,6 +41,12 @@ export default async (options: Configuration, inputs = {}) => {
     log('Failed to create dev server', 'error')
   }
 
+  const url = `${devServerConfiguration.host}:${devServerConfiguration.port}`
+
+  startServer(url)
+
+  // TODO enabled by default, still necessary? attachDoneSignals(server)
+
   try {
     await server.start()
   } catch (error) {
@@ -35,70 +55,8 @@ export default async (options: Configuration, inputs = {}) => {
 
   return {
     server,
-    url: `${devServerConfiguration.host}:${devServerConfiguration.port}`,
+    url,
     port: devServerConfiguration.port,
     stop: () => server.stop(), // Requires context.
   }
-
-  // const [configuration, devServerConfiguration] = await loadWebpackConfig(true)
-
-  // if (typeof options === 'object') {
-  //   // objectAssignDeep(devServerConfiguration, options)
-  // }
-
-  // // Webpack-Dev-Server logs hidden through webpack logger.
-  // configuration.infrastructureLogging = {
-  //   level: 'warn',
-  // }
-
-  // let compiler
-  // try {
-  //   compiler = webpack(configuration)
-  // } catch (error) {
-  //   logError(error)
-  //   process.exit(1)
-  // }
-
-  // // Run webpack with webpack-dev-server.
-  // compiler.hooks.invalid.tap('invalid', recompiling)
-
-  // compiler.hooks.done.tap('done', (stats) => {
-  //   if (stats.stats && Array.isArray(stats.stats)) {
-  //     stats.stats.forEach((stat) => logStats(stat, true))
-  //   } else {
-  //     logStats(stats, true)
-  //   }
-  // })
-
-  // if (!devServerConfiguration.port) {
-  //   devServerConfiguration.port = port
-  // }
-
-  // if (!devServerConfiguration.host) {
-  //   devServerConfiguration.host = 'localhost'
-  // }
-
-  // if (headless) {
-  //   devServerConfiguration.open = false
-  // }
-
-  // const server = new WebpackDevServer(devServerConfiguration, compiler)
-  // const url = `${devServerConfiguration.host}:${devServerConfiguration.port}`
-
-  // attachDoneSignals(server)
-
-  // try {
-  //   await server.start()
-  // } catch (error) {
-  //   console.error(error)
-  //   return {}
-  // }
-
-  // startServer(url)
-
-  // return {
-  //   url,
-  //   port: devServerConfiguration.port,
-  //   server,
-  // }
 }

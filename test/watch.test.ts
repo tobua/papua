@@ -71,34 +71,35 @@ test('Watcher rebuilds on file change.', async () => {
 })
 
 // NOTE useless test (expected opposite...) keeping for other purposes.
-// test('Removed imports are not removed from dist during watch.', async () => {
-//   const watchRebuildStructure = [
-//     packageJson('watch-remove-files', { html: false }),
-//     file('index.js', `import logo from 'logo.png'; console.log(logo)`),
-//     {
-//       name: 'logo.png',
-//       copy: 'test/asset/logo.png',
-//     },
-//   ]
-//   const { dist } = prepare(watchRebuildStructure, fixturePath)
+test('Removed imports are not removed from dist during watch.', async () => {
+  const watchRebuildStructure = [
+    packageJson('watch-remove-files', { html: false }),
+    file('index.js', `import logo from './logo.png'; console.log(logo)`),
+    {
+      name: 'logo.png',
+      copy: 'test/asset/logo.png',
+    },
+  ]
+  const { dist } = prepare(watchRebuildStructure, fixturePath)
 
-//   const watcher = await watch()
+  const { close } = await watch(false)
 
-//   // Wait for initial compilation to finish.
-//   await wait(5)
+  // Wait for initial compilation to finish.
+  await wait(0.5)
 
-//   let imageFiles = listFilesMatching('*.png', dist)
+  let imageFiles = listFilesMatching('*.png', dist)
 
-//   expect(imageFiles.length).toEqual(1)
+  expect(imageFiles.length).toEqual(1)
 
-//   writeFile('index.js', `console.log('empty')`)
+  // No longer imports image.
+  writeFile('index.js', `console.log('empty')`)
 
-//   // Wait one second to ensure watcher recompilation done.
-//   await wait(1)
+  // Wait one second to ensure watcher recompilation done.
+  await wait(0.5)
 
-//   imageFiles = listFilesMatching('*.png', dist)
+  imageFiles = listFilesMatching('*.png', dist)
 
-//   expect(imageFiles.length).toEqual(1)
+  expect(imageFiles.length).toEqual(1)
 
-//   await closeWatcher(watcher)
-// })
+  await close()
+})

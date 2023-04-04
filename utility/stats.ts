@@ -28,6 +28,7 @@ export const logStats = (input: MultiStats, development: boolean) => {
     // TODO includes more files than just entries, previously used compilation.entries no longer available.
     const entries = stats.compilation
       .getModules()
+      .filter((module) => !module.resource.includes('node_modules')) // Filter out DevServer injections.
       .map((module) => relative(getProjectBasePath(), module.resource))
 
     console.log(`${chalk.gray('Entry')} ${entries.join(', ')}`)

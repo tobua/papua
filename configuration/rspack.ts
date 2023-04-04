@@ -13,7 +13,11 @@ class PatchTypeScriptHookPlugin {
 }
 
 const getPlugins = (development: boolean) => {
-  const plugins: Plugins = [htmlPlugin()]
+  const plugins: Plugins = []
+
+  if (options().html) {
+    plugins.push(htmlPlugin())
+  }
 
   if (!development && options().typescript) {
     plugins.push(new PatchTypeScriptHookPlugin())
@@ -33,4 +37,16 @@ export default (development: boolean) =>
     },
     devtool: development ? 'cheap-module-source-map' : 'source-map',
     plugins: getPlugins(development),
+    module: {
+      rules: [
+        {
+          test: /\.inline\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset/inline', // Inline logo.inline.svg files in JavaScript using base64 dataURI.
+        },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset/resource', // Convert asset to separate file.
+        },
+      ],
+    },
   } as RspackOptions)

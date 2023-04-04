@@ -23,6 +23,7 @@ const defaultOptions: Options = {
   workbox: {},
   title: 'papua App',
   hasTest: false,
+  html: true,
 }
 
 // Get the options for this project, either from the filesystem or explicit configuration.

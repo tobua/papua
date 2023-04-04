@@ -45,4 +45,5 @@ export interface Options {
   workbox: Object
   hasTest: boolean
   title: string
+  html: boolean
 }
