@@ -2,7 +2,7 @@ import merge from 'deepmerge'
 import { options } from '../utility/options'
 
 export const tsconfig = (tsconfigUserOverrides = {}) => {
-  const userTSConfig = {
+  let userTSConfig = {
     extends: 'papua/configuration/tsconfig',
   }
 
@@ -24,7 +24,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
     packageTSConfig.include.push('../../../test')
   }
 
-  merge(userTSConfig, tsconfigUserOverrides, { clone: false })
+  userTSConfig = merge(userTSConfig, tsconfigUserOverrides, { clone: false })
 
   return [userTSConfig, packageTSConfig]
 }

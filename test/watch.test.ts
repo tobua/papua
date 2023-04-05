@@ -74,9 +74,9 @@ test('Watcher rebuilds on file change.', async () => {
 test('Removed imports are not removed from dist during watch.', async () => {
   const watchRebuildStructure = [
     packageJson('watch-remove-files', { html: false }),
-    file('index.js', `import logo from './logo.png'; console.log(logo)`),
+    file('index.js', `import logo from './logo.load.png'; console.log(logo)`),
     {
-      name: 'logo.png',
+      name: 'logo.load.png',
       copy: 'test/asset/logo.png',
     },
   ]

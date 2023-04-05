@@ -143,36 +143,36 @@ test('Papua html template is used.', async () => {
   expect(htmlContents).toContain('width=device-width')
 })
 
-// test('Html template can be customized.', async () => {
-//   const title = 'The title hello'
-//   const loadingMessage = 'Still loading, sorry for the inconvenience.'
-//   const { dist } = prepare([
-//     packageJson('custom-template', {
-//       papua: { html: { template: 'custom.html' } },
-//     }),
-//     file('index.js', ''),
-//     file(
-//       'custom.html',
-//       `<html>
-//   <body>
-//     <p>${loadingMessage}</p>
-//   </body>
-// </html>`
-//     ),
-//   ])
+test('Html template can be customized.', async () => {
+  const title = 'The title hello'
+  const loadingMessage = 'Still loading, sorry for the inconvenience.'
+  const { dist } = prepare([
+    packageJson('custom-template', {
+      papua: { html: { template: 'custom.html' } },
+    }),
+    file('index.js', ''),
+    file(
+      'custom.html',
+      `<html>
+  <body>
+    <p>${loadingMessage}</p>
+  </body>
+</html>`
+    ),
+  ])
 
-//   await build()
+  await build(false)
 
-//   expect(existsSync(dist)).toEqual(true)
-//   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-//   const htmlContents = readFile(join(dist, 'index.html'))
+  const htmlContents = readFile(join(dist, 'index.html'))
 
-//   // Custom user template is used.
-//   expect(htmlContents).not.toContain(title)
-//   expect(htmlContents).toContain(loadingMessage)
-//   expect(htmlContents).not.toContain('width=device-width')
-// })
+  // Custom user template is used.
+  expect(htmlContents).not.toContain(title)
+  expect(htmlContents).toContain(loadingMessage)
+  expect(htmlContents).not.toContain('width=device-width')
+})
 
 // test('Generates and injects favicons.', async () => {
 //   const { dist } = prepare([packageJson('favicons'), file('index.js', '')])

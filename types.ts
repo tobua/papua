@@ -1,3 +1,5 @@
+import { Options } from '@rspack/plugin-html'
+
 export interface Package {
   name?: string
   version?: string
@@ -45,5 +47,5 @@ export interface Options {
   workbox: Object
   hasTest: boolean
   title: string
-  html: boolean
+  html: boolean | Options
 }

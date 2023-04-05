@@ -1,7 +1,7 @@
 import merge from 'deepmerge'
 
 export const jsconfig = (jsconfigUserOverrides = {}) => {
-  const userJSConfig = {
+  let userJSConfig = {
     extends: 'papua/configuration/jsconfig',
   }
 
@@ -13,7 +13,7 @@ export const jsconfig = (jsconfigUserOverrides = {}) => {
     },
   }
 
-  merge(userJSConfig, jsconfigUserOverrides, { clone: false })
+  userJSConfig = merge(userJSConfig, jsconfigUserOverrides, { clone: false })
 
   return [userJSConfig, packageJSConfig]
 }

@@ -29,7 +29,7 @@ const defaultOptions: Options = {
 // Get the options for this project, either from the filesystem or explicit configuration.
 export const options = cache(() => {
   let packageContents: Package
-  let result: Options = merge({}, defaultOptions, { clone: false })
+  let result: Options = merge({}, defaultOptions, { clone: true })
 
   try {
     const packageJsonPath = join(getProjectBasePath(), 'package.json')

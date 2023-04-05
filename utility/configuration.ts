@@ -4,12 +4,11 @@ import { join } from 'path'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
-// TODO has no types...
-// import parse from 'parse-gitignore'
+import parse from 'parse-gitignore'
 import { tsconfig } from '../configuration/tsconfig.js'
-// import { jsconfig } from '../configuration/jsconfig'
+import { jsconfig } from '../configuration/jsconfig.js'
 import { packageJson } from '../configuration/package'
-// import { gitignore } from '../configuration/gitignore'
+import { gitignore } from '../configuration/gitignore'
 import rspackConfig from '../configuration/rspack'
 // import webpackConfig from '../configuration/webpack'
 // import { webpackServer } from '../configuration/webpack-server'
@@ -278,26 +277,27 @@ export const writeTSConfig = (tsConfigUserOverrides = {}) => {
   writePackageAndUserFile(!options().typescript, 'tsconfig.json', tsconfig, tsConfigUserOverrides)
 }
 
-// export const writeJSConfig = (jsConfigUserOverrides = {}) => {
-//   // writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
-// }
+export const writeJSConfig = (jsConfigUserOverrides = {}) => {
+  writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
+}
 
-// export const writeGitIgnore = (gitIgnoreOverrides = []) => {
-//   const gitIgnorePath = join(getProjectBasePath(), '.gitignore')
-//   let entries = []
+export const writeGitIgnore = (gitIgnoreUserOverrides: string[] = []) => {
+  const gitIgnorePath = join(getProjectBasePath(), '.gitignore')
+  let entries = []
 
-//   if (existsSync(gitIgnorePath)) {
-//     const existingGitignoreLines = parse(readFileSync(gitIgnorePath, 'utf8')).patterns
-//     entries = entries.concat(existingGitignoreLines)
-//   }
+  if (existsSync(gitIgnorePath)) {
+    // @ts-ignore
+    const existingGitignoreLines = parse(readFileSync(gitIgnorePath, 'utf8')).patterns
+    entries = entries.concat(existingGitignoreLines)
+  }
 
-//   entries = entries.concat(gitignore(gitIgnoreOverrides))
+  entries = entries.concat(gitignore(gitIgnoreUserOverrides))
 
-//   // Remove duplicates, add empty line at the end
-//   entries = [...new Set(entries), '']
+  // Remove duplicates, add empty line at the end
+  entries = [...new Set(entries), '']
 
-//   writeFileSync(gitIgnorePath, entries.join('\r\n'))
-// }
+  writeFileSync(gitIgnorePath, entries.join('\r\n'))
+}
 
 export const removePropertiesToUpdate = (pkg) => {
   if (typeof pkg.engines === 'object') {

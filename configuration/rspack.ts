@@ -38,14 +38,19 @@ export default (development: boolean) =>
     devtool: development ? 'cheap-module-source-map' : 'source-map',
     plugins: getPlugins(development),
     module: {
+      // Matched from bottom to top!
       rules: [
         {
-          test: /\.inline\.(png|jpe?g|gif|svg)$/i,
-          type: 'asset/inline', // Inline logo.inline.svg files in JavaScript using base64 dataURI.
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset', // Auto-detect: Inline if < 8kb, external otherwise.
         },
         {
-          test: /\.(png|jpe?g|gif|svg)$/i,
-          type: 'asset/resource', // Convert asset to separate file.
+          test: /\.inline\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset/inline', // Inline *.inline.svg files in JavaScript using base64 dataURI.
+        },
+        {
+          test: /\.load\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset/resource', // Convert *.load.png asset to separate file loaded through request.
         },
       ],
     },

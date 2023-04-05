@@ -18,7 +18,7 @@ import {
   writePackageJson,
   writeConfiguration,
 } from '../utility/configuration'
-// import webpack from '../configuration/webpack'
+// import rspack from '../configuration/rspack'
 import { refresh } from '../utility/helper'
 import { createConfigurationDirectory } from './utility/create-configuration-directory'
 
@@ -140,209 +140,209 @@ test('Adds an empty package.json if none can be found.', async () => {
   expect(Object.keys(pkg.scripts).length).toEqual(1)
 })
 
-// test('Generates jsconfig extending package config.', () => {
-//   prepare([packageJson('simple')])
+test('Generates jsconfig extending package config.', () => {
+  prepare([packageJson('simple'), file('index.js', 'console.log("test")')])
 
-//   const jsconfigPath = join(fixturePath, 'jsconfig.json')
-//   const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/jsconfig.json')
-//   createConfigurationDirectory(fixturePath)
-//   writeFile('node_modules/papua/configuration/jsconfig.json', {})
+  const jsconfigPath = join(fixturePath, 'jsconfig.json')
+  const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/jsconfig.json')
+  createConfigurationDirectory(fixturePath)
+  writeFile('node_modules/papua/configuration/jsconfig.json', {})
 
-//   writeJSConfig({})
+  writeJSConfig({})
 
-//   expect(existsSync(jsconfigPath)).toEqual(true)
-//   expect(existsSync(packageConfigPath)).toEqual(true)
+  expect(existsSync(jsconfigPath)).toBe(true)
+  expect(existsSync(packageConfigPath)).toBe(true)
 
-//   const contents = readFileSync(jsconfigPath, 'utf8')
-//   const contentsPackage = readFile('node_modules/papua/configuration/jsconfig.json')
+  const contents = readFileSync(jsconfigPath, 'utf8')
+  const contentsPackage = readFile('node_modules/papua/configuration/jsconfig.json')
 
-//   // Prettier formatting is applied.
-//   expect(contents).toEqual(`{
-//   "extends": "papua/configuration/jsconfig"
-// }
-// `)
+  // Prettier formatting is applied.
+  expect(contents).toEqual(`{
+  "extends": "papua/configuration/jsconfig"
+}
+`)
 
-//   expect(typeof contentsPackage.compilerOptions).toEqual('object')
+  expect(typeof contentsPackage.compilerOptions).toEqual('object')
 
-//   writeJSConfig({ compilerOptions: { jsx: 'react' } })
+  writeJSConfig({ compilerOptions: { jsx: 'react' } })
 
-//   const contentsWithOptions = readFile('jsconfig.json')
-//   const contentsPackageWithOptions = readFile('node_modules/papua/configuration/jsconfig.json')
+  const contentsWithOptions = readFile('jsconfig.json')
+  const contentsPackageWithOptions = readFile('node_modules/papua/configuration/jsconfig.json')
 
-//   expect(contentsPackage).toEqual(contentsPackageWithOptions)
-//   expect(contentsWithOptions.compilerOptions.jsx).toEqual('react')
-//   expect(contentsWithOptions.extends).toEqual('papua/configuration/jsconfig')
-// })
+  expect(contentsPackage).toEqual(contentsPackageWithOptions)
+  expect(contentsWithOptions.compilerOptions.jsx).toEqual('react')
+  expect(contentsWithOptions.extends).toEqual('papua/configuration/jsconfig')
+})
 
-// test('Generates tsconfig extending package config.', () => {
-//   prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
+test('Generates tsconfig extending package config.', () => {
+  prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
-//   const tsconfigPath = join(fixturePath, 'tsconfig.json')
-//   const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/tsconfig.json')
-//   createConfigurationDirectory(fixturePath)
-//   writeFile('node_modules/papua/configuration/tsconfig.json', {})
+  const tsconfigPath = join(fixturePath, 'tsconfig.json')
+  const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/tsconfig.json')
+  createConfigurationDirectory(fixturePath)
+  writeFile('node_modules/papua/configuration/tsconfig.json', {})
 
-//   writeTSConfig({})
+  writeTSConfig({})
 
-//   expect(existsSync(tsconfigPath)).toEqual(true)
-//   expect(existsSync(packageConfigPath)).toEqual(true)
+  expect(existsSync(tsconfigPath)).toBe(true)
+  expect(existsSync(packageConfigPath)).toBe(true)
 
-//   const contents = readFileSync(tsconfigPath, 'utf8')
-//   const contentsPackage = readFile('node_modules/papua/configuration/tsconfig.json')
+  const contents = readFileSync(tsconfigPath, 'utf8')
+  const contentsPackage = readFile('node_modules/papua/configuration/tsconfig.json')
 
-//   expect(contents).toEqual(`{
-//   "extends": "papua/configuration/tsconfig"
-// }
-// `)
+  expect(contents).toEqual(`{
+  "extends": "papua/configuration/tsconfig"
+}
+`)
 
-//   expect(typeof contentsPackage.compilerOptions).toEqual('object')
-//   expect(contentsPackage.compilerOptions.baseUrl).toEqual('../../..')
+  expect(typeof contentsPackage.compilerOptions).toEqual('object')
+  expect(contentsPackage.compilerOptions.baseUrl).toEqual('../../..')
 
-//   writeTSConfig({ compilerOptions: { module: 'commonjs' } })
+  writeTSConfig({ compilerOptions: { module: 'commonjs' } })
 
-//   const contentsWithOptions = readFile('tsconfig.json')
-//   const contentsPackageWithOptions = readFile('node_modules/papua/configuration/tsconfig.json')
+  const contentsWithOptions = readFile('tsconfig.json')
+  const contentsPackageWithOptions = readFile('node_modules/papua/configuration/tsconfig.json')
 
-//   expect(contentsPackage).toEqual(contentsPackageWithOptions)
-//   expect(contentsWithOptions.compilerOptions.module).toEqual('commonjs')
-//   expect(contentsWithOptions.extends).toEqual('papua/configuration/tsconfig')
-// })
+  expect(contentsPackage).toEqual(contentsPackageWithOptions)
+  expect(contentsWithOptions.compilerOptions.module).toEqual('commonjs')
+  expect(contentsWithOptions.extends).toEqual('papua/configuration/tsconfig')
+})
 
-// test('Fallback to put whole tsconfig into user folder if not writable.', () => {
-//   prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
+test('Fallback to put whole tsconfig into user folder if not writable.', () => {
+  prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
-//   const tsconfigPath = join(fixturePath, 'tsconfig.json')
-//   const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/tsconfig.json')
+  const tsconfigPath = join(fixturePath, 'tsconfig.json')
+  const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/tsconfig.json')
 
-//   writeTSConfig({ compilerOptions: { module: 'commonjs' } })
+  writeTSConfig({ compilerOptions: { module: 'commonjs' } })
 
-//   expect(existsSync(tsconfigPath)).toEqual(true)
-//   expect(existsSync(packageConfigPath)).toEqual(false)
+  expect(existsSync(tsconfigPath)).toEqual(true)
+  expect(existsSync(packageConfigPath)).toEqual(false)
 
-//   const contentsWithOptions = readFile('tsconfig.json')
+  const contentsWithOptions = readFile('tsconfig.json')
 
-//   expect(contentsWithOptions.extends).toEqual(undefined)
-//   expect(contentsWithOptions.compilerOptions.module).toEqual('commonjs')
-//   // Directory is reduced to match user folder.
-//   expect(contentsWithOptions.compilerOptions.baseUrl).toEqual('.')
-// })
+  expect(contentsWithOptions.extends).toEqual(undefined)
+  expect(contentsWithOptions.compilerOptions.module).toEqual('commonjs')
+  // Directory is reduced to match user folder.
+  expect(contentsWithOptions.compilerOptions.baseUrl).toEqual('.')
+})
 
-// test('Generates gitignore with default entries.', () => {
-//   prepare([packageJson('gitignore'), file('index.js', '')])
+test('Generates gitignore with default entries.', () => {
+  prepare([packageJson('gitignore'), file('index.js', '')])
 
-//   const gitignorePath = join(fixturePath, '.gitignore')
+  const gitignorePath = join(fixturePath, '.gitignore')
 
-//   writeGitIgnore([])
+  writeGitIgnore([])
 
-//   expect(existsSync(gitignorePath)).toEqual(true)
+  expect(existsSync(gitignorePath)).toEqual(true)
 
-//   const contents = readFile('.gitignore')
+  const contents = readFile('.gitignore')
 
-//   expect(contents).toEqual(
-//     ['node_modules', 'package-lock.json', 'jsconfig.json', 'dist', ''].join('\r\n')
+  expect(contents).toEqual(
+    ['node_modules', 'package-lock.json', 'jsconfig.json', 'dist', ''].join('\r\n')
+  )
+})
+
+test('Generates proper gitignore for typescript.', () => {
+  prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
+
+  const gitignorePath = join(fixturePath, '.gitignore')
+
+  writeGitIgnore([])
+
+  expect(existsSync(gitignorePath)).toEqual(true)
+
+  const contents = readFile('.gitignore')
+
+  expect(contents).toEqual(
+    ['node_modules', 'package-lock.json', 'tsconfig.json', 'dist', ''].join('\r\n')
+  )
+})
+
+test('Creates cypress.json with project default properties.', async () => {
+  prepare([packageJson('cypress')])
+
+  const packageCypressConfigurationPath = join(
+    fixturePath,
+    'node_modules/papua/configuration/cypress.config.js'
+  )
+  createConfigurationDirectory(fixturePath)
+  copyFileSync(
+    join(process.cwd(), './../../../configuration/cypress.config.js'),
+    join(process.cwd(), './node_modules/papua/configuration/cypress.config.js')
+  )
+
+  expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
+  // TODO cannot import ESM from CJS
+  // const contents = await import(packageCypressConfigurationPath)
+  // expect(contents.chromeWebSecurity).toEqual(false)
+})
+
+// test('Root cypress.json will extend package configuration.', () => {
+//   prepare([
+//     packageJson('cypress'),
+//     json('cypress.json', {
+//       chromeWebSecurity: true,
+//       firefoxGcInterval: {
+//         runMode: 1,
+//       },
+//     }),
+//   ])
+
+//   const userCypressConfigurationPath = join(fixturePath, 'cypress.json')
+//   const packageCypressConfigurationPath = join(
+//     fixturePath,
+//     'node_modules/papua/configuration/cypress.json'
 //   )
+//   createConfigurationDirectory(fixturePath)
+//   writeFile('node_modules/papua/configuration/cypress.json', {})
+
+//   const userContentsBefore = readFile(userCypressConfigurationPath)
+
+//   configureCypress()
+
+//   expect(existsSync(userCypressConfigurationPath)).toEqual(true)
+//   expect(readFile(userCypressConfigurationPath)).toEqual(userContentsBefore)
+//   expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
+//   const contents = readFile(packageCypressConfigurationPath)
+//   expect(contents.chromeWebSecurity).toEqual(true)
+//   expect(contents.firefoxGcInterval.runMode).toEqual(1)
 // })
 
-// test('Generates proper gitignore for typescript.', () => {
-//   prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
-
-//   const gitignorePath = join(fixturePath, '.gitignore')
-
-//   writeGitIgnore([])
-
-//   expect(existsSync(gitignorePath)).toEqual(true)
-
-//   const contents = readFile('.gitignore')
-
-//   expect(contents).toEqual(
-//     ['node_modules', 'package-lock.json', 'tsconfig.json', 'dist', ''].join('\r\n')
-//   )
-// })
-
-// test('Creates cypress.json with project default properties.', async () => {
-//   prepare([packageJson('cypress')])
+// test('package.json cypress configuration will override cypress.json.', () => {
+//   prepare([
+//     packageJson('cypress', {
+//       papua: {
+//         cypress: {
+//           defaultCommandTimeout: 6000,
+//           firefoxGcInterval: {
+//             runMode: 2,
+//           },
+//         },
+//       },
+//     }),
+//     json('cypress.json', {
+//       chromeWebSecurity: true,
+//       firefoxGcInterval: {
+//         runMode: 1,
+//       },
+//     }),
+//   ])
 
 //   const packageCypressConfigurationPath = join(
 //     fixturePath,
-//     'node_modules/papua/configuration/cypress.config.js'
+//     'node_modules/papua/configuration/cypress.json'
 //   )
 //   createConfigurationDirectory(fixturePath)
-//   copyFileSync(
-//     join(process.cwd(), './../../../configuration/cypress.config.js'),
-//     join(process.cwd(), './node_modules/papua/configuration/cypress.config.js')
-//   )
+//   writeFile('node_modules/papua/configuration/cypress.json', {})
 
-//   expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
-//   // TODO cannot import ESM from CJS
-//   // const contents = await import(packageCypressConfigurationPath)
-//   // expect(contents.chromeWebSecurity).toEqual(false)
+//   configureCypress()
+
+//   const contents = readFile(packageCypressConfigurationPath)
+//   expect(contents.chromeWebSecurity).toEqual(true)
+//   expect(contents.defaultCommandTimeout).toEqual(6000)
+//   expect(contents.firefoxGcInterval.runMode).toEqual(2)
 // })
-
-// // test('Root cypress.json will extend package configuration.', () => {
-// //   prepare([
-// //     packageJson('cypress'),
-// //     json('cypress.json', {
-// //       chromeWebSecurity: true,
-// //       firefoxGcInterval: {
-// //         runMode: 1,
-// //       },
-// //     }),
-// //   ])
-
-// //   const userCypressConfigurationPath = join(fixturePath, 'cypress.json')
-// //   const packageCypressConfigurationPath = join(
-// //     fixturePath,
-// //     'node_modules/papua/configuration/cypress.json'
-// //   )
-// //   createConfigurationDirectory(fixturePath)
-// //   writeFile('node_modules/papua/configuration/cypress.json', {})
-
-// //   const userContentsBefore = readFile(userCypressConfigurationPath)
-
-// //   configureCypress()
-
-// //   expect(existsSync(userCypressConfigurationPath)).toEqual(true)
-// //   expect(readFile(userCypressConfigurationPath)).toEqual(userContentsBefore)
-// //   expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
-// //   const contents = readFile(packageCypressConfigurationPath)
-// //   expect(contents.chromeWebSecurity).toEqual(true)
-// //   expect(contents.firefoxGcInterval.runMode).toEqual(1)
-// // })
-
-// // test('package.json cypress configuration will override cypress.json.', () => {
-// //   prepare([
-// //     packageJson('cypress', {
-// //       papua: {
-// //         cypress: {
-// //           defaultCommandTimeout: 6000,
-// //           firefoxGcInterval: {
-// //             runMode: 2,
-// //           },
-// //         },
-// //       },
-// //     }),
-// //     json('cypress.json', {
-// //       chromeWebSecurity: true,
-// //       firefoxGcInterval: {
-// //         runMode: 1,
-// //       },
-// //     }),
-// //   ])
-
-// //   const packageCypressConfigurationPath = join(
-// //     fixturePath,
-// //     'node_modules/papua/configuration/cypress.json'
-// //   )
-// //   createConfigurationDirectory(fixturePath)
-// //   writeFile('node_modules/papua/configuration/cypress.json', {})
-
-// //   configureCypress()
-
-// //   const contents = readFile(packageCypressConfigurationPath)
-// //   expect(contents.chromeWebSecurity).toEqual(true)
-// //   expect(contents.defaultCommandTimeout).toEqual(6000)
-// //   expect(contents.firefoxGcInterval.runMode).toEqual(2)
-// // })
 
 // test('webpack babel configuration can be extended in package.json.', () => {
 //   prepare([
@@ -356,7 +356,7 @@ test('Adds an empty package.json if none can be found.', async () => {
 //     }),
 //   ])
 
-//   const configuration = webpack(true)
+//   const configuration = rspack(true)
 
 //   expect(configuration.module.rules[0].use.options).toBeDefined()
 //   expect(configuration.module.rules[0].use.options.plugins).toEqual(['@emotion'])

@@ -1,7 +1,7 @@
 import { options } from '../utility/options'
 
-export const gitignore = () => {
-  const entries = ['node_modules', 'package-lock.json']
+export const gitignore = (gitIgnoreUserOverrides: string[] = []) => {
+  let entries = ['node_modules', 'package-lock.json']
 
   if (options().typescript) {
     entries.push('tsconfig.json')
@@ -9,8 +9,10 @@ export const gitignore = () => {
     entries.push('jsconfig.json')
   }
 
-  if (!options().source) {
-    entries.push(options().output)
+  entries.push(options().output)
+
+  if (gitIgnoreUserOverrides.length) {
+    entries = entries.concat(gitIgnoreUserOverrides)
   }
 
   return entries
