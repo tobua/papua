@@ -43,6 +43,31 @@ test('Can disable html template.', async () => {
   expect(existsSync(join(dist, 'index.html'))).toEqual(false)
 })
 
+test('Can use absolute and relative imports.', async () => {
+  const disableHtmlPluginStructure = [
+    packageJson('various-imports'),
+    file(
+      'index.js',
+      `import 'absolute.js';
+import './relative.js';
+
+console.log('index')`
+    ),
+    file('absolute.js', `console.log('absolute')`),
+    file('relative.js', `console.log('relative')`),
+  ]
+  const { dist } = prepare(disableHtmlPluginStructure, fixturePath)
+
+  await build(false)
+
+  const jsContents = contentsForFilesMatching('*.js', dist)
+
+  expect(jsContents.length).toBe(1)
+  expect(jsContents[0].contents).toContain('"index"')
+  expect(jsContents[0].contents).toContain('"absolute"')
+  expect(jsContents[0].contents).toContain('"relative"')
+})
+
 // test('Multiple builds with different output locations.', async () => {
 //   // Virtual mock, so that file doesn't necessarly have to exist.
 //   jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
