@@ -9,7 +9,7 @@ import { log, freePort } from '../utility/helper'
 import { options } from '../utility/options'
 import build from './build'
 import { getProjectBasePath } from '../utility/path'
-import { getInputs } from '../utility/input'
+import { getCliInputs } from '../utility/input'
 
 const addLeadingSlash = (path: string) => {
   if (path.startsWith('/')) {
@@ -19,8 +19,14 @@ const addLeadingSlash = (path: string) => {
   return `/${path}`
 }
 
-export default async (inputs) => {
-  const { port = await freePort(), open } = getInputs(inputs, { port: 'number', open: 'boolean' })
+export default async (inputs = {}) => {
+  const { port = await freePort(), open } = getCliInputs<{ port: number; open: boolean }>(
+    {
+      port: 'number',
+      open: 'boolean',
+    },
+    inputs
+  )
   const publicPath = options().publicPath ? addLeadingSlash(options().publicPath) : ''
 
   log('Building...')

@@ -1,8 +1,9 @@
-import { resolve } from 'path'
+import { resolve, join } from 'path'
 import { RspackOptions, Compiler, Plugins } from '@rspack/core'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import { options } from '../utility/options'
 import { htmlPlugin } from './rspack-html'
+import { getProjectBasePath } from '../utility/path'
 
 class PatchTypeScriptHookPlugin {
   // eslint-disable-next-line class-methods-use-this
@@ -38,6 +39,9 @@ export default (development: boolean) =>
     },
     output: {
       filename: development ? '[name].js' : '[name].[contenthash].js',
+      path: join(getProjectBasePath(), options().output),
+      publicPath: options().publicPath,
+      assetModuleFilename: development ? '[name][ext][query]' : '[hash][ext][query]',
     },
     devtool: development ? 'cheap-module-source-map' : 'source-map',
     plugins: getPlugins(development),
@@ -64,15 +68,17 @@ export default (development: boolean) =>
         {
           test: /\.load\.(png|jpe?g|gif|svg)$/i,
           type: 'asset/resource', // Convert *.load.png asset to separate file loaded through request.
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: development ? '[path][name].[ext]' : '[contenthash].[ext]',
-              },
-            },
-          ],
         },
       ],
+    },
+    builtins: {
+      // TODO https://www.rspack.dev/config/builtins.html
+      // NOTE builtins html plugin has issues with publicPath.
+      define: {
+        'process.env.PUBLIC_URL': JSON.stringify(options().publicPath),
+      },
+      // react: {
+      //   runtime: 'automatic',
+      // },
     },
   } as RspackOptions)

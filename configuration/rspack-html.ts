@@ -17,7 +17,12 @@ export const htmlPlugin = () => {
     template = './index.html'
   }
 
-  let htmlOptions: Options = { template, title: options().title }
+  let htmlOptions: Options = {
+    template,
+    title: options().title,
+    minify: true,
+    publicPath: options().publicPath,
+  }
 
   if (typeof customization === 'object') {
     htmlOptions = merge(htmlOptions, customization, {

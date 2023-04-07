@@ -21,14 +21,12 @@ environment('build')
 beforeEach(refresh)
 
 const pngLogo = {
-  name: 'logo.png',
+  name: 'logo.load.png',
   copy: 'test/asset/logo.png',
 }
 
 test('Builds without errors.', async () => {
   const { dist } = prepare([packageJson('build'), file('index.js', `console.log('test')`)])
-
-  expect(true).toBe(true)
 
   await build(false)
 
@@ -40,89 +38,91 @@ test('Builds without errors.', async () => {
   expect(listFilesMatching('*.js.map', dist).length).toEqual(1)
 })
 
-// test('No public path applied properly in bundle.', async () => {
-//   const { dist } = prepare([
-//     packageJson('publicpath'),
-//     file('index.js', `import logo from 'logo.png'; console.log(logo)`),
-//     pngLogo,
-//   ])
+test('No public path applied properly in bundle.', async () => {
+  const { dist } = prepare([
+    packageJson('publicpath'),
+    file('index.js', `import logo from 'logo.load.png'; console.log(logo)`),
+    pngLogo,
+  ])
 
-//   await build()
+  await build(true)
 
-//   expect(existsSync(dist)).toEqual(true)
-//   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-//   const htmlContents = readFile(join(dist, 'index.html'))
-//   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
-//   const mainJsName = listFilesMatching('*.js', dist)[0]
-//   const pngName = listFilesMatching('*.png', dist)[0]
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  const mainJsName = listFilesMatching('*.js', dist)[0]
+  const pngName = listFilesMatching('*.png', dist)[0]
 
-//   // Proper path to main bundle.
-//   expect(htmlContents).toContain(`src="${mainJsName}"`)
-//   // Proper path to logo.
-//   expect(mainJsContents).toContain(`"${pngName}"`)
-// })
+  // Proper path to main bundle.
+  expect(htmlContents).toContain(`src="${mainJsName}"`)
+  // Proper path to logo.
+  expect(mainJsContents).toContain(`"${pngName}"`)
+})
 
-// test('Root public path applied properly in bundle.', async () => {
-//   const { dist } = prepare([
-//     packageJson('publicpath', { papua: { publicPath: '/' } }),
-//     file('index.js', `import logo from 'logo.png'; console.log(logo)`),
-//     pngLogo,
-//   ])
+test('Root public path applied properly in bundle.', async () => {
+  const { dist } = prepare([
+    packageJson('publicpath', { papua: { publicPath: '/' } }),
+    file('index.js', `import logo from 'logo.load.png'; console.log(logo)`),
+    pngLogo,
+  ])
 
-//   await build()
+  await build(false)
 
-//   expect(existsSync(dist)).toEqual(true)
-//   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-//   const htmlContents = readFile(join(dist, 'index.html'))
-//   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
-//   const mainJsName = listFilesMatching('*.js', dist)[0]
-//   const pngName = listFilesMatching('*.png', dist)[0]
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  const mainJsName = listFilesMatching('*.js', dist)[0]
+  const pngName = listFilesMatching('**/*.png', dist)[0]
 
-//   if (process.platform === 'win32') {
-//     // Proper path to main bundle.
-//     expect(htmlContents).toContain(`src="\\/${mainJsName}"`)
-//     // Proper path to logo.
-//     expect(mainJsContents).toContain(`"\\\\${pngName}"`)
-//   } else {
-//     // Proper path to main bundle.
-//     expect(htmlContents).toContain(`src="/${mainJsName}"`)
-//     // Proper path to logo.
-//     expect(mainJsContents).toContain(`"/${pngName}"`)
-//   }
-// })
+  if (process.platform === 'win32') {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="\\/${mainJsName}"`)
+    // Proper path to logo.
+    expect(mainJsContents).toContain(`"\\\\${pngName}"`)
+  } else {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="/${mainJsName}"`)
+    // Proper path to logo, public path programmatically added only once.
+    expect(mainJsContents).toContain(`"${pngName}"`)
+    expect(mainJsContents).toContain(`"/"`)
+  }
+})
 
-// test('Deep public path applied properly in bundle.', async () => {
-//   const path = 'hello/world'
-//   const { dist } = prepare([
-//     packageJson('publicpath', { papua: { publicPath: path } }),
-//     file('index.js', `import logo from 'logo.png'; console.log(logo)`),
-//     pngLogo,
-//   ])
+test('Deep public path applied properly in bundle.', async () => {
+  const path = '/hello/world'
+  const { dist } = prepare([
+    packageJson('publicpath', { papua: { publicPath: path } }),
+    file('index.js', `import logo from 'logo.load.png'; console.log(logo)`),
+    pngLogo,
+  ])
 
-//   await build()
+  await build(false)
 
-//   expect(existsSync(dist)).toEqual(true)
-//   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-//   const htmlContents = readFile(join(dist, 'index.html'))
-//   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
-//   const mainJsName = listFilesMatching('*.js', dist)[0]
-//   const pngName = listFilesMatching('*.png', dist)[0]
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  const mainJsName = listFilesMatching('*.js', dist)[0]
+  const pngName = listFilesMatching('*.png', dist)[0]
 
-//   if (process.platform === 'win32') {
-//     // Proper path to main bundle.
-//     expect(htmlContents).toContain(`src="\\hello\\world\\/${mainJsName}"`)
-//     // Proper path to logo.
-//     expect(mainJsContents).toContain(`"\\\\hello\\\\world\\\\${pngName}"`)
-//   } else {
-//     // Proper path to main bundle.
-//     expect(htmlContents).toContain(`src="/${path}/${mainJsName}"`)
-//     // Proper path to logo.
-//     expect(mainJsContents).toContain(`"/${path}/${pngName}"`)
-//   }
-// })
+  if (process.platform === 'win32') {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="\\hello\\world\\/${mainJsName}"`)
+    // Proper path to logo.
+    expect(mainJsContents).toContain(`"\\\\hello\\\\world\\\\${pngName}"`)
+  } else {
+    // Proper path to main bundle.
+    expect(htmlContents).toContain(`src="${path}/${mainJsName}"`)
+    // Proper path to logo, public path programmatically added only once.
+    expect(mainJsContents).toContain(`"${path}"`)
+    expect(mainJsContents).toContain(`"${pngName}"`)
+  }
+})
 
 test('Papua html template is used.', async () => {
   const title = 'The title hello'
@@ -172,6 +172,20 @@ test('Html template can be customized.', async () => {
   expect(htmlContents).not.toContain(title)
   expect(htmlContents).toContain(loadingMessage)
   expect(htmlContents).not.toContain('width=device-width')
+})
+
+test('Defined environment variables are resolved.', async () => {
+  const path = '/hello'
+  const { dist } = prepare([
+    packageJson('build-env', { papua: { publicPath: path } }),
+    file('index.js', `console.log(process.env.PUBLIC_URL)`),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain(`"${path}"`)
 })
 
 // test('Generates and injects favicons.', async () => {

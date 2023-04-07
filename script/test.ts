@@ -28,14 +28,18 @@ const installCypressIfMissing = () => {
 export const hasCypressTests = () => existsSync(join(getProjectBasePath(), 'cypress'))
 
 export default () => {
-  const hasJest = options().hasTest || existsSync(join(getProjectBasePath(), options().test))
+  const testDirectory = options().test
+  const testDirectorySpecified = typeof testDirectory === 'string'
+  const hasVitest =
+    options().hasTest ||
+    (testDirectorySpecified && existsSync(join(getProjectBasePath(), testDirectory)))
   const hasCypress = hasCypressTests()
 
   const additionalArguments = process.argv.slice(3)
 
-  if (hasJest) {
-    log('running tests with jest...')
-    execSync(`jest ${additionalArguments.join(' ')}`, { stdio: 'inherit' })
+  if (hasVitest) {
+    log('running vitest...')
+    execSync(`vitest run ${additionalArguments.join(' ')}`, { stdio: 'inherit' })
   }
 
   if (hasCypress) {
@@ -46,7 +50,7 @@ export default () => {
     })
   }
 
-  if (!hasJest && !hasCypress) {
+  if (!hasVitest && !hasCypress) {
     log(
       `No tests found add tests inside /${options().test} for Jest or inside /cypress for Cypress`,
       'warning'

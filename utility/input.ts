@@ -1,10 +1,14 @@
 import { sep } from 'path'
 import { Command } from 'commander'
+import merge from 'deepmerge'
 
-export const getInputs = (options, specification) => {
+export const getCliInputs = <T>(
+  specification: { [key: string]: 'string' | 'number' | 'boolean' },
+  options = {}
+) => {
   // Not run through papua CLI, skip parsing arguments.
   if (!(process.argv[1].endsWith('papua') || process.argv[1].endsWith(`papua${sep}cli.js`))) {
-    return options || {}
+    return options as T
   }
 
   const program = new Command()
@@ -17,10 +21,5 @@ export const getInputs = (options, specification) => {
 
   // 3 Input methods: Programmatic (options argument), CLI (argv) or
   // User prompt if previous input methods empty.
-  if (!options || typeof options !== 'object') {
-    // eslint-disable-next-line no-param-reassign
-    options = program.opts()
-  }
-
-  return options
+  return merge(options, program.opts(), { clone: true }) as T
 }

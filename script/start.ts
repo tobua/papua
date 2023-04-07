@@ -3,15 +3,18 @@ import { RspackDevServer, Configuration } from '@rspack/dev-server'
 import merge from 'deepmerge'
 import { startServer, recompiling, logStats, logError } from '../utility/stats'
 import { freePort, log } from '../utility/helper'
-import { getInputs } from '../utility/input'
+import { getCliInputs } from '../utility/input'
 import { loadRspackConfig } from '../utility/configuration'
 import { devServer } from '../configuration/rspack-server'
 
 export default async (options: Configuration = {}, inputs = {}) => {
-  const { port = await freePort(), headless } = getInputs(inputs, {
-    port: 'number',
-    headless: 'boolean',
-  })
+  const { port = await freePort(), headless } = getCliInputs<{ port: number; headless: boolean }>(
+    {
+      port: 'number',
+      headless: 'boolean',
+    },
+    inputs
+  )
 
   const [configuration] = await loadRspackConfig(true)
 

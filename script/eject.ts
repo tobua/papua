@@ -3,13 +3,13 @@ import { join } from 'path'
 import prompts from 'prompts'
 import { log, editPackageJson } from '../utility/helper'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'
-import { getInputs } from '../utility/input'
+import { getCliInputs } from '../utility/input'
 
 const templates = {
   html: {
     title: 'HTML Template',
     file: 'index.html',
-    handler: (file) => {
+    handler: (file: string) => {
       copyFileSync(
         join(getPluginBasePath(), 'configuration/template.html'),
         join(getProjectBasePath(), file)
@@ -25,7 +25,7 @@ const templates = {
   icon: {
     title: 'Icon',
     file: 'logo.png',
-    handler: (file) => {
+    handler: (file: string) => {
       if (file !== 'logo.png' && file !== 'logo.svg') {
         editPackageJson({ papua: { icon: file } })
         log(`Icon configuration edited in package.json to point to ${file}`)
@@ -67,8 +67,11 @@ export const after = (configuration) => {
   },
 }
 
-export default async (inputs) => {
-  let { template, file } = getInputs(inputs, { template: 'string', file: 'string' })
+export default async (inputs = {}) => {
+  let { template, file } = getCliInputs<{ template: string; file: string }>(
+    { template: 'string', file: 'string' },
+    inputs
+  )
 
   if (!template) {
     template = (
