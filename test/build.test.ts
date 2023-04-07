@@ -188,6 +188,24 @@ test('Defined environment variables are resolved.', async () => {
   expect(mainJsContents).toContain(`"${path}"`)
 })
 
+test('Files inside the /public folder are copied over to the root.', async () => {
+  prepare([
+    packageJson('build-copy'),
+    file('index.js', `console.log("copy")`),
+    file('public/favicon.ico', ''),
+    file('public/something.png', ''),
+    file('public/nested/template.html', ''),
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*', '.')
+
+  expect(files).toContain('dist/favicon.ico')
+  expect(files).toContain('dist/something.png')
+  expect(files).toContain('dist/nested/template.html')
+})
+
 // test('Generates and injects favicons.', async () => {
 //   const { dist } = prepare([packageJson('favicons'), file('index.js', '')])
 

@@ -1,3 +1,4 @@
+import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import { RspackOptions, Compiler, Plugins } from '@rspack/core'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
@@ -80,5 +81,8 @@ export default (development: boolean) =>
       // react: {
       //   runtime: 'automatic',
       // },
+      copy: {
+        patterns: existsSync(join(process.cwd(), 'public')) ? [{ from: 'public' }] : [],
+      },
     },
   } as RspackOptions)
