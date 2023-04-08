@@ -2,10 +2,36 @@ import { join } from 'path'
 import { existsSync } from 'fs'
 import HtmlRspackPlugin, { Options } from '@rspack/plugin-html'
 import merge from 'deepmerge'
-import { options } from '../utility/options.js'
+import { options } from '../utility/options'
+import { getPluginBasePath, getProjectBasePath } from '../utility/path'
+
+const faviconPath = (icon: boolean | string) => {
+  let path = join(getPluginBasePath(), 'configuration/logo.png')
+
+  const logoPngProjectPath = join(getProjectBasePath(), 'logo.png')
+  const logoSvgProjectPath = join(getProjectBasePath(), 'logo.svg')
+
+  if (existsSync(logoPngProjectPath)) {
+    path = logoPngProjectPath
+  }
+
+  if (existsSync(logoSvgProjectPath)) {
+    path = logoSvgProjectPath
+  }
+
+  if (typeof icon === 'string') {
+    const customIconPath = join(getProjectBasePath(), icon)
+
+    if (existsSync(customIconPath)) {
+      path = customIconPath
+    }
+  }
+
+  return path
+}
 
 export const htmlPlugin = () => {
-  const customization = options().html
+  const { html, icon } = options()
 
   let template = './node_modules/papua/configuration/template.html'
 
@@ -22,10 +48,11 @@ export const htmlPlugin = () => {
     title: options().title,
     minify: true,
     publicPath: options().publicPath,
+    favicon: options().icon && faviconPath(icon),
   }
 
-  if (typeof customization === 'object') {
-    htmlOptions = merge(htmlOptions, customization, {
+  if (typeof html === 'object') {
+    htmlOptions = merge(htmlOptions, html, {
       clone: true,
     })
   }

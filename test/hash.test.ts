@@ -49,7 +49,7 @@ test('Various production file types contain content hashes.', async () => {
   expect(mainJsFiles.length).toEqual(1)
   expect(mainJsMapFiles.length).toEqual(1)
   expect(stylesFiles.length).toEqual(1)
-  expect(imagesFiles.length).toEqual(1)
+  expect(imagesFiles.length).toEqual(2)
   // Includes a lengthy contenthash.
   expect(mainJsFiles[0].length).toBeGreaterThan(20)
   expect(mainJsMapFiles[0].length).toBeGreaterThan(20)

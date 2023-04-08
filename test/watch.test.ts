@@ -89,7 +89,7 @@ test('Removed imports are not removed from dist during watch.', async () => {
 
   let imageFiles = listFilesMatching('*.png', dist)
 
-  expect(imageFiles.length).toEqual(1)
+  expect(imageFiles.length).toEqual(2)
 
   // No longer imports image.
   writeFile('index.js', `console.log('empty')`)
@@ -99,7 +99,7 @@ test('Removed imports are not removed from dist during watch.', async () => {
 
   imageFiles = listFilesMatching('*.png', dist)
 
-  expect(imageFiles.length).toEqual(1)
+  expect(imageFiles.length).toEqual(2)
 
   await close()
 })

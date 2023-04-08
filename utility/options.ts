@@ -24,6 +24,7 @@ const defaultOptions: Options = {
   title: 'papua App',
   hasTest: false,
   html: true,
+  icon: true,
 }
 
 // Get the options for this project, either from the filesystem or explicit configuration.

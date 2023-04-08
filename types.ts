@@ -1,4 +1,4 @@
-import { Options } from '@rspack/plugin-html'
+import { Options as HtmlOptions } from '@rspack/plugin-html'
 
 export interface Package {
   name?: string
@@ -47,5 +47,6 @@ export interface Options {
   workbox: Object
   hasTest: boolean
   title: string
-  html: boolean | Options
+  html: boolean | HtmlOptions
+  icon: boolean | string
 }

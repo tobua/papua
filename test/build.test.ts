@@ -206,16 +206,42 @@ test('Files inside the /public folder are copied over to the root.', async () =>
   expect(files).toContain('dist/nested/template.html')
 })
 
-// test('Generates and injects favicons.', async () => {
-//   const { dist } = prepare([packageJson('favicons'), file('index.js', '')])
+test('Generates and injects favicons.', async () => {
+  const { dist } = prepare([packageJson('favicons'), file('index.js', '')])
 
-//   await build()
+  await build(false)
 
-//   expect(existsSync(dist)).toEqual(true)
-//   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-//   const htmlContents = readFile(join(dist, 'index.html'))
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const imageFiles = listFilesMatching('**/*.png', '.')
 
-//   // Favicons are injected.
-//   expect(htmlContents).toContain('assets/favicon.png')
-// })
+  // Favicon is injected.
+  expect(htmlContents).toContain('<link rel="icon" href="logo.png">')
+  // Image is present in output.
+  expect(imageFiles).toContain('dist/logo.png')
+})
+
+test('Favicon can be customized.', async () => {
+  const { dist } = prepare([
+    packageJson('custom-favicon', { papua: { icon: 'nested/hello.png' } }),
+    file('index.js', ''),
+    {
+      name: 'nested/hello.png',
+      copy: 'test/asset/logo.png',
+    },
+  ])
+
+  await build(false)
+
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const imageFiles = listFilesMatching('**/*.png', '.')
+
+  // Nesting is removed, as unnecessary.
+  expect(htmlContents).toContain('<link rel="icon" href="hello.png">')
+  expect(imageFiles).toContain('dist/hello.png')
+})
