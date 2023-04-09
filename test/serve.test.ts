@@ -33,3 +33,17 @@ test('Serve script builds assets in production and serves them on the default po
 
   expect(await check(port, 'localhost')).toEqual(false)
 })
+
+test('Port can be customized.', async () => {
+  prepare([packageJson('serve'), file('index.js', `console.log('serve-script')`)])
+
+  const { url, port, close } = await serve({ port: 1337 })
+
+  expect(port).toBe(1337)
+  expect(url).toEqual(`http://localhost:${port}`)
+  expect(await check(port, 'localhost')).toEqual(true)
+
+  await close()
+
+  expect(await check(port, 'localhost')).toEqual(false)
+})

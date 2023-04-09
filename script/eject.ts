@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, writeFileSync } from 'fs'
+import { existsSync, writeFileSync, cpSync } from 'node:fs'
 import { join } from 'path'
 import prompts from 'prompts'
 import { log, editPackageJson } from '../utility/helper'
@@ -10,9 +10,10 @@ const templates = {
     title: 'HTML Template',
     file: 'index.html',
     handler: (file: string) => {
-      copyFileSync(
+      cpSync(
         join(getPluginBasePath(), 'configuration/template.html'),
-        join(getProjectBasePath(), file)
+        join(getProjectBasePath(), file),
+        { recursive: true }
       )
       log(`Template created in ${join(getProjectBasePath(), file)}`)
 
@@ -31,28 +32,29 @@ const templates = {
         log(`Icon configuration edited in package.json to point to ${file}`)
       }
 
-      copyFileSync(
+      cpSync(
         join(getPluginBasePath(), 'configuration/logo.png'),
-        join(getProjectBasePath(), file)
+        join(getProjectBasePath(), file),
+        { recursive: true }
       )
 
       log(`Icon added in ${join(getProjectBasePath(), file)}`)
     },
   },
-  webpack: {
-    title: 'webpack configuration',
+  rspack: {
+    title: 'rspack configuration',
     handler: () => {
-      const webpackConfigPath = join(getProjectBasePath(), 'webpack.config.js')
-      if (existsSync(webpackConfigPath)) {
-        log(`Configuration already exists in ${webpackConfigPath}`, 'error')
+      const rspackConfigPath = join(getProjectBasePath(), 'rspack.config.js')
+      if (existsSync(rspackConfigPath)) {
+        log(`Configuration already exists in ${rspackConfigPath}`, 'error')
         return
       }
 
       writeFileSync(
-        webpackConfigPath,
-        `// Custom webpack configuration to merge with papua default configuration.
+        rspackConfigPath,
+        `// Custom rspack configuration to merge with papua default configuration.
 export default (configuration, isDevelopment) => ({
-  // Add webpack modifications here.
+  // Add rspack modifications here.
 })
 
 // Optionally edit the resulting configuration after merging.
@@ -62,7 +64,7 @@ export const after = (configuration) => {
 }`
       )
 
-      log(`Configuration created in ${webpackConfigPath}`)
+      log(`Configuration created in ${rspackConfigPath}`)
     },
   },
 }
