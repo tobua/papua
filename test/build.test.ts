@@ -235,13 +235,33 @@ test('Favicon can be customized.', async () => {
 
   await build(false)
 
-  expect(existsSync(dist)).toEqual(true)
-  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
-
   const htmlContents = readFile(join(dist, 'index.html'))
   const imageFiles = listFilesMatching('**/*.png', '.')
 
   // Nesting is removed, as unnecessary.
   expect(htmlContents).toContain('<link rel="icon" href="hello.png">')
   expect(imageFiles).toContain('dist/hello.png')
+})
+
+test('Can import CSS.', async () => {
+  const { dist } = prepare([
+    packageJson('build'),
+    file('index.js', `import './index.css'`),
+    file('index.css', 'body { background: red; }'),
+  ])
+
+  await build(false)
+
+  const htmlContents = readFile(join(dist, 'index.html')) //
+  const cssFileName = listFilesMatching('*.css', dist)[0]
+  const cssContents = contentsForFilesMatching('*.css', dist)[0].contents
+
+  expect(listFilesMatching('*.css', dist).length).toEqual(1)
+  expect(listFilesMatching('*.css.map', dist).length).toEqual(1)
+
+  // Minified in production.
+  expect(cssContents).toContain('background:red')
+  // CSS file injected into HTML template.
+  expect(htmlContents).toContain(`href="${cssFileName}"`)
+  expect(htmlContents).toContain('rel="stylesheet"')
 })

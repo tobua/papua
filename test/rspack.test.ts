@@ -7,12 +7,10 @@ import {
   prepare,
   packageJson,
   file,
-  listFilesMatching,
   contentsForFilesMatching,
-  readFile,
 } from 'jest-fixture'
 import { build } from '../index'
-import { loadWebpackConfig } from '../utility/configuration'
+import { loadRspackConfig } from '../utility/configuration'
 import { refresh } from '../utility/helper'
 
 registerVitest(beforeEach, afterEach, vi)
@@ -21,9 +19,10 @@ const [fixturePath] = environment('webpack')
 
 beforeEach(refresh)
 
-const webpackConfig = {
+const rspackConfig = {
   __esModule: true,
   default: {},
+  after: undefined, // Property required, as virtual mock fails otherwise.
 }
 
 test('Can disable html template.', async () => {
@@ -66,6 +65,46 @@ console.log('index')`
   expect(jsContents[0].contents).toContain('"index"')
   expect(jsContents[0].contents).toContain('"absolute"')
   expect(jsContents[0].contents).toContain('"relative"')
+})
+
+test('User can add their own rspack configuration file.', async () => {
+  // Virtual mock, so that file doesn't necessarly have to exist.
+  vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
+
+  const loaderPluginMergeStructure = [packageJson('loader-plugin-merge'), file('index.js', '')]
+
+  prepare(loaderPluginMergeStructure, fixturePath)
+
+  // Mocking import manually, as filesystem import is cached and filechanges not reflected.
+  rspackConfig.default = {}
+
+  const [initialConfigurations] = await loadRspackConfig(true)
+
+  if (!initialConfigurations) {
+    return
+  }
+
+  expect(initialConfigurations[0].builtins?.emotion).toBeUndefined()
+
+  prepare(loaderPluginMergeStructure, fixturePath)
+
+  // Reset previous imports/mocks.
+  rspackConfig.default = {
+    builtins: {
+      emotion: true,
+    },
+  }
+
+  const [configurations] = await loadRspackConfig(true)
+
+  if (!configurations) {
+    return
+  }
+
+  expect(configurations.length).toBe(1)
+  expect(configurations[0].builtins?.emotion).toBe(true)
+
+  vi.resetModules() // Make sure mock doesn't affect other test suites.
 })
 
 // test('Multiple builds with different output locations.', async () => {

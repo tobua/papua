@@ -343,24 +343,3 @@ test('Creates cypress.json with project default properties.', async () => {
 //   expect(contents.defaultCommandTimeout).toEqual(6000)
 //   expect(contents.firefoxGcInterval.runMode).toEqual(2)
 // })
-
-// test('webpack babel configuration can be extended in package.json.', () => {
-//   prepare([
-//     packageJson('webpack-babel', {
-//       papua: {
-//         babel: {
-//           presets: ['@babel/whatever'],
-//           plugins: ['@emotion'],
-//         },
-//       },
-//     }),
-//   ])
-
-//   const configuration = rspack(true)
-
-//   expect(configuration.module.rules[0].use.options).toBeDefined()
-//   expect(configuration.module.rules[0].use.options.plugins).toEqual(['@emotion'])
-//   expect(configuration.module.rules[0].use.options.presets).toContain('@babel/whatever')
-//   // Additional presets are merged with existing one's.
-//   expect(configuration.module.rules[0].use.options.presets).toContain('@babel/env')
-// })

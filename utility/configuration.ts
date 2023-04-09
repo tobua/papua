@@ -1,6 +1,5 @@
 import { accessSync, existsSync, constants, readFileSync, writeFileSync, unlinkSync } from 'fs'
 import { join } from 'path'
-// import merge from 'deepmerge'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
@@ -10,9 +9,6 @@ import { jsconfig } from '../configuration/jsconfig.js'
 import { packageJson } from '../configuration/package'
 import { gitignore } from '../configuration/gitignore'
 import rspackConfig from '../configuration/rspack'
-// import webpackConfig from '../configuration/webpack'
-// import { webpackServer } from '../configuration/webpack-server'
-// import { html } from '../configuration/webpack-html'
 import { log, isPlugin, getConfigurationFilePath, deepForEach } from './helper'
 import { options } from './options'
 import { getProjectBasePath, getWorkspacePaths } from './path'
@@ -22,11 +18,8 @@ type UserConfiguration = RspackOptions & { after?: Function }
 const createSingleRspackConfiguration = (
   baseConfiguration: RspackOptions,
   userConfiguration: UserConfiguration,
-  afterMergeConfiguration
+  afterMergeConfiguration: Function
 ) => {
-  // let configuration = webpackConfig(development)
-  // configuration.devServer = webpackServer()
-
   // With clone plugins etc. (non-serializable properties) will be gone.
   let configuration = merge(baseConfiguration, userConfiguration, { clone: false })
 
@@ -46,20 +39,20 @@ const createSingleRspackConfiguration = (
     }
   }
 
-  return configuration as unknown as MultiRspackOptions
+  return configuration as unknown as RspackOptions
 }
 
-// const createMultipleWebpackConfigurations = (
-//   userConfigurations,
-//   development,
-//   afterMergeConfiguration
-// ) => {
-//   const configurations = userConfigurations.map((userConfiguration, index) =>
-//     createSingleWebpackConfiguration(userConfiguration, development, afterMergeConfiguration, index)
-//   )
+const createMultipleWebpackConfigurations = (
+  baseConfiguration: RspackOptions,
+  userConfigurations: UserConfiguration[],
+  afterMergeConfiguration: Function
+) => {
+  const configurations = userConfigurations.map((userConfiguration) =>
+    createSingleRspackConfiguration(baseConfiguration, userConfiguration, afterMergeConfiguration)
+  )
 
-//   return configurations
-// }
+  return configurations
+}
 
 export const loadRspackConfig = async (development: boolean) => {
   let userConfiguration: UserConfiguration & { default?: any } = {}
@@ -95,20 +88,23 @@ export const loadRspackConfig = async (development: boolean) => {
     userConfiguration = userConfiguration(baseConfiguration, development)
   }
 
-  // TODO array configurations
-  // if (!Array.isArray(userConfiguration)) {
-  const configuration = createSingleRspackConfiguration(
-    baseConfiguration,
-    userConfiguration,
-    afterMergeConfiguration
-  )
-  // } else {
-  //   configuration = createMultipleWebpackConfigurations(
-  //     userConfiguration,
-  //     development,
-  //     afterMergeConfiguration
-  //   )
-  // }
+  let configuration: MultiRspackOptions
+
+  if (!Array.isArray(userConfiguration)) {
+    configuration = [
+      createSingleRspackConfiguration(
+        baseConfiguration,
+        userConfiguration,
+        afterMergeConfiguration
+      ),
+    ]
+  } else {
+    configuration = createMultipleWebpackConfigurations(
+      baseConfiguration,
+      userConfiguration,
+      afterMergeConfiguration
+    )
+  }
 
   const devServerConfiguration = null
 
