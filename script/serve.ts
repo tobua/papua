@@ -10,6 +10,7 @@ import { options } from '../utility/options'
 import build from './build'
 import { getProjectBasePath } from '../utility/path'
 import { getCliInputs } from '../utility/input'
+import { ServeConfig } from '../types'
 
 const addLeadingSlash = (path: string) => {
   if (path.startsWith('/')) {
@@ -40,14 +41,14 @@ export default async (inputs = {}) => {
     rimraf.sync('.temp')
   }
 
-  let configuration = {
+  let configuration: ServeConfig = {
     public: options().output,
     // Rewrites for SPA
     rewrites: [{ source: '/**', destination: '/index.html' }],
   }
 
   if (publicPath) {
-    configuration.redirects = [{ source: '/', destination: publicPath }]
+    configuration.redirects = [{ source: '/', destination: publicPath, type: 301 }]
     configuration.rewrites = [
       {
         source: `${publicPath}/**`,
@@ -61,12 +62,17 @@ export default async (inputs = {}) => {
   }
 
   const server = http.createServer((request, response) => handler(request, response, configuration))
+  const url = `http://localhost:${port}${publicPath}`
 
-  server.listen(port, () => {
-    log(`Serving /${configuration.public} from localhost:${port}${publicPath}`)
+  return new Promise<{ close: Function; port: number; url: string }>((done) => {
+    server.listen(port, () => {
+      log(`Serving /${configuration.public} from ${url}`)
 
-    if (open) {
-      openBrowser(`http://localhost:${port}${publicPath}`)
-    }
+      if (open) {
+        openBrowser(url)
+      }
+
+      done({ close: () => server.close(), port, url })
+    })
   })
 }

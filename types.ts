@@ -1,5 +1,36 @@
 import { Options as HtmlOptions } from '@rspack/plugin-html'
 
+interface Rewrite {
+  source: string
+  destination: string
+}
+
+interface Redirect extends Rewrite {
+  type: number
+}
+
+interface Header {
+  source: string
+  headers: Array<{
+    key: string
+    value: string
+  }>
+}
+// NOTE types not exported by serve-handler.
+export interface ServeConfig {
+  public?: string | undefined
+  cleanUrls?: boolean | string[] | undefined
+  rewrites?: Rewrite[] | undefined
+  redirects?: Redirect[] | undefined
+  headers?: Header[] | undefined
+  directoryListing?: boolean | string[] | undefined
+  unlisted?: string[] | undefined
+  trailingSlash?: boolean | undefined
+  renderSingle?: boolean | undefined
+  symlinks?: boolean | undefined
+  etag?: boolean | undefined
+}
+
 export interface Package {
   name?: string
   version?: string
@@ -49,4 +80,5 @@ export interface Options {
   title: string
   html: boolean | HtmlOptions
   icon: boolean | string
+  serve?: ServeConfig
 }

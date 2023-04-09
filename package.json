@@ -96,6 +96,7 @@
     "configuration"
   ],
   "devDependencies": {
+    "@types/serve-handler": "^6.1.1",
     "cypress": "^12.9.0",
     "jest-fixture": "^4.0.2",
     "padua": "^1.2.2",
