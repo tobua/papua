@@ -4,11 +4,12 @@ import { Configuration } from 'webpack-dev-server'
 import { options } from '../utility/options.js'
 
 const removeLeadingSlash = (path: string) => path.replace(/^\/*/, '')
+const isTest = process.env.NODE_ENV === 'test'
 
 export const devServer = (port = 3000, headless = false) => {
   const baseConfiguration = {
     port,
-    open: !headless && process.env.NODE_ENV !== 'test',
+    open: !headless && !isTest,
     host: 'localhost',
     // Redirect all routes to index.html (useful with router).
     historyApiFallback: true,
@@ -19,7 +20,7 @@ export const devServer = (port = 3000, headless = false) => {
   } as Configuration
 
   if (options().publicPath) {
-    baseConfiguration.open = removeLeadingSlash(options().publicPath) || '/'
+    baseConfiguration.open = !isTest && (removeLeadingSlash(options().publicPath) || '/')
     // Leading and trailing slashes required.
     // Leading slash for bundle and trailing for assets.
     const publicPathWithSlashes = join('/', options().publicPath, '/')

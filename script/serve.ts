@@ -1,7 +1,7 @@
 import { join } from 'path'
 import http from 'http'
 import openBrowser from 'open'
-import rimraf from 'rimraf'
+import { rimrafSync } from 'rimraf'
 import fsExtra from 'fs-extra'
 import handler from 'serve-handler'
 import merge from 'deepmerge'
@@ -31,14 +31,14 @@ export default async (inputs = {}) => {
   const publicPath = options().publicPath ? addLeadingSlash(options().publicPath) : ''
 
   log('Building...')
-  rimraf.sync(join(getProjectBasePath(), options().output))
+  rimrafSync(join(getProjectBasePath(), options().output))
   await build(false)
 
   // Wrap dist files in public path folder.
   if (publicPath) {
     fsExtra.moveSync(options().output, join('.temp', options().output, options().publicPath))
     fsExtra.moveSync(join('.temp', options().output), join(options().output))
-    rimraf.sync('.temp')
+    rimrafSync('.temp')
   }
 
   let configuration: ServeConfig = {

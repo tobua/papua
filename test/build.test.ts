@@ -10,6 +10,7 @@ import {
   listFilesMatching,
   contentsForFilesMatching,
   readFile,
+  json,
 } from 'jest-fixture'
 import { build } from '../index'
 import { refresh } from '../utility/helper'
@@ -264,4 +265,21 @@ test('Can import CSS.', async () => {
   // CSS file injected into HTML template.
   expect(htmlContents).toContain(`href="${cssFileName}"`)
   expect(htmlContents).toContain('rel="stylesheet"')
+})
+
+test('Can import JSON.', async () => {
+  const { dist } = prepare([
+    packageJson('build'),
+    file(
+      'index.js',
+      `import content from './index.json'; import { hello } from './index.json'; console.log(content, hello)`
+    ),
+    json('index.json', { hello: 'world' }),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('{hello:"world"}')
 })

@@ -3,7 +3,6 @@ import { resolve, join } from 'path'
 import { RspackOptions, Compiler, Plugins } from '@rspack/core'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import { options } from '../utility/options'
-import { htmlPlugin } from './rspack-html'
 import { getProjectBasePath } from '../utility/path'
 
 class PatchTypeScriptHookPlugin {
@@ -19,10 +18,6 @@ const root = (folder: string) => resolve(process.cwd(), folder)
 
 const getPlugins = (development: boolean) => {
   const plugins: Plugins = []
-
-  if (options().html) {
-    plugins.push(htmlPlugin())
-  }
 
   if (!development && options().typescript) {
     plugins.push(new PatchTypeScriptHookPlugin())
@@ -50,10 +45,6 @@ export default (development: boolean) =>
       // To allow absolute imports from root, without tons of ../..
       // and making it easy to copy code and move files around.
       modules: [root('.'), 'node_modules'],
-      // Add TypeScript extensions.
-      // extensions: ['.js', '.jsx', '.ts', '.tsx']
-      //   .filter((extension) => options().typescript || !extension.includes('ts'))
-      //   .concat('.json', '.mjs', '.wasm'),
     },
     module: {
       // Matched from bottom to top!

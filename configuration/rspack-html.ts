@@ -30,7 +30,7 @@ const faviconPath = (icon: boolean | string) => {
   return path
 }
 
-export const htmlPlugin = () => {
+export const htmlPlugin = (inputs?: boolean | Options) => {
   const { html, icon } = options()
 
   let template = './node_modules/papua/configuration/template.html'
@@ -55,6 +55,10 @@ export const htmlPlugin = () => {
     htmlOptions = merge(htmlOptions, html, {
       clone: true,
     })
+  }
+
+  if (typeof inputs === 'object') {
+    htmlOptions = merge(htmlOptions, inputs, { clone: true })
   }
 
   return new HtmlRspackPlugin(htmlOptions)

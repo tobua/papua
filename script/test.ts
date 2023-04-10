@@ -52,7 +52,9 @@ export default () => {
 
   if (!hasVitest && !hasCypress) {
     log(
-      `No tests found add tests inside /${options().test} for Jest or inside /cypress for Cypress`,
+      `No tests found add tests inside /${
+        options().test
+      } for Vitest or inside /cypress for Cypress`,
       'warning'
     )
   }

@@ -3,6 +3,7 @@ import { join } from 'path'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
+import { Options } from '@rspack/plugin-html'
 import parse from 'parse-gitignore'
 import { tsconfig } from '../configuration/tsconfig.js'
 import { jsconfig } from '../configuration/jsconfig.js'
@@ -12,23 +13,33 @@ import rspackConfig from '../configuration/rspack'
 import { log, isPlugin, getConfigurationFilePath, deepForEach } from './helper'
 import { options } from './options'
 import { getProjectBasePath, getWorkspacePaths } from './path'
+import { htmlPlugin } from '../configuration/rspack-html'
 
-type UserConfiguration = RspackOptions & { after?: Function }
+type UserConfiguration = RspackOptions & { after?: Function; html?: boolean | Options }
 
 const createSingleRspackConfiguration = (
   baseConfiguration: RspackOptions,
   userConfiguration: UserConfiguration,
-  afterMergeConfiguration: Function
+  afterMergeConfiguration: Function,
+  index = 0
 ) => {
   // With clone plugins etc. (non-serializable properties) will be gone.
   let configuration = merge(baseConfiguration, userConfiguration, { clone: false })
 
   // Allows the user to configure different html templates.
-  // if (userConfiguration.html !== false && (options().html !== false || index > 0)) {
-  //   configuration.plugins.unshift(html(userConfiguration.html || options().html))
-  // }
+  if (index > 0 && userConfiguration.html !== false) {
+    configuration.plugins = [...configuration.plugins, htmlPlugin(userConfiguration.html)]
+  }
 
-  // delete configuration.html
+  if (index === 0 && options().html !== false && userConfiguration.html !== false) {
+    configuration.plugins = [
+      ...configuration.plugins,
+      htmlPlugin(userConfiguration.html || options().html),
+    ]
+  }
+
+  // @ts-ignore
+  delete configuration.html
 
   // Apply user edits.
   if (afterMergeConfiguration) {
@@ -47,8 +58,13 @@ const createMultipleWebpackConfigurations = (
   userConfigurations: UserConfiguration[],
   afterMergeConfiguration: Function
 ) => {
-  const configurations = userConfigurations.map((userConfiguration) =>
-    createSingleRspackConfiguration(baseConfiguration, userConfiguration, afterMergeConfiguration)
+  const configurations = userConfigurations.map((userConfiguration, index) =>
+    createSingleRspackConfiguration(
+      baseConfiguration,
+      userConfiguration,
+      afterMergeConfiguration,
+      index
+    )
   )
 
   return configurations
@@ -120,67 +136,6 @@ export const loadRspackConfig = async (development: boolean) => {
 
   return [configuration, devServerConfiguration]
 }
-
-// Merges the default webpack config with user additions.
-// export const loadWebpackConfig = async (development) => {
-//   let userConfiguration = {}
-//   let afterMergeConfiguration
-//   const userConfigurationPath = join(getProjectBasePath(), 'webpack.config.js')
-//   const windowsFileProtocol = process.platform === 'win32' ? 'file://' : ''
-
-//   try {
-//     // Works with module.exports = {} and export default {}.
-//     // The latter only if type in project is set to ES Modules.
-//     userConfiguration = await import(`${windowsFileProtocol}${userConfigurationPath}`)
-
-//     if (userConfiguration.after && typeof userConfiguration.after === 'function') {
-//       afterMergeConfiguration = userConfiguration.after
-//     }
-
-//     if (userConfiguration.default) {
-//       userConfiguration = userConfiguration.default
-//     }
-//   } catch (error) {
-//     if (existsSync(userConfigurationPath)) {
-//       log(`Failed to import user webpack configuration in ${userConfigurationPath}`, 'warning')
-//     }
-
-//     // Ignore, no user configuration found.
-//   }
-
-//   // User configuration can be a function and will receive the default config and the environment.
-//   if (typeof userConfiguration === 'function') {
-//     userConfiguration = userConfiguration(webpackConfig(development), development)
-//   }
-
-//   let configuration
-
-//   if (!Array.isArray(userConfiguration)) {
-//     configuration = createSingleWebpackConfiguration(
-//       userConfiguration,
-//       development,
-//       afterMergeConfiguration
-//     )
-//   } else {
-//     configuration = createMultipleWebpackConfigurations(
-//       userConfiguration,
-//       development,
-//       afterMergeConfiguration
-//     )
-//   }
-
-//   const devServerConfiguration = Array.isArray(configuration)
-//     ? configuration[0].devServer
-//     : configuration.devServer
-
-//   if (Array.isArray(configuration)) {
-//     configuration.forEach((currentConfiguration) => delete currentConfiguration.devServer)
-//   } else {
-//     delete configuration.devServer
-//   }
-
-//   return [configuration, devServerConfiguration]
-// }
 
 const writeUserAndPackageConfig = (
   filename: string,
@@ -343,18 +298,18 @@ export const writePackageJson = async (postinstall: boolean, workspacePath = '.'
 export const writeConfiguration = async (postinstall = false) => {
   const workspaces = await getWorkspacePaths()
 
-  await Promise.all(
+  return Promise.all(
     workspaces.map(async (workspacePath) => {
       const { packageContents } = await writePackageJson(postinstall, workspacePath)
       // Skip modifying the project in case it's being installed for later programmatic use by a plugin.
       if (postinstall && isPlugin(packageContents)) {
         return null
       }
-      // writeJSConfig(packageContents.papua.jsconfig)
+      writeJSConfig(packageContents.papua.jsconfig)
       writeTSConfig(packageContents.papua.tsconfig)
-      // writeGitIgnore(packageContents.papua.gitignore)
-      // return { packageContents }
-      return null
+      writeGitIgnore(packageContents.papua.gitignore)
+
+      return { packageContents }
     })
   )
 }

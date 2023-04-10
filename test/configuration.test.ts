@@ -273,9 +273,9 @@ test('Creates cypress.json with project default properties.', async () => {
   )
 
   expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
-  // TODO cannot import ESM from CJS
-  // const contents = await import(packageCypressConfigurationPath)
-  // expect(contents.chromeWebSecurity).toEqual(false)
+
+  const contents = (await import(packageCypressConfigurationPath))?.default
+  expect(contents.chromeWebSecurity).toEqual(false)
 })
 
 // test('Root cypress.json will extend package configuration.', () => {

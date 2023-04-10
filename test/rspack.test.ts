@@ -8,7 +8,11 @@ import {
   packageJson,
   file,
   contentsForFilesMatching,
+  readFile,
+  listFilesMatching,
 } from 'jest-fixture'
+import { Compiler, RspackOptions, MultiCompilerOptions } from '@rspack/core'
+import { Options } from '@rspack/plugin-html'
 import { build } from '../index'
 import { loadRspackConfig } from '../utility/configuration'
 import { refresh } from '../utility/helper'
@@ -19,7 +23,14 @@ const [fixturePath] = environment('webpack')
 
 beforeEach(refresh)
 
-const rspackConfig = {
+type HtmlRspackOptions = RspackOptions & { html?: boolean | Options }
+type MultiHtmlRspackOptions = ReadonlyArray<HtmlRspackOptions> & MultiCompilerOptions
+
+const rspackConfig: {
+  __esModule: boolean
+  default: HtmlRspackOptions | MultiHtmlRspackOptions
+  after: Function | undefined
+} = {
   __esModule: true,
   default: {},
   after: undefined, // Property required, as virtual mock fails otherwise.
@@ -107,184 +118,188 @@ test('User can add their own rspack configuration file.', async () => {
   vi.resetModules() // Make sure mock doesn't affect other test suites.
 })
 
-// test('Multiple builds with different output locations.', async () => {
-//   // Virtual mock, so that file doesn't necessarly have to exist.
-//   jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
-//     virtual: true,
-//   })
+test('Multiple builds with different output locations.', async () => {
+  vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
 
-//   webpackConfig.default = [
-//     {
-//       output: {
-//         path: join(fixturePath, 'web/dist'),
-//       },
-//     },
-//     {
-//       entry: {
-//         extension: {
-//           import: 'extension.js',
-//         },
-//       },
-//       html: false,
-//       output: {
-//         path: join(fixturePath, 'extension/dist'),
-//       },
-//     },
-//     {
-//       entry: {
-//         blog: {
-//           import: 'blog.js',
-//         },
-//       },
-//       output: {
-//         path: join(fixturePath, 'blog/dist'),
-//         publicPath: 'our/blog/',
-//       },
-//     },
-//   ]
+  rspackConfig.default = [
+    {
+      output: {
+        path: join(fixturePath, 'web/dist'),
+      },
+    },
+    {
+      entry: {
+        extension: {
+          import: 'extension.js',
+        },
+      },
+      html: false,
+      output: {
+        path: join(fixturePath, 'extension/dist'),
+      },
+    },
+    {
+      entry: {
+        blog: {
+          import: 'blog.js',
+        },
+      },
+      html: {
+        publicPath: 'our/blog/',
+      },
+      output: {
+        path: join(fixturePath, 'blog/dist'),
+        publicPath: 'our/blog/',
+      },
+    },
+  ]
 
-//   prepare([
-//     packageJson('multiple-builds', {
-//       papua: {
-//         entry: 'web.js',
-//       },
-//     }),
-//     file('web.js', `console.log('web')`),
-//     file('extension.js', `console.log('extension')`),
-//     file('blog.js', `import logo from 'logo.png'; console.log('blog', logo)`),
-//     {
-//       name: 'logo.png',
-//       copy: 'test/asset/logo.png',
-//     },
-//   ])
+  prepare([
+    packageJson('multiple-builds', {
+      papua: {
+        entry: 'web.js',
+      },
+    }),
+    file('web.js', `console.log('web')`),
+    file('extension.js', `console.log('extension')`),
+    file('blog.js', `import logo from 'logo.load.png'; console.log('blog', logo)`),
+    {
+      name: 'logo.load.png',
+      copy: 'test/asset/logo.png',
+    },
+  ])
 
-//   await build()
+  await build(false)
 
-//   const distFolderWeb = join(fixturePath, 'web/dist')
-//   const distFolderExtension = join(fixturePath, 'extension/dist')
-//   const distFolderBlog = join(fixturePath, 'blog/dist')
+  const distFolderWeb = join(fixturePath, 'web/dist')
+  const distFolderExtension = join(fixturePath, 'extension/dist')
+  const distFolderBlog = join(fixturePath, 'blog/dist')
 
-//   expect(existsSync(distFolderWeb)).toEqual(true)
-//   expect(existsSync(distFolderExtension)).toEqual(true)
-//   expect(existsSync(distFolderBlog)).toEqual(true)
-//   expect(existsSync(join(distFolderWeb, 'index.html'))).toEqual(true)
-//   expect(existsSync(join(distFolderExtension, 'index.html'))).toEqual(false)
-//   expect(existsSync(join(distFolderBlog, 'index.html'))).toEqual(true)
+  expect(existsSync(distFolderWeb)).toEqual(true)
+  expect(existsSync(distFolderExtension)).toEqual(true)
+  expect(existsSync(distFolderBlog)).toEqual(true)
+  expect(existsSync(join(distFolderWeb, 'index.html'))).toEqual(true)
+  expect(existsSync(join(distFolderExtension, 'index.html'))).toEqual(false)
+  expect(existsSync(join(distFolderBlog, 'index.html'))).toEqual(true)
 
-//   const htmlContents = readFile(join(distFolderBlog, 'index.html'))
-//   const jsContents = contentsForFilesMatching('*.js', distFolderBlog)
-//   const imageFiles = listFilesMatching('*.png', distFolderBlog)
+  const htmlContents = readFile(join(distFolderBlog, 'index.html'))
+  const jsContents = contentsForFilesMatching('*.js', distFolderBlog)
+  const imageFiles = listFilesMatching('*.png', distFolderBlog)
 
-//   // Check public path.
-//   expect(htmlContents).toContain(`src="our/blog/${jsContents[0].name}"`)
-//   expect(jsContents[0].contents).toContain(`"our/blog/${imageFiles[0]}"`)
-// })
+  // Check public path.
+  expect(htmlContents).toContain(`src="our/blog/${jsContents[0].name}"`)
+  expect(jsContents[0].contents).toContain(`"${imageFiles[0]}"`)
+  expect(jsContents[0].contents).toContain(`"our/blog/"`)
 
-// test('User can add loaders and plugins.', async () => {
-//   // Virtual mock, so that file doesn't necessarly have to exist.
-//   jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
-//     virtual: true,
-//   })
+  vi.resetModules()
+})
 
-//   const loaderPluginMergeStructure = [packageJson('loader-plugin-merge'), file('index.js', '')]
+test('User can add loaders and plugins.', async () => {
+  vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
 
-//   prepare(loaderPluginMergeStructure, fixturePath)
+  const loaderPluginMergeStructure = [packageJson('loader-plugin-merge'), file('index.js', '')]
 
-//   // Mocking import manually, as filesystem import is cached and filechanges not reflected.
-//   webpackConfig.default = {}
+  prepare(loaderPluginMergeStructure, fixturePath)
 
-//   const [initialConfiguration] = await loadWebpackConfig(true)
+  // Mocking import manually, as filesystem import is cached and filechanges not reflected.
+  rspackConfig.default = {}
 
-//   const initialPluginCount = initialConfiguration.plugins.length
-//   const initialRulesCount = initialConfiguration.module.rules.length
+  const [initialConfiguration] = (await loadRspackConfig(true))[0] as RspackOptions[]
 
-//   prepare(loaderPluginMergeStructure, fixturePath)
+  const initialPluginCount = initialConfiguration.plugins?.length
+  const initialRulesCount = initialConfiguration.module?.rules?.length
 
-//   // Reset previous imports/mocks.
-//   webpackConfig.default = {
-//     module: {
-//       rules: [
-//         {
-//           test: /\.svg$/,
-//           loader: 'my-loader',
-//         },
-//       ],
-//     },
-//     plugins: [() => {}],
-//   }
+  prepare(loaderPluginMergeStructure, fixturePath)
 
-//   const [configuration] = await loadWebpackConfig(true)
+  // Reset previous imports/mocks.
+  rspackConfig.default = {
+    module: {
+      rules: [
+        {
+          test: /\.svg$/,
+          use: {
+            loader: 'my-loader',
+          },
+        },
+      ],
+    },
+    plugins: [() => {}],
+  }
 
-//   const pluginCount = configuration.plugins.length
-//   const rulesCount = configuration.module.rules.length
+  const [configuration] = (await loadRspackConfig(true))[0] as RspackOptions[]
 
-//   // New plugin and loader is present.
-//   expect(pluginCount - 1).toEqual(initialPluginCount)
-//   expect(rulesCount - 1).toEqual(initialRulesCount)
-// })
+  const pluginCount = configuration.plugins?.length ?? 0
+  const rulesCount = configuration.module?.rules?.length ?? 0
 
-// test('Custom plugins and loaders can be used.', async () => {
-//   // Virtual mock, so that file doesn't necessarly have to exist.
-//   jest.doMock(join(fixturePath, 'webpack.config.js'), () => webpackConfig, {
-//     virtual: true,
-//   })
+  // New plugin and loader is present.
+  expect(pluginCount - 1).toEqual(initialPluginCount)
+  expect(rulesCount - 1).toEqual(initialRulesCount)
 
-//   const newContents = 'empty now'
+  vi.resetModules()
+})
 
-//   const customLoaderPluginStructure = [
-//     packageJson('custom-loader-and-plugin', { type: 'module' }),
-//     file('index.js', `import icon from 'icon.svg'; console.log(icon)`),
-//     file('icon.svg', 'iconista'),
-//     file(
-//       'loader.js',
-//       `export default function MyLoader(content) {
-//   // This will be the return value of the import.
-//   return \`export default '${newContents}'\`
-// }`
-//     ),
-//   ]
+test('Custom plugins and loaders can be used.', async () => {
+  vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
 
-//   const { dist } = prepare(customLoaderPluginStructure, fixturePath)
+  const newContents = 'empty now'
 
-//   const pluginMock = jest.fn()
+  // TODO plugin import by rspack/core fails when using ESM and type="module" (worked in webpack)...
+  const customLoaderPluginStructure = [
+    packageJson('custom-loader-and-plugin'),
+    file('index.js', `import icon from 'icon.fancy'; console.log(icon)`),
+    file('icon.fancy', 'iconista'),
+    file(
+      'loader.js',
+      `module.exports = function MyLoader(content) {
+  // This will be the return value of the import.
+  return \`export default '${newContents}'\`
+}`
+    ),
+  ]
 
-//   class MyPlugin {
-//     // eslint-disable-next-line class-methods-use-this
-//     apply(compiler) {
-//       compiler.hooks.run.tap('my-plugin', pluginMock)
-//     }
-//   }
+  const { dist } = prepare(customLoaderPluginStructure, fixturePath)
 
-//   webpackConfig.after = (configuration) => {
-//     configuration.module.rules.splice(1, 1)
-//     return configuration
-//   }
+  const pluginMock = vi.fn()
 
-//   // Reset previous imports/mocks.
-//   webpackConfig.default = {
-//     module: {
-//       rules: [
-//         {
-//           test: /\.svg$/,
-//           use: {
-//             loader: join(fixturePath, 'loader.js'),
-//           },
-//         },
-//       ],
-//     },
-//     plugins: [new MyPlugin()],
-//   }
+  class MyPlugin {
+    // eslint-disable-next-line class-methods-use-this
+    apply(compiler: Compiler) {
+      compiler.hooks.run.tap('my-plugin', pluginMock)
+    }
+  }
 
-//   await build()
+  rspackConfig.after = (configuration) => {
+    configuration.module.rules.splice(1, 1)
+    return configuration
+  }
 
-//   expect(existsSync(dist)).toEqual(true)
+  // Reset previous imports/mocks.
+  rspackConfig.default = {
+    module: {
+      rules: [
+        {
+          test: /\.fancy$/,
+          use: {
+            loader: join(fixturePath, 'loader.js'),
+          },
+        },
+      ],
+    },
+    plugins: [new MyPlugin()],
+  }
 
-//   // Plugin hook was called.
-//   expect(pluginMock).toHaveBeenCalled()
+  await build(false)
 
-//   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  expect(existsSync(dist)).toEqual(true)
 
-//   expect(mainJsContents).toContain(newContents)
+  // Plugin hook was called.
+  expect(pluginMock).toHaveBeenCalled()
 
-//   delete webpackConfig.after
-// })
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain(newContents)
+
+  delete rspackConfig.after
+
+  vi.resetModules()
+})
