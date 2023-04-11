@@ -1,5 +1,18 @@
 import merge from 'deepmerge'
+import { NormalizedEntry } from '../types'
 import { options } from '../utility/options'
+
+const getEntries = (entry: NormalizedEntry) => {
+  let entries: string[]
+
+  if (!Array.isArray(entry)) {
+    entries = Object.values(entry).reduce((current, result) => result.concat(current), [])
+  } else {
+    entries = entry
+  }
+
+  return entries
+}
 
 export const tsconfig = (tsconfigUserOverrides = {}) => {
   let userTSConfig = {
@@ -15,7 +28,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
       baseUrl: '../../..',
       lib: ['esnext', 'dom'],
     },
-    files: options().entry.map((entry) => `../../../${entry}`),
+    files: getEntries(options().entry).map((entry) => `../../../${entry}`),
     exclude: [`../../../${options().output}`],
     include: ['./global.d.ts'],
   }

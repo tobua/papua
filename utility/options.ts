@@ -1,10 +1,10 @@
-import { join } from 'path'
+import { join, relative } from 'path'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import glob from 'fast-glob'
 import merge from 'deepmerge'
 import { log, cache } from './helper'
 import { getProjectBasePath } from './path'
-import { Options, Package } from '../types'
+import { Entry, NormalizedEntry, Options, Package } from '../types'
 
 const emptyFileTemplate = `// This is the entry file for your application.
 // If you want to use TypeScript rename it to index.ts
@@ -20,11 +20,84 @@ const defaultOptions: Options = {
   test: 'test',
   entry: [],
   publicPath: '',
-  workbox: {},
+  workbox: { swSrc: undefined },
   title: 'papua App',
   hasTest: false,
   html: true,
   icon: true,
+  hash: true,
+}
+
+const normalizePaths = (paths: string[] | string) => {
+  let result = paths as string[]
+
+  if (typeof paths === 'string') {
+    result = [paths]
+  }
+
+  result = result.map((path) => relative(getProjectBasePath(), path))
+
+  // Remove duplicates.
+  result = [...new Set(result)]
+
+  return result
+}
+
+const getEntry = (entry: Entry): NormalizedEntry => {
+  if (typeof entry === 'string' || (Array.isArray(entry) && entry.length > 0)) {
+    return normalizePaths(entry)
+  }
+
+  if (typeof entry === 'object' && Object.keys(entry).length > 0) {
+    Object.entries(entry).forEach(([key, currentEntry]) => {
+      entry[key] = normalizePaths(currentEntry)
+    })
+
+    return entry as NormalizedEntry
+  }
+
+  const defaultEntries = []
+
+  // Look for default entries found in file system.
+  ;['index', 'src/index'].forEach((currentEntry) =>
+    ['js', 'ts', 'jsx', 'tsx'].forEach((extension) => {
+      const entryFilePath = `./${currentEntry}.${extension}`
+
+      if (existsSync(join(getProjectBasePath(), entryFilePath))) {
+        defaultEntries.push(entryFilePath)
+      }
+    })
+  )
+
+  return normalizePaths(defaultEntries)
+}
+
+const analyzeEntries = (entry: NormalizedEntry) => {
+  let entries: string[]
+
+  if (!Array.isArray(entry)) {
+    entries = Object.values(entry).reduce((current, result) => result.concat(current), [])
+  } else {
+    entries = entry
+  }
+
+  const features = { javascript: false, typescript: false, react: false }
+
+  entries.forEach((currentEntry) => {
+    if (/\.tsx?$/.test(currentEntry)) {
+      features.typescript = true
+    }
+
+    if (/\.jsx?$/.test(currentEntry)) {
+      features.javascript = true
+    }
+
+    if (/\.[tj]sx$/.test(currentEntry)) {
+      features.react = true
+    }
+  })
+
+  return features
 }
 
 // Get the options for this project, either from the filesystem or explicit configuration.
@@ -42,50 +115,15 @@ export const options = cache(() => {
   if (typeof packageContents.papua === 'object') {
     // Include project specific overrides
     result = merge(result, packageContents.papua, { clone: false })
-
-    if (typeof result.entry !== 'string' && !Array.isArray(result.entry)) {
-      log(`Invalid 'entry' option provided`, 'error')
-    }
-
-    if (typeof result.entry === 'string') {
-      result.entry = [result.entry]
-    }
   }
 
-  // Add default includes found in file system.
-  ;['index', 'src/index'].forEach((entry) =>
-    ['js', 'ts', 'jsx', 'tsx'].forEach((extension) => {
-      const entryFilePath = `./${entry}.${extension}`
+  result.entry = getEntry(result.entry)
+  const features = analyzeEntries(result.entry)
 
-      if (existsSync(join(getProjectBasePath(), entryFilePath))) {
-        result.entry.push(entryFilePath)
-      }
-    })
-  )
-
-  let hasJS = false
-  let hasTS = false
-
-  result.entry.forEach((entry) => {
-    if (/\.tsx?$/.test(entry)) {
-      result.typescript = true
-      hasTS = true
-    }
-
-    if (/\.jsx?$/.test(entry)) {
-      hasJS = true
-    }
-
-    if (/\.[tj]sx$/.test(entry)) {
-      result.react = true
-    }
-  })
-
-  // Remove duplicates.
-  result.entry = [...new Set(result.entry)]
+  result.typescript = features.typescript
 
   // Warn if TS and JS mixed (should still work though).
-  if (hasJS && hasTS) {
+  if (features.javascript && features.typescript) {
     log(
       'Both JavaScript and TypeScript entries found, we recommend to only use one language per project',
       'warning'
@@ -99,13 +137,13 @@ export const options = cache(() => {
     Object.keys(packageContents.devDependencies || {}).includes('react')
 
   // JSX also works with .js extension and will also be enabled if react dependency is found.
-  if (reactInstalled) {
-    result.react = true
-  } else if (result.react && !reactInstalled) {
+  result.react = reactInstalled || features.react
+
+  if (result.react && !reactInstalled) {
     log(`Using JSX but React isn't installed`, 'warning')
   }
 
-  if (result.entry.length === 0) {
+  if (Array.isArray(result.entry) && result.entry.length === 0) {
     const entryFile = `./index.${result.react ? 'jsx' : 'js'}`
     const entryFilePath = join(getProjectBasePath(), entryFile)
 
@@ -113,7 +151,7 @@ export const options = cache(() => {
 
     log(`No entry file found, created one in ${entryFilePath}`)
 
-    result.entry = [entryFile]
+    result.entry = normalizePaths(entryFile)
   }
 
   const testFiles = glob.sync([`${result.test}/**.test.?s*`], {

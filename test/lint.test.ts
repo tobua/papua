@@ -87,6 +87,7 @@ console.log(first, second)`
   expect(initialIndexJs).not.toContain('\n')
   expect(formattedIndexJs).toContain('\n')
 
+  // NOTE might be failing due to debug statements...
   expect(consoleLogMock.mock.calls.length).toEqual(5)
 
   // ESLint

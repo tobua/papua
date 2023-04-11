@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, readFileSync } from 'fs'
+import { cpSync, existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { test, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
@@ -18,7 +18,6 @@ import {
   writePackageJson,
   writeConfiguration,
 } from '../utility/configuration'
-// import rspack from '../configuration/rspack'
 import { refresh } from '../utility/helper'
 import { createConfigurationDirectory } from './utility/create-configuration-directory'
 
@@ -27,6 +26,10 @@ registerVitest(beforeEach, afterEach, vi)
 const [fixturePath] = environment('configuration')
 
 beforeEach(refresh)
+
+afterEach(() => {
+  vi.resetModules()
+})
 
 test('Adds necessary package json properties.', async () => {
   prepare([packageJson('simple')])
@@ -116,7 +119,7 @@ test('Updates old package json properties.', async () => {
   pkg = readFile('package.json')
 
   expect(pkg.engines.node).toEqual('>= 16')
-  // expect(pkg.engines.test).toEqual('hello')
+  expect(pkg.engines.test).toEqual('hello')
   expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.cjs')
 })
 
@@ -259,87 +262,105 @@ test('Generates proper gitignore for typescript.', () => {
   )
 })
 
-test('Creates cypress.json with project default properties.', async () => {
+test('Creates cypress.config.js with project default properties.', async () => {
   prepare([packageJson('cypress')])
 
   const packageCypressConfigurationPath = join(
     fixturePath,
     'node_modules/papua/configuration/cypress.config.js'
   )
-  createConfigurationDirectory(fixturePath)
-  copyFileSync(
+  cpSync(
     join(process.cwd(), './../../../configuration/cypress.config.js'),
-    join(process.cwd(), './node_modules/papua/configuration/cypress.config.js')
+    join(process.cwd(), './node_modules/papua/configuration/cypress.config.js'),
+    { recursive: true }
   )
 
   expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
 
-  const contents = (await import(packageCypressConfigurationPath))?.default
+  const { default: contents } = (await vi.importActual(packageCypressConfigurationPath)) as any
   expect(contents.chromeWebSecurity).toEqual(false)
 })
 
-// test('Root cypress.json will extend package configuration.', () => {
-//   prepare([
-//     packageJson('cypress'),
-//     json('cypress.json', {
-//       chromeWebSecurity: true,
-//       firefoxGcInterval: {
-//         runMode: 1,
-//       },
-//     }),
-//   ])
+const createCypressConfigFileContents = (
+  configuration: string
+) => `import { defineConfig } from 'cypress'
 
-//   const userCypressConfigurationPath = join(fixturePath, 'cypress.json')
-//   const packageCypressConfigurationPath = join(
-//     fixturePath,
-//     'node_modules/papua/configuration/cypress.json'
-//   )
-//   createConfigurationDirectory(fixturePath)
-//   writeFile('node_modules/papua/configuration/cypress.json', {})
+export default defineConfig(${configuration})`
 
-//   const userContentsBefore = readFile(userCypressConfigurationPath)
+test('Root cypress.config.js will extend package configuration.', async () => {
+  prepare([
+    packageJson('cypress'),
+    file(
+      'cypress.config.js',
+      createCypressConfigFileContents(`{
+        chromeWebSecurity: true,
+        firefoxGcInterval: {
+          runMode: 1,
+        },
+      }`)
+    ),
+  ])
 
-//   configureCypress()
+  const packageCypressConfigurationPath = join(
+    fixturePath,
+    'node_modules/papua/configuration/cypress.config.js'
+  )
 
-//   expect(existsSync(userCypressConfigurationPath)).toEqual(true)
-//   expect(readFile(userCypressConfigurationPath)).toEqual(userContentsBefore)
-//   expect(existsSync(packageCypressConfigurationPath)).toEqual(true)
-//   const contents = readFile(packageCypressConfigurationPath)
-//   expect(contents.chromeWebSecurity).toEqual(true)
-//   expect(contents.firefoxGcInterval.runMode).toEqual(1)
-// })
+  cpSync(
+    join(process.cwd(), '../../../configuration/cypress.config.js'),
+    packageCypressConfigurationPath,
+    {
+      recursive: true,
+    }
+  )
 
-// test('package.json cypress configuration will override cypress.json.', () => {
-//   prepare([
-//     packageJson('cypress', {
-//       papua: {
-//         cypress: {
-//           defaultCommandTimeout: 6000,
-//           firefoxGcInterval: {
-//             runMode: 2,
-//           },
-//         },
-//       },
-//     }),
-//     json('cypress.json', {
-//       chromeWebSecurity: true,
-//       firefoxGcInterval: {
-//         runMode: 1,
-//       },
-//     }),
-//   ])
+  const { default: configurationContents } = (await vi.importActual(
+    packageCypressConfigurationPath
+  )) as any
 
-//   const packageCypressConfigurationPath = join(
-//     fixturePath,
-//     'node_modules/papua/configuration/cypress.json'
-//   )
-//   createConfigurationDirectory(fixturePath)
-//   writeFile('node_modules/papua/configuration/cypress.json', {})
+  expect(configurationContents.chromeWebSecurity).toEqual(true)
+  expect(configurationContents.firefoxGcInterval.runMode).toEqual(1)
+})
 
-//   configureCypress()
+test('package.json cypress configuration will override cypress.config.js.', async () => {
+  prepare([
+    packageJson('cypress', {
+      papua: {
+        cypress: {
+          defaultCommandTimeout: 6000,
+          firefoxGcInterval: {
+            runMode: 2,
+          },
+        },
+      },
+    }),
+    file(
+      'cypress.config.js',
+      createCypressConfigFileContents(`{
+      chromeWebSecurity: true,
+      firefoxGcInterval: {
+        runMode: 1,
+      },
+    }`)
+    ),
+  ])
 
-//   const contents = readFile(packageCypressConfigurationPath)
-//   expect(contents.chromeWebSecurity).toEqual(true)
-//   expect(contents.defaultCommandTimeout).toEqual(6000)
-//   expect(contents.firefoxGcInterval.runMode).toEqual(2)
-// })
+  const packageCypressConfigurationPath = join(
+    fixturePath,
+    'node_modules/papua/configuration/cypress.config.js'
+  )
+
+  cpSync(
+    join(process.cwd(), '../../../configuration/cypress.config.js'),
+    packageCypressConfigurationPath,
+    {
+      recursive: true,
+    }
+  )
+
+  const { default: contents } = (await vi.importActual(packageCypressConfigurationPath)) as any
+
+  expect(contents.chromeWebSecurity).toEqual(true)
+  expect(contents.defaultCommandTimeout).toEqual(6000)
+  expect(contents.firefoxGcInterval.runMode).toEqual(2)
+})

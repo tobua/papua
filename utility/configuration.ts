@@ -1,4 +1,12 @@
-import { accessSync, existsSync, constants, readFileSync, writeFileSync, unlinkSync } from 'fs'
+import {
+  accessSync,
+  existsSync,
+  constants,
+  readFileSync,
+  writeFileSync,
+  unlinkSync,
+  symlinkSync,
+} from 'fs'
 import { join } from 'path'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
@@ -262,6 +270,20 @@ export const removePropertiesToUpdate = (pkg) => {
   }
 }
 
+const installLocalDependencies = (dependencies: { [key: string]: string }) => {
+  if (!dependencies || typeof dependencies !== 'object' || Object.keys(dependencies).length === 0) {
+    return
+  }
+
+  Object.entries(dependencies).forEach(([name, folder]) => {
+    const absolutePath = join(getProjectBasePath(), folder)
+    const targetPath = join(getProjectBasePath(), 'node_modules', name)
+    if (existsSync(absolutePath) && !existsSync(targetPath)) {
+      symlinkSync(absolutePath, targetPath)
+    }
+  })
+}
+
 export const writePackageJson = async (postinstall: boolean, workspacePath = '.') => {
   const packageJsonPath = join(getProjectBasePath(), workspacePath, './package.json')
 
@@ -308,6 +330,7 @@ export const writeConfiguration = async (postinstall = false) => {
       writeJSConfig(packageContents.papua.jsconfig)
       writeTSConfig(packageContents.papua.tsconfig)
       writeGitIgnore(packageContents.papua.gitignore)
+      installLocalDependencies(packageContents.localDependencies)
 
       return { packageContents }
     })

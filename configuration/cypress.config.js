@@ -2,32 +2,45 @@ import { existsSync, readFileSync } from 'fs'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { defineConfig } from 'cypress'
 import merge from 'deepmerge'
+import { join } from 'path'
 
-const importFileContents = async (fileName, readableName) => {
-  let result = {}
-  const filePath = `./../../../${fileName}`
+const importFileIfExists = async (path, readableName, warn = false) => {
+  let result
 
-  if (existsSync(filePath)) {
+  if (existsSync(path)) {
     try {
-      if (filePath.endsWith('.json')) {
+      if (path.endsWith('.json')) {
         // Dynamic import would either require assert which fails on older node versions
         // or throws ERR_UNKNOWN_FILE_EXTENSION due to JSON on older < 16.15 node.
-        result = JSON.parse(readFileSync(filePath))
+        result = JSON.parse(readFileSync(path))
       } else {
-        result = await import(filePath)
+        result = await import(path)
       }
     } catch (error) {
-      console.log(error)
-      console.warn(`Failed to read ${readableName} from ${filePath}.`)
+      if (warn) {
+        console.log(error)
+        console.warn(`Failed to read ${readableName} from ${path}.`)
+      }
     }
   }
 
   // Normalize CJS and ESM.
-  if (typeof result === 'object' && typeof result.default !== 'undefined') {
+  if (result && typeof result === 'object' && typeof result.default !== 'undefined') {
     result = result.default
   }
 
   return result
+}
+
+const importFileContents = async (fileName, readableName) => {
+  const filePath = `./../../../${fileName}`
+  const rootFilePath = join(process.cwd(), fileName)
+
+  return (
+    (await importFileIfExists(filePath, readableName, true)) ||
+    (await importFileIfExists(rootFilePath, readableName)) ||
+    {}
+  )
 }
 
 const userConfig = await importFileContents('cypress.config.js', 'user cypress config')
@@ -55,7 +68,6 @@ const defaults = {
   },
 }
 
-let result = merge(defaults, packageJsonConfig, { clone: false })
-result = merge(result, userConfig, { clone: false })
-
-export default defineConfig(result)
+export default defineConfig(
+  merge(merge(defaults, userConfig, { clone: true }), packageJsonConfig, { clone: true })
+)

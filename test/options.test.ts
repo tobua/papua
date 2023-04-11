@@ -16,7 +16,7 @@ test('Options set correctly for simple project.', () => {
 
   expect(result.typescript).toEqual(false)
   expect(result.react).toEqual(false)
-  expect(result.entry).toEqual(['./index.js'])
+  expect(result.entry).toEqual(['index.js'])
   expect(result.title).toEqual('simple App')
 })
 
@@ -27,7 +27,7 @@ test('Proper options for TS project.', () => {
 
   expect(result.typescript).toEqual(true)
   expect(result.react).toEqual(false)
-  expect(result.entry).toEqual(['./index.ts'])
+  expect(result.entry).toEqual(['index.ts'])
 })
 
 test('Custom entry is used.', () => {
@@ -45,7 +45,7 @@ test('Custom entry is used.', () => {
 
   expect(result.typescript).toEqual(false)
   expect(result.react).toEqual(false)
-  expect(result.entry).toEqual(['./another.js'])
+  expect(result.entry).toEqual(['another.js'])
   expect(result.title).toEqual('My-App')
 })
 

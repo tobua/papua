@@ -54,3 +54,29 @@ test('Various production file types contain content hashes.', async () => {
   expect(mainJsFiles[0].length).toBeGreaterThan(20)
   expect(mainJsMapFiles[0].length).toBeGreaterThan(20)
 })
+
+test('Hashing in production can be disabled.', async () => {
+  const { dist } = prepare([
+    packageJson('hash-disabled', { papua: { hash: false } }),
+    file(
+      'index.js',
+      `import './styles.css';
+    import './logo.load.png';
+    
+    console.log('test')`
+    ),
+    file('styles.css', 'p { color: red; }'),
+    {
+      name: 'logo.load.png',
+      copy: 'test/asset/logo.png',
+    },
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*', dist)
+
+  expect(files).toContain('main.js')
+  expect(files).toContain('main.css')
+  expect(files).toContain('logo.load.png')
+})

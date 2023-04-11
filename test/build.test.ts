@@ -14,6 +14,7 @@ import {
 } from 'jest-fixture'
 import { build } from '../index'
 import { refresh } from '../utility/helper'
+import { writeConfiguration } from '../utility/configuration'
 
 registerVitest(beforeEach, afterEach, vi)
 
@@ -120,7 +121,7 @@ test('Deep public path applied properly in bundle.', async () => {
     // Proper path to main bundle.
     expect(htmlContents).toContain(`src="${path}/${mainJsName}"`)
     // Proper path to logo, public path programmatically added only once.
-    expect(mainJsContents).toContain(`"${path}"`)
+    expect(mainJsContents).toContain(`"${path}/"`)
     expect(mainJsContents).toContain(`"${pngName}"`)
   }
 })
@@ -186,7 +187,7 @@ test('Defined environment variables are resolved.', async () => {
 
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
 
-  expect(mainJsContents).toContain(`"${path}"`)
+  expect(mainJsContents).toContain(`"${path}/"`)
 })
 
 test('Files inside the /public folder are copied over to the root.', async () => {
@@ -282,4 +283,155 @@ test('Can import JSON.', async () => {
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
 
   expect(mainJsContents).toContain('{hello:"world"}')
+})
+
+test('Service worker is built and injected with appropriate plugin if present.', async () => {
+  const { dist } = prepare([
+    packageJson('build'),
+    file('index.js', 'console.log("hey")'),
+    file('service-worker.js', 'console.log("worker")'),
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*.js', dist)
+
+  // TODO workbox plugin not yet supported.
+  expect(files.length).toBe(1)
+})
+
+test('Installs listed localDependencies.', async () => {
+  const { dist } = prepare([
+    packageJson('local-dependencies', {
+      localDependencies: {
+        somethang: '../somethang',
+        anotherthang: './some/another-thang',
+      },
+    }),
+    json('../somethang/package.json', {
+      name: 'somethang',
+      main: './index.js',
+    }),
+    file('../somethang/index.js', 'export default () => "somethang"'),
+    json('some/another-thang/package.json', {
+      name: 'anotherthang',
+      main: './index.js',
+    }),
+    file('some/another-thang/index.js', 'export default () => "anotherthang"'),
+    // Ensure node_modules exist (which is the case on postinstall).
+    json('node_modules/installed/package.json', { name: 'installed' }),
+    // Imports symlinked modules.
+    file(
+      'index.js',
+      `import somethang from 'somethang'; import anotherthang from 'anotherthang'; console.log(somethang, anotherthang)`
+    ),
+  ])
+
+  await writeConfiguration(false)
+  await writeConfiguration(false) // Can be run multiple times.
+
+  const files = listFilesMatching('**/*', '.')
+  const somethangIndexContents = readFile('node_modules/somethang/index.js')
+
+  expect(files).toContain('node_modules/somethang/package.json')
+  expect(files).toContain('node_modules/anotherthang/index.js')
+  expect(somethangIndexContents).toContain('"somethang"')
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('"anotherthang"')
+  expect(mainJsContents).toContain('"somethang"')
+})
+
+test('Supports multiple entry files.', async () => {
+  const { dist } = prepare([
+    packageJson('entry-array', { papua: { entry: ['./index.js', './another.js'] } }),
+    file('index.js', 'console.log("index")'),
+    file('another.js', 'console.log("another")'),
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*.js', dist)
+
+  // Multiple entry files merged into single bundle.
+  expect(files.length).toBe(1)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('"index"')
+  expect(mainJsContents).toContain('"another"')
+})
+
+test('Supports multiple entry chunks.', async () => {
+  const { dist } = prepare([
+    packageJson('entry-array', {
+      papua: { entry: { main: './index.js', another: './another.js' } },
+    }),
+    file('index.js', 'console.log("index")'),
+    file('another.js', 'console.log("another")'),
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*.js', dist)
+
+  // Multiple entry files merged into single bundle.
+  expect(files.length).toBe(2)
+
+  const mainJsContents = contentsForFilesMatching('main.*.js', dist)[0].contents
+  const anotherJsContents = contentsForFilesMatching('another.*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('"index"')
+  expect(mainJsContents).not.toContain('"another"')
+
+  expect(anotherJsContents).not.toContain('"index"')
+  expect(anotherJsContents).toContain('"another"')
+})
+
+test('Entries are normalized and filtered.', async () => {
+  const { dist } = prepare([
+    packageJson('entry-array', {
+      papua: { entry: ['./index.js', 'index.js', join(process.cwd(), 'index.js')] },
+    }),
+    file('index.js', 'console.log("index")'),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  // NOTE rspack also handles this, normalizing and removing duplicates theoretically not necessary.
+  expect((mainJsContents.match(/"index"/g) || []).length).toBe(1)
+})
+
+test('Can render React JSX.', async () => {
+  const { dist } = prepare([
+    packageJson('jsx', { dependencies: { react: 'latest' } }),
+    file('index.jsx', 'export default () => <p>hey</p>'),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('createElement')
+  expect(mainJsContents).not.toContain('<p>')
+})
+
+test('Can render React without JSX entry.', async () => {
+  const { dist } = prepare([
+    packageJson('jsx', { dependencies: { react: 'latest' } }),
+    file('index.js', `import 'component.jsx'`),
+    file('component.jsx', 'export default () => <p>hey</p>'),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('createElement')
+  expect(mainJsContents).not.toContain('<p>')
 })

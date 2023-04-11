@@ -1,4 +1,5 @@
 import { Options as HtmlOptions } from '@rspack/plugin-html'
+import type { WebpackInjectManifestOptions } from 'workbox-build'
 
 interface Rewrite {
   source: string
@@ -38,6 +39,7 @@ export interface Package {
   dependencies?: Object
   devDependencies?: Object
   peerDependencies?: Object
+  localDependencies?: Object
   scripts?: {
     start?: string
     build?: string
@@ -57,28 +59,21 @@ export interface Package {
   }
 }
 
-// TODO types for user facing options??
-// export interface Options {
-//   test: false | string
-//   entry: string[]
-//   output: string
-//   pkg: Package
-//   tsconfig?: Object
-//   gitignore?: string[]
-//   hash: string
-// }
+export type Entry = string | string[] | { [key: string]: string | string[] }
+export type NormalizedEntry = string[] | { [key: string]: string[] }
 
 export interface Options {
   output: string
   react: boolean
-  entry: string[]
+  entry: NormalizedEntry
   typescript: boolean
   test: false | string
   publicPath: string
-  workbox: Object
+  workbox: WebpackInjectManifestOptions
   hasTest: boolean
   title: string
   html: boolean | HtmlOptions
   icon: boolean | string
+  hash: boolean
   serve?: ServeConfig
 }

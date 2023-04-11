@@ -6,23 +6,23 @@ import { log } from '../utility/helper'
 import { getProjectBasePath } from '../utility/path'
 import { options } from '../utility/options'
 
-const installCypressIfMissing = () => {
-  if (existsSync(join(getProjectBasePath(), 'node_modules/cypress'))) {
+const installIfMissing = (dependency: string) => {
+  if (existsSync(join(getProjectBasePath(), `node_modules/${dependency}`))) {
     return
   }
 
-  // Check if cypress package is installed globally (from is-installed-globally).
-  if (existsSync(join(realpathSync(globalDirs.npm.packages), 'cypress'))) {
+  // Check if package is installed globally (from is-installed-globally).
+  if (existsSync(join(realpathSync(globalDirs.npm.packages), dependency))) {
     return
   }
 
-  if (existsSync(join(globalDirs.yarn.packages, 'cypress'))) {
+  if (existsSync(join(globalDirs.yarn.packages, dependency))) {
     return
   }
 
-  log('Cypress not found installing it now...')
+  log(`${dependency} not found installing it now with "npm install ${dependency}"...`)
 
-  execSync(`npm install cypress`, { stdio: 'inherit' })
+  execSync(`npm install ${dependency}`, { stdio: 'inherit' })
 }
 
 export const hasCypressTests = () => existsSync(join(getProjectBasePath(), 'cypress'))
@@ -38,13 +38,14 @@ export default () => {
   const additionalArguments = process.argv.slice(3)
 
   if (hasVitest) {
+    installIfMissing('vitest')
     log('running vitest...')
     execSync(`vitest run ${additionalArguments.join(' ')}`, { stdio: 'inherit' })
   }
 
   if (hasCypress) {
+    installIfMissing('cypress')
     log('running cypress...')
-    installCypressIfMissing()
     execSync(`cypress open --config-file ./node_modules/papua/configuration/cypress.config.js`, {
       stdio: 'inherit',
     })
