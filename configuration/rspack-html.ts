@@ -1,6 +1,7 @@
 import { join } from 'path'
 import { existsSync } from 'fs'
-import HtmlRspackPlugin, { Options } from '@rspack/plugin-html'
+// eslint-disable-next-line import/no-named-default
+import { default as HtmlPlugin, Options } from '@rspack/plugin-html'
 import merge from 'deepmerge'
 import { options } from '../utility/options'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'
@@ -61,5 +62,5 @@ export const htmlPlugin = (inputs?: boolean | Options) => {
     htmlOptions = merge(htmlOptions, inputs, { clone: true })
   }
 
-  return new HtmlRspackPlugin(htmlOptions)
+  return new HtmlPlugin(htmlOptions)
 }
