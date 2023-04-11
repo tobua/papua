@@ -63,10 +63,9 @@ export const htmlPlugin = (inputs?: boolean | Options) => {
   }
 
   // @ts-ignore
-  if (typeof HtmlPlugin === 'object' && HtmlPlugin.default) {
-    // @ts-ignore
-    HtmlPlugin = HtmlPlugin.default
-  }
+  const hasDefaultExport = typeof HtmlPlugin === 'object' && HtmlPlugin.default
+  // @ts-ignore
+  const HtmlRspackPlugin = hasDefaultExport ? HtmlPlugin.default : HtmlPlugin
 
-  return new HtmlPlugin(htmlOptions)
+  return new HtmlRspackPlugin(htmlOptions)
 }
