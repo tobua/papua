@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm install --legacy-peer-deps
+      - run: npm run build
       - name: 🧪 Test
         run: npm test -- --forceExit
       - uses: tobua/release-npm-action@v1

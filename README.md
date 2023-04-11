@@ -4,7 +4,9 @@
 
 # papua
 
-Setup and build modern web applications.
+Setup and build modern web applications with **Rspack**, **TypeScript**, **React**, **ESLint**, **Prettier** and **Vitest** all without the need for any configuration at all.
+
+⚠️ With Version 4.0.0 the plugin switches from **webpack** to **Rspack**, while largely compatible some migration might be necessary, see details in the [v4.0.0 Release](https://github.com/tobua/papua/releases/tag/v4.0.0).
 
 ## Installation
 
@@ -57,27 +59,19 @@ Builds the application for production. A production build will only be created i
 
 Lints the code and prints errors.
 
-### `npx papua update`
-
-Checks if there are updates to any npm packages and automatically updates them.
-
 ### `npx papua serve [--port <number>] [--open]`
 
 Builds the production assets and serves them. Can be configured through the `papua.serve` property in `package.json` see [Serve](https://github.com/vercel/serve-handler#options) for available options.
 
 Arguments: `--open` open in default browser, `--port 5000` specify a port.
 
-### `npx papua snow`
-
-Alternative to the `webpack-dev-server` in `papua start` much faster but still experimental. Likely to replace start once it's stable. Will eject an `index.html` with necessary imports pointing to your entry points. Import to entrypoints from `index.html` always point to the JavaScript file that will be generated during the build `*.js`. It will automatically find the matching `jsx`, `ts` or `tsx` file.
-
-### `npx papua eject [--template <html | icon | webpack>] [--file <name>]`
+### `npx papua eject [--template <html | icon | rspack>] [--file <name>]`
 
 Eject certain files to allow for more fine grained configuration. If no default values are provided the plugin will prompt for values. The following templates are available:
 
 - HTML (index.html)
 - Icon (logo.png)
-- Webpack (webpack.config.js - file cannot be set)
+- Rspack (rspack.config.js - file cannot be set)
 
 ### `npx papua watch`
 
@@ -99,16 +93,21 @@ a `papua` property to your `package.json` with the following options available:
     // Does the project include React, automatically detected from extension (jsx, tsx).
     react: true,
     // Folder for tests with jest, default /test, test configuration enabled if `**.test.[jt]s*` files found inside.
-    test: 'markup',
+    test: 'spec',
     // What's the name of the entry file, automatically adds [src/]?index.[jt]sx? file if available.
     entry: 'another.tsx',
     entry: ['another.js', 'several.jsx'],
+    entry: { main: './index.js', separate: ['./chunk.js', 'second.js'] },
     // Public path where the files are served from, default '.'.
     publicPath: '/app',
-    // Polyfills to include, defaults below.
-    polyfills: ['core-js/stable', 'regenerator-runtime/runtime'],
+    // App title used in the template.
+    title: 'My papua App',
     // Configure html file to be generated.
-    html: { template: 'page.html', filename: 'modern.html', excludeChunks: ['polyfills'] }
+    html: { template: 'page.html', filename: 'modern.html' },
+    // Customize favicon.
+    icon: 'my-favicon.ico',
+    // Disable content hashes added to assets in production build.
+    hash: false,
     // Passed to serve-handler in serve script.
     serve: {
       cleanUrls: false
@@ -116,10 +115,6 @@ a `papua` property to your `package.json` with the following options available:
     // Configure cypress front end tests.
     cypress: {
       defaultCommandTimeout: 6000
-    },
-    // Additional babel configuration.
-    babel: {
-      plugins: ['@emotion']
     },
     // Options for workbox-webpack-plugin InjectManifest
     workbox: {
@@ -150,13 +145,13 @@ One of these files will automatically be created extending the default configura
 
 `index.html`
 
-If available papua will look for a HTML template in `index.html` and use a default fallback if none is available. Use the `package.json` → `papua` → `html` option to configure the template to look for and other options passed to `html-webpack-plugin`.
+If available papua will look for a HTML template in `index.html` and use a default fallback if none is available. Use the `package.json` → `papua` → `html` option to configure the template to look for and other options passed to `@rspack/plugin-html`.
 
-### webpack
+### Rspack
 
-`webpack.config.js`
+`rspack.config.js`
 
-A webpack configuration file can be added in the root. This configuration will then be merged with the default configuration. If a function is exported the default configuration will be received with the mode as a parameter.
+A rspack configuration file can be added in the root. This configuration will then be merged with the default configuration. If a function is exported the default configuration will be received with the mode as a parameter.
 
 ```js
 import { join } from 'path'
