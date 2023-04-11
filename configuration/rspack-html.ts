@@ -62,5 +62,11 @@ export const htmlPlugin = (inputs?: boolean | Options) => {
     htmlOptions = merge(htmlOptions, inputs, { clone: true })
   }
 
+  // @ts-ignore
+  if (typeof HtmlPlugin === 'object' && HtmlPlugin.default) {
+    // @ts-ignore
+    HtmlPlugin = HtmlPlugin.default
+  }
+
   return new HtmlPlugin(htmlOptions)
 }

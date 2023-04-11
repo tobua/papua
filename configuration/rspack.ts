@@ -114,6 +114,7 @@ export default (development: boolean): RspackOptions => ({
     // NOTE builtins html plugin has issues with publicPath.
     define: {
       'process.env.PUBLIC_URL': JSON.stringify(getPublicPath()),
+      'process.env.NODE_ENV': development ? '"development"' : '"production"',
     },
     copy: {
       patterns: existsSync(join(process.cwd(), 'public')) ? [{ from: 'public' }] : [],
