@@ -1,8 +1,8 @@
+import { cpSync } from 'fs'
 import { join } from 'path'
 import http from 'http'
 import openBrowser from 'open'
 import { rimrafSync } from 'rimraf'
-import fsExtra from 'fs-extra'
 import handler from 'serve-handler'
 import merge from 'deepmerge'
 import { log, freePort } from '../utility/helper'
@@ -29,16 +29,24 @@ export default async (inputs = {}) => {
     inputs
   )
   const publicPath = options().publicPath ? addLeadingSlash(options().publicPath) : ''
+  const hasPublicPath = publicPath && publicPath !== '/'
 
   log('Building...')
   rimrafSync(join(getProjectBasePath(), options().output))
   await build(false)
 
   // Wrap dist files in public path folder.
-  if (publicPath) {
-    fsExtra.moveSync(options().output, join('.temp', options().output, options().publicPath))
-    fsExtra.moveSync(join('.temp', options().output), join(options().output))
-    rimrafSync('.temp')
+  if (hasPublicPath) {
+    cpSync(join(getProjectBasePath(), options().output), join(getProjectBasePath(), '.temp'), {
+      recursive: true,
+    })
+    rimrafSync(join(getProjectBasePath(), options().output))
+    cpSync(
+      join(getProjectBasePath(), '.temp'),
+      join(getProjectBasePath(), options().output, options().publicPath),
+      { recursive: true }
+    )
+    rimrafSync(join(getProjectBasePath(), '.temp'))
   }
 
   let configuration: ServeConfig = {
@@ -47,7 +55,7 @@ export default async (inputs = {}) => {
     rewrites: [{ source: '/**', destination: '/index.html' }],
   }
 
-  if (publicPath) {
+  if (hasPublicPath) {
     configuration.redirects = [{ source: '/', destination: publicPath, type: 301 }]
     configuration.rewrites = [
       {
