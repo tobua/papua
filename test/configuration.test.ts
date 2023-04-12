@@ -161,7 +161,7 @@ test('Generates jsconfig extending package config.', () => {
 
   // Prettier formatting is applied.
   expect(contents).toEqual(`{
-  "extends": "papua/configuration/jsconfig"
+  "extends": "${join(process.cwd(), 'node_modules/papua/configuration/jsconfig.json')}"
 }
 `)
 
@@ -174,7 +174,9 @@ test('Generates jsconfig extending package config.', () => {
 
   expect(contentsPackage).toEqual(contentsPackageWithOptions)
   expect(contentsWithOptions.compilerOptions.jsx).toEqual('react')
-  expect(contentsWithOptions.extends).toEqual('papua/configuration/jsconfig')
+  expect(contentsWithOptions.extends).toEqual(
+    join(process.cwd(), 'node_modules/papua/configuration/jsconfig.json')
+  )
 })
 
 test('Generates tsconfig extending package config.', () => {
@@ -194,7 +196,7 @@ test('Generates tsconfig extending package config.', () => {
   const contentsPackage = readFile('node_modules/papua/configuration/tsconfig.json')
 
   expect(contents).toEqual(`{
-  "extends": "papua/configuration/tsconfig"
+  "extends": "${join(process.cwd(), 'node_modules/papua/configuration/tsconfig.json')}"
 }
 `)
 
@@ -208,7 +210,9 @@ test('Generates tsconfig extending package config.', () => {
 
   expect(contentsPackage).toEqual(contentsPackageWithOptions)
   expect(contentsWithOptions.compilerOptions.module).toEqual('commonjs')
-  expect(contentsWithOptions.extends).toEqual('papua/configuration/tsconfig')
+  expect(contentsWithOptions.extends).toEqual(
+    join(process.cwd(), 'node_modules/papua/configuration/tsconfig.json')
+  )
 })
 
 test('Fallback to put whole tsconfig into user folder if not writable.', () => {

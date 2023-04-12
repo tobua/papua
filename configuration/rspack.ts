@@ -66,6 +66,24 @@ const getPlugins = (development: boolean) => {
   return plugins
 }
 
+const getRoots = () => {
+  const paths = []
+
+  // To allow absolute imports from root, without tons of ../..
+  // and making it easy to copy code and move files around.
+  if (options().root) {
+    paths.push(root('.'))
+  }
+
+  if (options().localDependencies) {
+    paths.push(join(process.cwd(), 'node_modules'))
+  }
+
+  paths.push('node_modules')
+
+  return paths
+}
+
 const getPublicPath = () => {
   if (options().publicPath) {
     // Require leading slash.
@@ -89,9 +107,7 @@ export default (development: boolean): RspackOptions => ({
   devtool: development ? 'cheap-module-source-map' : 'source-map',
   plugins: getPlugins(development),
   resolve: {
-    // To allow absolute imports from root, without tons of ../..
-    // and making it easy to copy code and move files around.
-    modules: [root('.'), 'node_modules'],
+    modules: getRoots(),
   },
   module: {
     // Matched from bottom to top!

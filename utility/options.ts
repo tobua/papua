@@ -2,7 +2,7 @@ import { join, relative } from 'path'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import glob from 'fast-glob'
 import merge from 'deepmerge'
-import { log, cache } from './helper'
+import { log, cache, hasLocalDependencies } from './helper'
 import { getProjectBasePath } from './path'
 import { Entry, NormalizedEntry, Options, Package } from '../types'
 
@@ -26,6 +26,8 @@ const defaultOptions: Options = {
   html: true,
   icon: true,
   hash: true,
+  root: true,
+  localDependencies: false,
 }
 
 const normalizePaths = (paths: string[] | string) => {
@@ -116,6 +118,8 @@ export const options = cache(() => {
     // Include project specific overrides
     result = merge(result, packageContents.papua, { clone: false })
   }
+
+  result.localDependencies = hasLocalDependencies(packageContents.localDependencies)
 
   result.entry = getEntry(result.entry)
   const features = analyzeEntries(result.entry)

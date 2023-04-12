@@ -108,6 +108,8 @@ a `papua` property to your `package.json` with the following options available:
     icon: 'my-favicon.ico',
     // Disable content hashes added to assets in production build.
     hash: false,
+    // Do not resolve file imports relative to root before modules, e.g. markup/component.js instead of ./markup/component.js.
+    root: false,
     // Passed to serve-handler in serve script.
     serve: {
       cleanUrls: false

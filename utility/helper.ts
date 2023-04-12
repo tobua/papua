@@ -89,3 +89,6 @@ export const deepForEach = (value: object | any[], callback: DeepForEachCallback
     forEachObject(value, callback, path)
   }
 }
+
+export const hasLocalDependencies = (dependencies: { [key: string]: string }) =>
+  dependencies && typeof dependencies === 'object' && Object.keys(dependencies).length > 0

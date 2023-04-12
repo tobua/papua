@@ -18,10 +18,17 @@ import { jsconfig } from '../configuration/jsconfig.js'
 import { packageJson } from '../configuration/package'
 import { gitignore } from '../configuration/gitignore'
 import rspackConfig from '../configuration/rspack'
-import { log, isPlugin, getConfigurationFilePath, deepForEach } from './helper'
+import {
+  log,
+  isPlugin,
+  getConfigurationFilePath,
+  deepForEach,
+  hasLocalDependencies,
+} from './helper'
 import { options } from './options'
 import { getProjectBasePath, getWorkspacePaths } from './path'
 import { htmlPlugin } from '../configuration/rspack-html'
+import { Dependencies } from '../types.js'
 
 type UserConfiguration = RspackOptions & { after?: Function; html?: boolean | Options }
 
@@ -270,8 +277,8 @@ export const removePropertiesToUpdate = (pkg) => {
   }
 }
 
-const installLocalDependencies = (dependencies: { [key: string]: string }) => {
-  if (!dependencies || typeof dependencies !== 'object' || Object.keys(dependencies).length === 0) {
+const installLocalDependencies = (dependencies: Dependencies) => {
+  if (!hasLocalDependencies(dependencies)) {
     return
   }
 

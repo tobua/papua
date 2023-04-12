@@ -32,14 +32,16 @@ export interface ServeConfig {
   etag?: boolean | undefined
 }
 
+export type Dependencies = { [key: string]: string }
+
 export interface Package {
   name?: string
   version?: string
   papua?: Object
-  dependencies?: Object
-  devDependencies?: Object
-  peerDependencies?: Object
-  localDependencies?: Object
+  dependencies?: Dependencies
+  devDependencies?: Dependencies
+  peerDependencies?: Dependencies
+  localDependencies?: Dependencies
   scripts?: {
     start?: string
     build?: string
@@ -75,5 +77,7 @@ export interface Options {
   html: boolean | HtmlOptions
   icon: boolean | string
   hash: boolean
+  root: boolean
   serve?: ServeConfig
+  localDependencies: boolean
 }
