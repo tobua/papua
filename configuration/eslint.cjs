@@ -66,7 +66,7 @@ module.exports = {
     babelOptions: {
       presets: [
         [
-          '@babel/preset-env',
+          '@babel/env',
           {
             targets: {
               node: 'current',

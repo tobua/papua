@@ -53,11 +53,13 @@ const templates = {
       writeFileSync(
         rspackConfigPath,
         `// Custom rspack configuration to merge with papua default configuration.
+/** @type {import('@rspack/core').RspackOptions | (configuration: import('@rspack/core').RspackOptions, isDevelopment: boolean) => import('@rspack/core').RspackOptions} */
 export default (configuration, isDevelopment) => ({
   // Add rspack modifications here.
 })
 
 // Optionally edit the resulting configuration after merging.
+/** @type {(configuration: import('@rspack/core').RspackOptions) => import('@rspack/core').RspackOptions} */
 export const after = (configuration) => {
   // Modify configuration.
   return configuration
