@@ -13,6 +13,8 @@ import lint from '../script/lint'
 import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
 
+process.env.PAPUA_TEST = 'true'
+
 registerVitest(beforeEach, afterEach, vi)
 
 const initialCwd = process.cwd()

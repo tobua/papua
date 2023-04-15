@@ -11,11 +11,13 @@ import {
   readFile,
   listFilesMatching,
 } from 'jest-fixture'
-import { Compiler, RspackOptions, MultiCompilerOptions } from '@rspack/core'
-import { Options } from '@rspack/plugin-html'
+import { Compiler } from '@rspack/core'
+import { createRspackConfig } from './utility/configuration'
 import { build } from '../index'
 import { loadRspackConfig } from '../utility/configuration'
 import { refresh } from '../utility/helper'
+
+process.env.PAPUA_TEST = 'true'
 
 registerVitest(beforeEach, afterEach, vi)
 
@@ -23,18 +25,11 @@ const [fixturePath] = environment('webpack')
 
 beforeEach(refresh)
 
-type HtmlRspackOptions = RspackOptions & { html?: boolean | Options }
-type MultiHtmlRspackOptions = ReadonlyArray<HtmlRspackOptions> & MultiCompilerOptions
+afterEach(() => {
+  vi.resetModules()
+})
 
-const rspackConfig: {
-  __esModule: boolean
-  default: HtmlRspackOptions | MultiHtmlRspackOptions
-  after: Function | undefined
-} = {
-  __esModule: true,
-  default: {},
-  after: undefined, // Property required, as virtual mock fails otherwise.
-}
+const rspackConfig = createRspackConfig()
 
 test('Can disable html template.', async () => {
   const disableHtmlPluginStructure = [
@@ -89,11 +84,7 @@ test('User can add their own rspack configuration file.', async () => {
   // Mocking import manually, as filesystem import is cached and filechanges not reflected.
   rspackConfig.default = {}
 
-  const [initialConfigurations] = await loadRspackConfig(true)
-
-  if (!initialConfigurations) {
-    return
-  }
+  const initialConfigurations = await loadRspackConfig(true)
 
   expect(initialConfigurations[0].builtins?.emotion).toBeUndefined()
 
@@ -106,16 +97,10 @@ test('User can add their own rspack configuration file.', async () => {
     },
   }
 
-  const [configurations] = await loadRspackConfig(true)
-
-  if (!configurations) {
-    return
-  }
+  const configurations = await loadRspackConfig(true)
 
   expect(configurations.length).toBe(1)
   expect(configurations[0].builtins?.emotion).toBe(true)
-
-  vi.resetModules() // Make sure mock doesn't affect other test suites.
 })
 
 test('Multiple builds with different output locations.', async () => {
@@ -190,8 +175,6 @@ test('Multiple builds with different output locations.', async () => {
   expect(htmlContents).toContain(`src="our/blog/${jsContents[0].name}"`)
   expect(jsContents[0].contents).toContain(`"${imageFiles[0]}"`)
   expect(jsContents[0].contents).toContain(`"our/blog/"`)
-
-  vi.resetModules()
 })
 
 test('User can add loaders and plugins.', async () => {
@@ -204,7 +187,7 @@ test('User can add loaders and plugins.', async () => {
   // Mocking import manually, as filesystem import is cached and filechanges not reflected.
   rspackConfig.default = {}
 
-  const [initialConfiguration] = (await loadRspackConfig(true))[0] as RspackOptions[]
+  const [initialConfiguration] = await loadRspackConfig(true)
 
   const initialPluginCount = initialConfiguration.plugins?.length
   const initialRulesCount = initialConfiguration.module?.rules?.length
@@ -226,7 +209,7 @@ test('User can add loaders and plugins.', async () => {
     plugins: [() => {}],
   }
 
-  const [configuration] = (await loadRspackConfig(true))[0] as RspackOptions[]
+  const [configuration] = await loadRspackConfig(true)
 
   const pluginCount = configuration.plugins?.length ?? 0
   const rulesCount = configuration.module?.rules?.length ?? 0
@@ -234,8 +217,6 @@ test('User can add loaders and plugins.', async () => {
   // New plugin and loader is present.
   expect(pluginCount - 1).toEqual(initialPluginCount)
   expect(rulesCount - 1).toEqual(initialRulesCount)
-
-  vi.resetModules()
 })
 
 test('Custom plugins and loaders can be used.', async () => {
@@ -300,6 +281,65 @@ test('Custom plugins and loaders can be used.', async () => {
   expect(mainJsContents).toContain(newContents)
 
   delete rspackConfig.after
+})
 
-  vi.resetModules()
+test('Multiple html files can be generated with multiple configurations.', async () => {
+  // Virtual mock, so that file doesn't necessarly have to exist.
+  vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
+
+  const loaderPluginMergeStructure = [
+    packageJson('multiple-html'),
+    file('first.js', 'console.log("first")'),
+    file('second.js', 'console.log("second")'),
+    file('third.js', 'console.log("third")'),
+  ]
+
+  const { dist } = prepare(loaderPluginMergeStructure, fixturePath)
+
+  // Reset previous imports/mocks.
+  rspackConfig.default = () => [
+    {
+      entry: './first.js',
+      html: false, // Disable default html template.
+      devServer: {
+        open: false,
+      },
+    },
+    {
+      entry: './second.js',
+      html: {
+        filename: 'second.html',
+      },
+    },
+    {
+      entry: './third.js',
+      output: {
+        path: join(fixturePath, 'dist/third'),
+      },
+      html: {
+        filename: 'third.html',
+      },
+    },
+  ]
+  // Required for vitest mocking to work properly.
+  rspackConfig.after = undefined
+
+  const configuration = await loadRspackConfig(true)
+
+  expect(configuration[0].devServer?.open).toBe(false)
+
+  await build(false)
+
+  expect(existsSync(dist)).toBe(true)
+  expect(existsSync(join(dist, 'index.html'))).toBe(false)
+  expect(existsSync(join(dist, 'second.html'))).toBe(true)
+  expect(existsSync(join(dist, 'third/third.html'))).toBe(true)
+
+  const jsFileContents = contentsForFilesMatching('**/*.js', dist)
+
+  expect(jsFileContents.length).toBe(3)
+  // NOTE order probably not guaranteed...
+  expect(jsFileContents[0].contents).toContain('"first"')
+  expect(jsFileContents[1].contents).toContain('"second"')
+  expect(jsFileContents[2].contents).toContain('"third"')
 })

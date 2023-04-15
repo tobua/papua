@@ -21,6 +21,8 @@ import {
 import { refresh } from '../utility/helper'
 import { createConfigurationDirectory } from './utility/create-configuration-directory'
 
+process.env.PAPUA_TEST = 'true'
+
 registerVitest(beforeEach, afterEach, vi)
 
 const [fixturePath] = environment('configuration')
@@ -120,7 +122,7 @@ test('Updates old package json properties.', async () => {
 
   expect(pkg.engines.node).toEqual('>= 16')
   expect(pkg.engines.test).toEqual('hello')
-  expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.cjs')
+  expect(pkg.stylelint.extends).toEqual('./node_modules/papua/configuration/stylelint.cjs')
 })
 
 test('Adds an empty package.json if none can be found.', async () => {

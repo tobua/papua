@@ -1,7 +1,7 @@
 import { rspack } from '@rspack/core'
 import { RspackDevServer, Configuration } from '@rspack/dev-server'
 import merge from 'deepmerge'
-import { startServer, recompiling, logStats, logError } from '../utility/stats'
+import { startServer, recompiling, logStats } from '../utility/stats'
 import { freePort, log } from '../utility/helper'
 import { getCliInputs } from '../utility/input'
 import { loadRspackConfig } from '../utility/configuration'
@@ -16,18 +16,27 @@ export default async (options: Configuration = {}, inputs = {}) => {
     inputs
   )
 
-  const [configuration] = await loadRspackConfig(true)
+  const configuration = await loadRspackConfig(true)
 
   // Webpack-Dev-Server logs hidden through webpack logger.
-  configuration.infrastructureLogging = {
+  configuration[0].infrastructureLogging = {
     level: 'warn',
   }
 
   const compiler = rspack(configuration)
 
-  const devServerConfiguration: Configuration = merge(devServer(port, headless), options, {
-    clone: false,
-  })
+  const devServerConfigurations = configuration.reduce(
+    (result, current) => merge(result, current.devServer ?? {}, { clone: true }),
+    {}
+  )
+
+  const devServerConfiguration: Configuration = merge(
+    merge(devServer(port, headless), devServerConfigurations, { clone: false }),
+    options,
+    {
+      clone: false,
+    }
+  )
 
   // Run webpack with webpack-dev-server.
   compiler.hooks.invalid.tap('invalid', recompiling)
@@ -47,8 +56,6 @@ export default async (options: Configuration = {}, inputs = {}) => {
   const url = `${devServerConfiguration.host}:${devServerConfiguration.port}`
 
   startServer(url)
-
-  // TODO enabled by default, still necessary? attachDoneSignals(server)
 
   try {
     await server.start()

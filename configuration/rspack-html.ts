@@ -5,6 +5,7 @@ import { default as HtmlPlugin, Options } from '@rspack/plugin-html'
 import merge from 'deepmerge'
 import { options } from '../utility/options'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'
+import { isTest } from '../utility/helper'
 
 const faviconPath = (icon: boolean | string) => {
   let path = join(getPluginBasePath(), 'configuration/logo.png')
@@ -36,7 +37,7 @@ export const htmlPlugin = (inputs?: boolean | Options) => {
 
   let template = './node_modules/papua/configuration/template.html'
 
-  if (process.env.NODE_ENV === 'test') {
+  if (isTest()) {
     template = './../../../configuration/template.html'
   }
 

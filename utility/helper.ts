@@ -36,8 +36,6 @@ export const refresh = () => results.clear()
 export const isPlugin = (packageContents: Package) =>
   packageContents.main && packageContents.version
 
-export const isTest = typeof jest !== 'undefined'
-
 export const removeLeadingSlash = (path) => path.replace(/^\/*/, '')
 
 export const freePort = async () => getPort({ port: portNumbers(3000, 3100) })
@@ -92,3 +90,8 @@ export const deepForEach = (value: object | any[], callback: DeepForEachCallback
 
 export const hasLocalDependencies = (dependencies: { [key: string]: string }) =>
   dependencies && typeof dependencies === 'object' && Object.keys(dependencies).length > 0
+
+export const isTest = () =>
+  typeof process !== 'undefined' &&
+  process.env.NODE_ENV === 'test' &&
+  process.env.PAPUA_TEST === 'true'

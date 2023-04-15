@@ -1,0 +1,324 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "JSON schema for package.json files to be used with the papua build tool.",
+  "allOf": [{ "$ref": "https://json.schemastore.org/package.json" }],
+  "properties": {
+    "papua": {
+      "description": "Optional configuration for papua.",
+      "type": "object",
+      "properties": {
+        "output": {
+          "description": "Folder where the bundled assets should be emitted.",
+          "type": "string"
+        },
+        "test": {
+          "type": "string"
+        },
+        "entry": {
+          "description": "Entry point or points to the source code.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "additionalProperties": {
+                "oneOf": [
+                  { "type": "string" },
+                  {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "tsconfig": {
+          "allOf": [{ "$ref": "https://json.schemastore.org/tsconfig.json" }]
+        },
+        "jsconfig": {
+          "allOf": [{ "$ref": "https://json.schemastore.org/jsconfig.json" }]
+        },
+        "publicPath": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "html": {
+          "type": "object",
+          "properties": {
+            "cache": {
+              "type": "boolean",
+              "default": true,
+              "description": "Emit the file only if it was changed."
+            },
+            "chunks": {
+              "oneOf": [
+                { "type": "string", "enum": ["all"] },
+                { "type": "array", "items": { "type": "string" } }
+              ],
+              "description": "List all entries which should be injected"
+            },
+            "chunksSortMode": {
+              "oneOf": [{ "type": "string", "enum": ["auto", "manual"] }],
+              "default": "auto",
+              "description": "Allows to control how chunks should be sorted before they are included to the html."
+            },
+            "excludeChunks": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List all entries which should not be injected"
+            },
+            "favicon": {
+              "oneOf": [{ "type": "boolean", "enum": [false] }, { "type": "string" }],
+              "description": "Path to the favicon icon"
+            },
+            "filename": {
+              "type": "string",
+              "default": "index.html",
+              "description": "The file to write the HTML to."
+            },
+            "publicPath": {
+              "oneOf": [
+                { "type": "string", "description": "The public path" },
+                {
+                  "type": "string",
+                  "enum": ["auto"],
+                  "description": "The public path is set to `auto`"
+                }
+              ],
+              "description": "By default the public path is set to `auto`."
+            },
+            "hash": {
+              "type": "boolean",
+              "description": "If `true` then append a unique `webpack` compilation hash to all included scripts and CSS files. This is useful for cache busting"
+            },
+            "inject": {
+              "oneOf": [
+                { "type": "boolean", "enum": [false], "description": "Do not inject assets" },
+                {
+                  "type": "string",
+                  "enum": ["body", "head"],
+                  "description": "Inject assets into the body or head"
+                },
+                { "type": "boolean", "enum": [true], "description": "Inject all assets" }
+              ],
+              "description": "Inject all assets into the given `template` or `templateContent`."
+            },
+            "scriptLoading": {
+              "type": "string",
+              "enum": ["blocking", "defer", "module"],
+              "default": "defer",
+              "description": "Set up script loading"
+            },
+            "meta": {
+              "oneOf": [
+                { "type": "boolean", "enum": [false], "description": "Do not inject meta tags" },
+                {
+                  "type": "object",
+                  "additionalProperties": {
+                    "oneOf": [
+                      { "type": "string" },
+                      { "type": "boolean" },
+                      {
+                        "type": "object",
+                        "additionalProperties": { "type": "string" }
+                      }
+                    ]
+                  },
+                  "description": "Inject meta tags"
+                }
+              ]
+            },
+            "minify": {
+              "oneOf": [
+                { "type": "string", "enum": ["auto"] },
+                { "type": "boolean" },
+                { "$ref": "#/definitions/MinifyOptions" }
+              ]
+            },
+            "showErrors": { "type": "boolean" },
+            "template": { "type": "string" },
+            "templateContent": {
+              "oneOf": [
+                { "type": "boolean", "enum": [false] },
+                { "type": "string" },
+                { "type": "object", "additionalProperties": true },
+                { "type": "object", "additionalProperties": true, "async": true }
+              ]
+            },
+            "templateCompiler": { "$ref": "#/definitions/TemplateCompiler" },
+            "templateParameters": {
+              "oneOf": [
+                { "type": "boolean", "enum": [false] },
+                { "type": "object", "additionalProperties": true },
+                { "type": "object", "additionalProperties": true, "async": true }
+              ]
+            },
+            "title": { "type": "string" },
+            "xhtml": { "type": "boolean" }
+          }
+        },
+        "icon": {
+          "description": "Path to an icon to inject into any template.",
+          "type": ["string", "boolean"]
+        },
+        "hash": {
+          "type": "boolean",
+          "default": true
+        },
+        "root": {
+          "description": "Should absolute import lookups be resolved from the root of the project first.",
+          "type": "boolean",
+          "default": true
+        },
+        "typescript": {
+          "type": "boolean"
+        },
+        "react": {
+          "type": "boolean"
+        },
+        "cypress": {
+          "description": "Configuration added to default Cypress configuration.",
+          "type": "object"
+        },
+        "workbox": {
+          "description": "Configuration added to workbox-webpack-plugin InjectManifest.",
+          "type": "object"
+        },
+        "serve": {
+          "description": "Configuration passed to serve-handler package in serve script.",
+          "type": "object",
+          "properties": {
+            "public": {
+              "type": ["string", "null"]
+            },
+            "cleanUrls": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "rewrites": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "destination": {
+                    "type": "string"
+                  }
+                },
+                "required": ["source", "destination"]
+              }
+            },
+            "redirects": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "destination": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "number"
+                  }
+                },
+                "required": ["source", "destination", "type"]
+              }
+            },
+            "headers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "headers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["key", "value"]
+                    }
+                  }
+                },
+                "required": ["source", "headers"]
+              }
+            },
+            "directoryListing": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "unlisted": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trailingSlash": {
+              "type": "boolean"
+            },
+            "renderSingle": {
+              "type": "boolean"
+            },
+            "symlinks": {
+              "type": "boolean"
+            },
+            "etag": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "definitions": {
+    "MinifyOptions": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "TemplateCompiler": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

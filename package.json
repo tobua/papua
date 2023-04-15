@@ -98,6 +98,14 @@
     "dist",
     "configuration"
   ],
+  "keywords": [
+    "build",
+    "rspack",
+    "create-react-app",
+    "test",
+    "lint",
+    "configuration"
+  ],
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/serve-handler": "^6.1.1",

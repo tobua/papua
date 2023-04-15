@@ -4,7 +4,7 @@ import { log } from '../utility/helper'
 import { logStats, logError, recompiling } from '../utility/stats'
 
 export default async (development = true) => {
-  const [configuration] = await loadRspackConfig(development)
+  const configuration = await loadRspackConfig(development)
 
   const compiler = rspack(configuration)
 

@@ -17,16 +17,16 @@ Setup and build modern web applications with **Rspack**, **TypeScript**, **React
 npm init now papua
 // Initialize default template in 'my-project' directory.
 npm init now papua ./my-project
-// Initialize TypeScript template in current directory.
-npm init now papua . typescript
+// Initialize JavaScript template in current directory.
+npm init now papua . javascript
 ```
 
 The following [templates](https://github.com/tobua/papua/tree/main/template) are available:
 
-- default (JS + React)
-- typescript (TS + React)
+- default (TS + React)
+- javascript (JS + React)
 - [pwa](https://github.com/tobua/papua/tree/main/template/pwa) (TS + React + Progressive Web App) [Demo](https://papua-pwa.vercel.app)
-- website (TS + React + MobX + Emotion)
+- website (TS + React + MobX + Stitches)
 - serverless (JS + React + Serverless Function)
 
 ```js
@@ -84,6 +84,7 @@ a `papua` property to your `package.json` with the following options available:
 
 ```js
 {
+  "$schema": "https://raw.githubusercontent.com/tobua/papua/main/schema.json",
   "name": "my-app",
   "papua": {
     // Output directory for build files, default 'dist'.

@@ -11,6 +11,8 @@ import {
 import { eject } from '../index'
 import { refresh } from '../utility/helper'
 
+process.env.PAPUA_TEST = 'true'
+
 registerVitest(beforeEach, afterEach, vi)
 
 environment('eject')

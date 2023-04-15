@@ -137,19 +137,7 @@ export const loadRspackConfig = async (development: boolean) => {
     )
   }
 
-  const devServerConfiguration = null
-
-  // const devServerConfiguration = Array.isArray(configuration)
-  //   ? configuration[0].devServer
-  //   : configuration.devServer
-
-  // if (Array.isArray(configuration)) {
-  //   configuration.forEach((currentConfiguration) => delete currentConfiguration.devServer)
-  // } else {
-  //   delete configuration.devServer
-  // }
-
-  return [configuration, devServerConfiguration]
+  return configuration
 }
 
 const writeUserAndPackageConfig = (

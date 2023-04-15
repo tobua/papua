@@ -3,6 +3,8 @@ import { registerVitest, environment, prepare, packageJson, file } from 'jest-fi
 import { options } from '../utility/options'
 import { refresh } from '../utility/helper'
 
+process.env.PAPUA_TEST = 'true'
+
 registerVitest(beforeEach, afterEach, vi)
 
 environment('options')
@@ -71,4 +73,20 @@ test('Cached file is used on second read.', () => {
   // @ts-ignore
   // eslint-disable-next-line no-underscore-dangle
   expect(result.__cached).toBe(true)
+})
+
+test('React JSX enabled even with .js entry file.', () => {
+  prepare([
+    packageJson('jsx-non-entry', {
+      dependencies: {
+        react: 'latest',
+      },
+    }),
+    file('index.js', 'export default () => <p>test</p>'),
+  ])
+
+  const result = options()
+
+  expect(result.typescript).toEqual(false)
+  expect(result.react).toEqual(true)
 })

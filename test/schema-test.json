@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema.json",
+  "name": "schema-test",
+  "description": "Example package to test package.json schema validation.",
+  "version": "1.0.0",
+  "author": "Matthias Giger",
+  "license": "MIT",
+  "papua": {
+    "output": "build",
+    "entry": { "main": "./index.js" },
+    "tsconfig": {
+      "compilerOptions": {
+        "baseUrl": "."
+      }
+    },
+    "html": {
+      "filename": "index.html"
+    },
+    "workbox": {
+      "hello": 1
+    }
+  }
+}
