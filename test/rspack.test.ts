@@ -338,8 +338,14 @@ test('Multiple html files can be generated with multiple configurations.', async
   const jsFileContents = contentsForFilesMatching('**/*.js', dist)
 
   expect(jsFileContents.length).toBe(3)
-  // NOTE order probably not guaranteed...
-  expect(jsFileContents[0].contents).toContain('"first"')
-  expect(jsFileContents[1].contents).toContain('"second"')
-  expect(jsFileContents[2].contents).toContain('"third"')
+
+  const contents = jsFileContents.map((inner) => inner.contents)
+
+  const first = contents.filter((content) => content.includes('"first"'))
+  const second = contents.filter((content) => content.includes('"second"'))
+  const third = contents.filter((content) => content.includes('"third"'))
+
+  expect(first?.length).toBe(1)
+  expect(second?.length).toBe(1)
+  expect(third?.length).toBe(1)
 })
