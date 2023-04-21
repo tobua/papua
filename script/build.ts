@@ -12,7 +12,7 @@ export default async (development: boolean) => {
         process.exit(1)
       }
 
-      logStats(stats, development)
+      logStats(stats, development, compiler)
 
       done(compiler)
     })

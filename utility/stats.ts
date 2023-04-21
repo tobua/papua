@@ -1,17 +1,36 @@
-import { relative } from 'path'
 import chalk from 'chalk'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
 import formatMessages from 'webpack-format-messages'
-import { MultiStats, Stats } from '@rspack/core'
+import { MultiCompiler, MultiStats, Stats } from '@rspack/core'
 import { log } from './helper'
-import { getProjectBasePath } from './path'
 
 export const startServer = (url: string) => {
   log(`Starting server on ${url}...`)
 }
 
-export const logStats = (input: MultiStats, development: boolean) => {
+const getEntries = (compiler: MultiCompiler) => {
+  const entries = []
+
+  compiler.compilers.forEach((innerCompiler) => {
+    const { entry } = innerCompiler.compilation.options
+
+    Object.keys(entry).forEach((entryKey) => {
+      entries.push([
+        entryKey,
+        // Filter out DevServer injections.
+        entry[entryKey].import.filter(
+          (module) =>
+            !module.includes('node_modules/@rspack') && !module.includes('node_modules/webpack')
+        ),
+      ])
+    })
+  })
+
+  return entries
+}
+
+export const logStats = (input: MultiStats, development: boolean, compiler: MultiCompiler) => {
   const multiStats: Stats[] = input.stats ?? [input as unknown as Stats]
   multiStats.forEach((stats) => {
     if (!development) {
@@ -25,13 +44,13 @@ export const logStats = (input: MultiStats, development: boolean) => {
       )
     }
 
-    // TODO includes more files than just entries, previously used compilation.entries no longer available.
-    const entries = stats.compilation
-      .getModules()
-      .filter((module) => !module.resource.includes('node_modules')) // Filter out DevServer injections.
-      .map((module) => relative(getProjectBasePath(), module.resource))
+    const entries = getEntries(compiler)
 
-    console.log(`${chalk.gray('Entry')} ${entries.join(', ')}`)
+    console.log(
+      `${chalk.gray('Entry')} ${entries
+        .map((entry) => `${entry[1].join(', ')} (${entry[0]})`)
+        .join(', ')}`
+    )
 
     const assets = Object.keys(stats.compilation.assets).map((name) => {
       const asset = stats.compilation.assets[name]

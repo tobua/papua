@@ -42,7 +42,7 @@ export default async (options: Configuration = {}, inputs = {}) => {
   compiler.hooks.invalid.tap('invalid', recompiling)
 
   compiler.hooks.done.tap('done', (stats) => {
-    logStats(stats, true)
+    logStats(stats, true, compiler)
   })
 
   let server: RspackDevServer

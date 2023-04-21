@@ -17,7 +17,7 @@ export default async (development = true) => {
       log('Compilation failed during watch', 'error')
     }
 
-    logStats(stats, development)
+    logStats(stats, development, compiler)
   })
 
   return {
