@@ -101,8 +101,8 @@ export default (development: boolean): RspackOptions => ({
     filename: development || !options().hash ? '[name].js' : '[name].[contenthash].js',
     path: join(getProjectBasePath(), options().output),
     publicPath: getPublicPath(),
-    assetModuleFilename:
-      development || !options().hash ? '[name][ext][query]' : '[hash][ext][query]',
+    // Path not required when hash is present, shortens paths.
+    assetModuleFilename: development || !options().hash ? '[path][query]' : '[hash][ext][query]',
   },
   devtool: development ? 'cheap-module-source-map' : 'source-map',
   plugins: getPlugins(development),

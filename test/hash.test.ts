@@ -82,3 +82,27 @@ test('Hashing in production can be disabled.', async () => {
   expect(files).toContain('main.css')
   expect(files).toContain('logo.load.png')
 })
+
+test('Can load images with query parameter.', async () => {
+  const { dist } = prepare([
+    packageJson('hash-query', { papua: { hash: false } }),
+    file(
+      'index.js',
+      `import './nested/logo.load.png?width=300';
+    
+    console.log('test')`
+    ),
+    {
+      name: 'nested/logo.load.png',
+      copy: 'test/asset/logo.png',
+    },
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*', dist)
+
+  expect(files).toContain('main.js')
+  // TODO query param found neither in bundle nor path...
+  expect(files).toContain('nested/logo.load.png')
+})

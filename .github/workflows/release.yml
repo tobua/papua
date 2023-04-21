@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  release:
+  build-test-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,3 +16,10 @@ jobs:
       - uses: tobua/release-npm-action@v1
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install --legacy-peer-deps
+      - name: 🧪 Test
+        run: npm test
