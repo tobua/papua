@@ -7,7 +7,7 @@ import {
   file,
   listFilesMatching,
 } from 'jest-fixture'
-import { build } from '../index'
+import { build, configure } from '../index'
 import { refresh } from '../utility/helper'
 
 process.env.PAPUA_TEST = 'true'
@@ -51,6 +51,8 @@ test('Stats list all generated assets.', async () => {
   })
 
   expect(output).toContain('seconds') // Includes build duration in milliseconds or seconds.
+
+  expect(output).not.toContain('Type check finished')
 })
 
 test('Only actual entry files are listed.', async () => {
@@ -118,4 +120,29 @@ test('Entry chunks and files are listed.', async () => {
   expect(output).not.toContain('(main)')
   expect(output).toContain('first.js, second.js (one)')
   expect(output).toContain('third.js (two)')
+})
+
+test('Message for successful type check when building for production.', async () => {
+  prepare([packageJson('stats-typescript'), file('index.ts', 'console.log("typescript")')])
+
+  configure() // Required for tsconfig.json
+  await build(false)
+
+  const output = consoleLogMock.mock.calls.join('\n')
+
+  expect(output).toContain('Type check finished')
+  expect(output).toContain('index.ts (main)')
+})
+
+test('Message for successful type check also present when errors.', async () => {
+  prepare([packageJson('stats-typescript'), file('index.ts', 'const test: string = 5')])
+
+  configure() // Required for tsconfig.json
+  await build(false)
+
+  const output = consoleLogMock.mock.calls.join('\n')
+
+  expect(output).toContain("'number' is not assignable to type 'string'")
+  expect(output).toContain('Type check finished')
+  expect(output).toContain('index.ts (main)')
 })

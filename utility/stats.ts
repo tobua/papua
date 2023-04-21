@@ -4,6 +4,7 @@ import prettyBytes from 'pretty-bytes'
 import formatMessages from 'webpack-format-messages'
 import { MultiCompiler, MultiStats, Stats } from '@rspack/core'
 import { log } from './helper'
+import { options } from './options'
 
 export const startServer = (url: string) => {
   log(`Starting server on ${url}...`)
@@ -86,6 +87,11 @@ export const logStats = (input: MultiStats, development: boolean, compiler: Mult
         console.log('')
         console.log(error)
       })
+    }
+
+    if (options().typescript && !development) {
+      console.log('')
+      console.log('Type check finished.')
     }
 
     console.log('')
