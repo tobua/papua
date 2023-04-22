@@ -48,6 +48,7 @@ test('Adds necessary package json properties.', async () => {
   expect(pkg.scripts.test).toEqual(undefined)
   expect(Object.keys(pkg.scripts).length).toEqual(1)
   expect(pkg.prettier && pkg.eslintConfig && pkg.stylelint && true).toEqual(true)
+  expect(pkg.$schema).toContain('schema.json')
 })
 
 test('Configures multiple packages in workspaces setup.', async () => {

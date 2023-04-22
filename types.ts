@@ -35,6 +35,7 @@ export interface ServeConfig {
 export type Dependencies = { [key: string]: string }
 
 export interface Package {
+  $schema?: string
   name?: string
   version?: string
   papua?: Object

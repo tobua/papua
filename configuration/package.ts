@@ -3,6 +3,7 @@ import { options } from '../utility/options'
 
 export const packageJson = () => {
   const pkg: Package = {
+    $schema: 'https://raw.githubusercontent.com/tobua/papua/main/schema.json',
     scripts: {
       start: 'papua start',
     },
