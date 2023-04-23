@@ -21,8 +21,7 @@ jobs:
       - run: npm run build
       - name: 🧪 Test
         run: npm test
-      - uses: tobua/release-npm-action@v1
+      - run: npx semantic-release
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        env:
-          NPM_CONFIG_PROVENANCE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
