@@ -148,13 +148,13 @@ One of these files will automatically be created extending the default configura
 
 `index.html`
 
-If available papua will look for a HTML template in `index.html` and use a default fallback if none is available. Use the `package.json` → `papua` → `html` option to configure the template to look for and other options passed to `@rspack/plugin-html`.
+If available papua will look for a HTML template in `index.html` and use a default fallback if none is available. Use the `package.json` → `papua` → `html` option to configure the template to look for and other options passed to `@rspack/plugin-html`. Run `npx papua eject --template html` to place the default template in the root to make your own edits.
 
 ### Rspack
 
 `rspack.config.js`
 
-A rspack configuration file can be added in the root. This configuration will then be merged with the default configuration. If a function is exported the default configuration will be received with the mode as a parameter.
+A rspack configuration file can be added in the root. This configuration will then be merged with the default configuration. If a function is exported the default configuration will be received with the mode as a parameter. Run `npx papua eject --template rspack` to generate an empty `rspack.config.js` file in the project root where the configuration can be edited.
 
 ```js
 import { join } from 'path'

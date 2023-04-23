@@ -10,7 +10,6 @@ jobs:
     permissions:
       id-token: write # Required to mint token for npm package provenance
       contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v3
       - name: 🦺 Install latest npm with npm package provenance feature
