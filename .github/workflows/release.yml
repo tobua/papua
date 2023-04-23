@@ -22,6 +22,6 @@ jobs:
       - name: 🧪 Test
         run: npm test
       - run: npx semantic-release
-        with:
+        env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
