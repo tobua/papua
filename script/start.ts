@@ -23,16 +23,7 @@ export default async (options: Configuration = {}, inputs = {}) => {
     level: 'warn',
   }
 
-  if (configuration.length > 1) {
-    log(
-      `dev-server currently doesn't support multiple configurations (array). Only first will be used`,
-      'warning'
-    )
-  }
-
-  // TODO multiple configurations currently not working, but already fixed on GitHub just not released.
-  // packages/rspack-dev-server/src/server.ts
-  const compiler = rspack(configuration[0])
+  const compiler = rspack(configuration)
 
   const devServerConfigurations = configuration.reduce(
     (result, current) => merge(result, current.devServer ?? {}, { clone: true }),

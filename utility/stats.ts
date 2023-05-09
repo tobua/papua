@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
 import formatMessages from 'webpack-format-messages'
-import { Compiler, MultiCompiler, MultiStats, Stats } from '@rspack/core'
+import { MultiCompiler, MultiStats, Stats } from '@rspack/core'
 import { log } from './helper'
 import { options } from './options'
 
@@ -10,12 +10,10 @@ export const startServer = (url: string) => {
   log(`Starting server on ${url}...`)
 }
 
-const getEntries = (compiler: MultiCompiler | Compiler) => {
+const getEntries = (compiler: MultiCompiler) => {
   const entries = []
-  // TODO Workaround as dev-server currently doesn't work with multiple compilers.
-  const compilers = compiler instanceof MultiCompiler ? compiler.compilers : [compiler]
 
-  compilers.forEach((innerCompiler) => {
+  compiler.compilers.forEach((innerCompiler) => {
     const { entry } = innerCompiler.compilation.options
 
     Object.keys(entry).forEach((entryKey) => {
@@ -36,7 +34,7 @@ const getEntries = (compiler: MultiCompiler | Compiler) => {
 export const logStats = (
   input: MultiStats | Stats,
   development: boolean,
-  compiler: MultiCompiler | Compiler
+  compiler: MultiCompiler
 ) => {
   const multiStats: Stats[] =
     input instanceof MultiStats ? input.stats : [input as unknown as Stats]

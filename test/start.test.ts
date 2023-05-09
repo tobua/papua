@@ -153,8 +153,7 @@ test('devServer can also be configured through rspack.config.js.', async () => {
   expect(await check(port, 'localhost')).toEqual(false)
 })
 
-// TODO multiple configurations in dev-server mode currently not implemented in rspack/dev-server.
-test.skip('rspack.config.js also works with multiple devServer properties that are then merged.', async () => {
+test('rspack.config.js also works with multiple devServer properties that are then merged.', async () => {
   // Virtual mock, so that file doesn't necessarly have to exist.
   vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
 
