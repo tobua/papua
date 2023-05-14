@@ -1,6 +1,7 @@
 import { existsSync } from 'fs'
 import { resolve, join } from 'path'
 import { RspackOptions, Compiler, Plugins } from '@rspack/core'
+import urlJoin from 'url-join'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 // import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
 import { options } from '../utility/options'
@@ -86,9 +87,9 @@ const getRoots = () => {
 
 const getPublicPath = () => {
   if (options().publicPath) {
-    // Require leading slash.
-    const publicPathWithSlashes = join('/', options().publicPath, '/')
-    return publicPathWithSlashes
+    // Require leading and trailing slashes, use url-join for Browser compatible paths.
+    // Double-slashes are never valid, but can result from url-join.
+    return urlJoin('/', options().publicPath, '/').replace('//', '/')
   }
 
   return ''

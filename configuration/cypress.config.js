@@ -37,8 +37,8 @@ const importFileContents = async (fileName, readableName) => {
   const rootFilePath = join(process.cwd(), fileName)
 
   return (
-    (await importFileIfExists(filePath, readableName, true)) ||
     (await importFileIfExists(rootFilePath, readableName)) ||
+    (await importFileIfExists(filePath, readableName, true)) ||
     {}
   )
 }

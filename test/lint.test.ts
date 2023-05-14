@@ -1,4 +1,4 @@
-import { join } from 'path'
+import { join, sep } from 'path'
 import {
   registerVitest,
   environment,
@@ -99,8 +99,8 @@ console.log(first, second)`
   expect(eslintMessages).toContain('no-console')
   expect(eslintMessages).toContain('warning')
   expect(eslintMessages).toContain('error')
-  expect(eslintMessages).toContain('/cli.js')
-  expect(eslintMessages).toContain('/index.js')
+  expect(eslintMessages).toContain(`${sep}cli.js`)
+  expect(eslintMessages).toContain(`${sep}index.js`)
 
   // Stylelint
   const stylelintMessages = consoleLogMock.mock.calls[4][0]

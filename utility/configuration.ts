@@ -274,7 +274,12 @@ const installLocalDependencies = (dependencies: Dependencies) => {
     const absolutePath = join(getProjectBasePath(), folder)
     const targetPath = join(getProjectBasePath(), 'node_modules', name)
     if (existsSync(absolutePath) && !existsSync(targetPath)) {
-      symlinkSync(absolutePath, targetPath)
+      try {
+        symlinkSync(absolutePath, targetPath)
+      } catch (error) {
+        // Symlinks only allowed for administrators on Windows.
+        log(`Failed to create symlink for localDependency ${name}`, 'warning')
+      }
     }
   })
 }

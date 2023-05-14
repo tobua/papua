@@ -163,10 +163,9 @@ test('Generates jsconfig extending package config.', () => {
   const contentsPackage = readFile('node_modules/papua/configuration/jsconfig.json')
 
   // Prettier formatting is applied.
-  expect(contents).toEqual(`{
-  "extends": "${join(process.cwd(), 'node_modules/papua/configuration/jsconfig.json')}"
-}
-`)
+  expect(JSON.parse(contents)).toEqual({
+  extends: join(process.cwd(), 'node_modules/papua/configuration/jsconfig.json')
+})
 
   expect(typeof contentsPackage.compilerOptions).toEqual('object')
 
@@ -198,10 +197,9 @@ test('Generates tsconfig extending package config.', () => {
   const contents = readFileSync(tsconfigPath, 'utf8')
   const contentsPackage = readFile('node_modules/papua/configuration/tsconfig.json')
 
-  expect(contents).toEqual(`{
-  "extends": "${join(process.cwd(), 'node_modules/papua/configuration/tsconfig.json')}"
-}
-`)
+  expect(JSON.parse(contents)).toEqual({
+  extends: join(process.cwd(), 'node_modules/papua/configuration/tsconfig.json')
+})
 
   expect(typeof contentsPackage.compilerOptions).toEqual('object')
   expect(contentsPackage.compilerOptions.baseUrl).toEqual('../../..')

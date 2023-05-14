@@ -79,6 +79,7 @@
     "stylelint": "^15.6.1",
     "stylelint-config-recommended": "^12.0.0",
     "typescript": "^5.0.4",
+    "url-join": "^5.0.0",
     "webpack-dev-server": "^4.15.0",
     "webpack-format-messages": "^3.0.1",
     "workbox-webpack-plugin": "^6.5.4"
@@ -108,11 +109,11 @@
     "configuration"
   ],
   "devDependencies": {
-    "@types/node": "^20.1.1",
+    "@types/node": "^20.1.4",
     "@types/serve-handler": "^6.1.1",
-    "cypress": "^12.11.0",
+    "cypress": "^12.12.0",
     "jest-fixture": "^4.0.2",
-    "padua": "^1.2.2",
+    "padua": "^1.2.3",
     "react": "^18.2.0",
     "tcp-port-used": "^1.0.2",
     "vitest": "^0.31.0"

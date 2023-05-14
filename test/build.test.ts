@@ -1,5 +1,5 @@
 import { existsSync } from 'fs'
-import { join } from 'path'
+import { join, sep } from 'path'
 import { test, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   registerVitest,
@@ -82,18 +82,12 @@ test('Root public path applied properly in bundle.', async () => {
   const mainJsName = listFilesMatching('*.js', dist)[0]
   const pngName = listFilesMatching('**/*.png', dist)[0]
 
-  if (process.platform === 'win32') {
-    // Proper path to main bundle.
-    expect(htmlContents).toContain(`src="\\/${mainJsName}"`)
-    // Proper path to logo.
-    expect(mainJsContents).toContain(`"\\\\${pngName}"`)
-  } else {
-    // Proper path to main bundle.
-    expect(htmlContents).toContain(`src="/${mainJsName}"`)
-    // Proper path to logo, public path programmatically added only once.
-    expect(mainJsContents).toContain(`"${pngName}"`)
-    expect(mainJsContents).toContain(`"/"`)
-  }
+  // Proper path to main bundle.
+  expect(htmlContents).toContain(`src="/${mainJsName}"`)
+  // Proper path to logo, public path programmatically added only once.
+  expect(mainJsContents).toContain(`"${pngName}"`)
+  // TODO JavaScript should not contain backslash on windows...
+  expect(mainJsContents).toContain(`"/"`)
 })
 
 test('Deep public path applied properly in bundle.', async () => {
@@ -114,18 +108,11 @@ test('Deep public path applied properly in bundle.', async () => {
   const mainJsName = listFilesMatching('*.js', dist)[0]
   const pngName = listFilesMatching('*.png', dist)[0]
 
-  if (process.platform === 'win32') {
-    // Proper path to main bundle.
-    expect(htmlContents).toContain(`src="\\hello\\world\\/${mainJsName}"`)
-    // Proper path to logo.
-    expect(mainJsContents).toContain(`"\\\\hello\\\\world\\\\${pngName}"`)
-  } else {
-    // Proper path to main bundle.
-    expect(htmlContents).toContain(`src="${path}/${mainJsName}"`)
-    // Proper path to logo, public path programmatically added only once.
-    expect(mainJsContents).toContain(`"${path}/"`)
-    expect(mainJsContents).toContain(`"${pngName}"`)
-  }
+  // Proper path to main bundle.
+  expect(htmlContents).toContain(`src="${path}/${mainJsName}"`)
+  // Proper path to logo, public path programmatically added only once.
+  expect(mainJsContents).toContain(`"${path}/"`)
+  expect(mainJsContents).toContain(`"${pngName}"`)
 })
 
 test('Papua html template is used.', async () => {
@@ -332,6 +319,7 @@ test('Installs listed localDependencies.', async () => {
   await writeConfiguration(false)
   await writeConfiguration(false) // Can be run multiple times.
 
+  // NOTE symlinks only work when CMD run as administrator on Windows.
   const files = listFilesMatching('**/*', '.')
   const somethangIndexContents = readFile('node_modules/somethang/index.js')
 
