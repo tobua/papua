@@ -20,7 +20,7 @@ const defaultOptions: Options = {
   test: 'test',
   entry: [],
   publicPath: '',
-  workbox: { swSrc: undefined },
+  workbox: {},
   title: 'papua App',
   hasTest: false,
   html: true,

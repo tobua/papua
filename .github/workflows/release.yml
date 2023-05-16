@@ -25,3 +25,10 @@ jobs:
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           DEBUG: true
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install --legacy-peer-deps
+      - name: 🧪 Test
+        run: npm test
