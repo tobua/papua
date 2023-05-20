@@ -13,7 +13,7 @@ import lint from '../script/lint'
 import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
 
-process.env.PAPUA_TEST = 'true'
+process.env.PAPUA_TEST = process.cwd()
 
 registerVitest(beforeEach, afterEach, vi)
 

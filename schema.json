@@ -309,6 +309,10 @@
           "additionalProperties": false
         }
       }
+    },
+    "localDependencies": {
+      "description": "Dependencies from anywhere on local filesystem linked automatically by papua.",
+      "$ref": "#/definitions/dependency"
     }
   },
   "definitions": {
@@ -319,6 +323,12 @@
     "TemplateCompiler": {
       "type": "object",
       "additionalProperties": true
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     }
   }
 }

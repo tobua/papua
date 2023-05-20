@@ -5,7 +5,7 @@ import formatPackageJson from 'pakag'
 import getPort, { portNumbers } from 'get-port'
 import merge from 'deepmerge'
 import isPlainObject from 'lodash.isplainobject'
-import { getProjectBasePath } from './path'
+import { getPluginBasePath, getProjectBasePath } from './path'
 import { Package } from '../types'
 
 export const log = create('papua', 'blue')
@@ -52,7 +52,7 @@ export const editPackageJson = (edits = {}) => {
 }
 
 export const getConfigurationFilePath = (filename: string) =>
-  join(getProjectBasePath(), `./node_modules/papua/configuration/${filename}`)
+  join(getPluginBasePath(), `configuration/${filename}`)
 
 type DeepForEachCallback = (value: any, key: string, subject: any, path: string) => void
 
@@ -90,8 +90,3 @@ export const deepForEach = (value: object | any[], callback: DeepForEachCallback
 
 export const hasLocalDependencies = (dependencies: { [key: string]: string }) =>
   dependencies && typeof dependencies === 'object' && Object.keys(dependencies).length > 0
-
-export const isTest = () =>
-  typeof process !== 'undefined' &&
-  process.env.NODE_ENV === 'test' &&
-  process.env.PAPUA_TEST === 'true'

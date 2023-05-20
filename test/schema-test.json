@@ -19,5 +19,8 @@
     "workbox": {
       "hello": 1
     }
+  },
+  "localDependencies": {
+    "padua": "../padua"
   }
 }

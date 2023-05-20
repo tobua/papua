@@ -2,7 +2,7 @@ import merge from 'deepmerge'
 import { join } from 'path'
 import { NormalizedEntry } from '../types'
 import { options } from '../utility/options'
-import { getProjectBasePath } from '../utility/path'
+import { getPluginBasePath } from '../utility/path'
 
 const getEntries = (entry: NormalizedEntry) => {
   let entries: string[]
@@ -18,7 +18,7 @@ const getEntries = (entry: NormalizedEntry) => {
 
 export const tsconfig = (tsconfigUserOverrides = {}) => {
   let userTSConfig = {
-    extends: join(getProjectBasePath(), 'node_modules/papua/configuration/tsconfig.json'),
+    extends: join(getPluginBasePath(), 'configuration/tsconfig.json'),
   }
 
   // The local tsconfig in this package will be written and the user config is extending it.

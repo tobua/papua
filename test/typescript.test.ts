@@ -4,7 +4,7 @@ import { registerVitest, environment, prepare, packageJson, file } from 'jest-fi
 import { build, configure } from '../index'
 import { refresh } from '../utility/helper'
 
-process.env.PAPUA_TEST = 'true'
+process.env.PAPUA_TEST = process.cwd()
 
 registerVitest(beforeEach, afterEach, vi)
 

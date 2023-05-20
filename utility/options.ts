@@ -37,7 +37,7 @@ const normalizePaths = (paths: string[] | string) => {
     result = [paths]
   }
 
-  result = result.map((path) => relative(getProjectBasePath(), path))
+  result = result.map((path) => relative(getProjectBasePath(), join(getProjectBasePath(), path)))
 
   // Remove duplicates.
   result = [...new Set(result)]

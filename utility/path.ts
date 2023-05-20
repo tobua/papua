@@ -1,6 +1,7 @@
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { join, relative } from 'path'
 import mapWorkspaces from '@npmcli/map-workspaces'
+import { isTest } from './test'
 
 // Required for pnpm as modules are nested deeper.
 const inModules = (path: string) => path.includes('node_modules') && process.env.INIT_CWD
@@ -8,26 +9,38 @@ const inModules = (path: string) => path.includes('node_modules') && process.env
 const packageInModules = (path: string) =>
   path.includes('node_modules/papua') || path.includes('node_modules\\papua')
 
+let workspacePath = '.'
+
+export const setWorkspacePath = (currentPath: string) => {
+  workspacePath = currentPath
+}
+
+export const isWorkspace = () => workspacePath !== '.'
+
 export const getProjectBasePath = () => {
   // CWD during postinstall is in package, otherwise in project.
   const currentWorkingDirectory = process.cwd()
 
   if (inModules(currentWorkingDirectory)) {
-    return process.env.INIT_CWD
+    return join(process.env.INIT_CWD, workspacePath)
   }
 
   if (packageInModules(currentWorkingDirectory)) {
-    return join(currentWorkingDirectory, '../..')
+    return join(currentWorkingDirectory, '../..', workspacePath)
   }
 
-  return currentWorkingDirectory
+  return join(currentWorkingDirectory, workspacePath)
 }
 
 export const getPluginBasePath = () => {
   const currentWorkingDirectory = process.cwd()
 
-  if (typeof jest !== 'undefined') {
-    return join(currentWorkingDirectory, '../../..')
+  if (isTest()) {
+    const fixtureConfigPath = join(process.cwd(), 'node_modules/papua')
+    if (existsSync(fixtureConfigPath)) {
+      return fixtureConfigPath
+    }
+    return process.env.PAPUA_TEST
   }
 
   // Required for pnpm as modules are nested deeper.
@@ -55,16 +68,16 @@ export const getWorkspacePaths = async () => {
 
     const result = []
 
-    Array.from(workspaces.values()).forEach((workspacePath) => {
+    Array.from(workspaces.values()).forEach((currentPath) => {
       const { dependencies = {}, devDependencies = {} } = JSON.parse(
-        readFileSync(join(workspacePath, 'package.json'), 'utf-8')
+        readFileSync(join(currentPath, 'package.json'), 'utf-8')
       )
 
       const list = Object.keys(dependencies).concat(Object.keys(devDependencies))
       const match = list.includes('papua')
 
       if (match) {
-        result.push(relative(basePath, workspacePath))
+        result.push(relative(basePath, currentPath))
       }
     })
 

@@ -10,7 +10,7 @@ import {
 import { build, configure } from '../index'
 import { refresh } from '../utility/helper'
 
-process.env.PAPUA_TEST = 'true'
+process.env.PAPUA_TEST = process.cwd()
 
 registerVitest(beforeEach, afterEach, vi)
 

@@ -7,7 +7,7 @@ import {
   unlinkSync,
   symlinkSync,
 } from 'fs'
-import { join } from 'path'
+import { join, normalize } from 'path'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
@@ -24,11 +24,13 @@ import {
   getConfigurationFilePath,
   deepForEach,
   hasLocalDependencies,
+  refresh,
 } from './helper'
 import { options } from './options'
-import { getProjectBasePath, getWorkspacePaths } from './path'
+import { getProjectBasePath, getWorkspacePaths, isWorkspace, setWorkspacePath } from './path'
 import { htmlPlugin } from '../configuration/rspack-html'
 import { Dependencies } from '../types.js'
+import { isTest } from './test.js'
 
 type UserConfiguration = RspackOptions & { after?: Function; html?: boolean | Options }
 
@@ -162,11 +164,11 @@ const adaptConfigToRoot = (packageConfig: object) => {
     const baseFromPackagePath = '../../../'
     if (typeof value === 'string' && value.includes(baseFromPackagePath)) {
       // eslint-disable-next-line no-param-reassign
-      subject[key] = value.replace(baseFromPackagePath, '')
+      subject[key] = normalize(value.replace(baseFromPackagePath, ''))
     }
     if (typeof value === 'string' && value.includes(emptyBasePackagePath)) {
       // eslint-disable-next-line no-param-reassign
-      subject[key] = value.replace(emptyBasePackagePath, '.')
+      subject[key] = normalize(value.replace(emptyBasePackagePath, '.'))
     }
   })
 }
@@ -208,6 +210,11 @@ const writePackageAndUserFile = (
   const [userConfig, packageConfig] = getConfiguration(userConfigOverrides)
 
   try {
+    if (isWorkspace() || (isTest() && !packageTSConfigPath.includes('node_modules'))) {
+      // Write config for each project, as sharing isn't possible.
+      throw new Error()
+    }
+
     // If package tsconfig can be written, adapt it and only extend user config.
     accessSync(
       packageTSConfigPath,
@@ -284,8 +291,8 @@ const installLocalDependencies = (dependencies: Dependencies) => {
   })
 }
 
-export const writePackageJson = async (postinstall: boolean, workspacePath = '.') => {
-  const packageJsonPath = join(getProjectBasePath(), workspacePath, './package.json')
+export const writePackageJson = async (postinstall: boolean) => {
+  const packageJsonPath = join(getProjectBasePath(), './package.json')
 
   if (!existsSync(packageJsonPath)) {
     writeFileSync(packageJsonPath, `{\n}\n`)
@@ -317,22 +324,27 @@ export const writePackageJson = async (postinstall: boolean, workspacePath = '.'
   return { packageContents: mergedPackageJson }
 }
 
-export const writeConfiguration = async (postinstall = false) => {
+export async function writeConfiguration(postinstall = false) {
   const workspaces = await getWorkspacePaths()
 
-  return Promise.all(
-    workspaces.map(async (workspacePath) => {
-      const { packageContents } = await writePackageJson(postinstall, workspacePath)
-      // Skip modifying the project in case it's being installed for later programmatic use by a plugin.
-      if (postinstall && isPlugin(packageContents)) {
-        return null
-      }
-      writeJSConfig(packageContents.papua.jsconfig)
-      writeTSConfig(packageContents.papua.tsconfig)
-      writeGitIgnore(packageContents.papua.gitignore)
-      installLocalDependencies(packageContents.localDependencies)
+  // Ensures asynchronous code is run in series.
+  // eslint-disable-next-line no-restricted-syntax
+  for (const workspacePath of workspaces) {
+    setWorkspacePath(workspacePath)
+    // Clear options cache and load options for current workspace.
+    refresh()
+    // eslint-disable-next-line no-await-in-loop
+    const { packageContents } = await writePackageJson(postinstall)
+    // Skip modifying the project in case it's being installed for later programmatic use by a plugin.
+    if (postinstall && isPlugin(packageContents)) {
+      return null
+    }
+    writeJSConfig(packageContents.papua.jsconfig)
+    writeTSConfig(packageContents.papua.tsconfig)
+    writeGitIgnore(packageContents.papua.gitignore)
+    installLocalDependencies(packageContents.localDependencies)
+    setWorkspacePath('.')
+  }
 
-      return { packageContents }
-    })
-  )
+  return null
 }

@@ -1,5 +1,5 @@
 import { existsSync } from 'fs'
-import { join, sep } from 'path'
+import { join } from 'path'
 import { test, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   registerVitest,
@@ -16,7 +16,7 @@ import { build } from '../index'
 import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
 
-process.env.PAPUA_TEST = 'true'
+process.env.PAPUA_TEST = process.cwd()
 
 registerVitest(beforeEach, afterEach, vi)
 

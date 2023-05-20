@@ -21,7 +21,7 @@ import {
 import { refresh } from '../utility/helper'
 import { createConfigurationDirectory } from './utility/create-configuration-directory'
 
-process.env.PAPUA_TEST = 'true'
+process.env.PAPUA_TEST = process.cwd()
 
 registerVitest(beforeEach, afterEach, vi)
 
@@ -164,8 +164,8 @@ test('Generates jsconfig extending package config.', () => {
 
   // Prettier formatting is applied.
   expect(JSON.parse(contents)).toEqual({
-  extends: join(process.cwd(), 'node_modules/papua/configuration/jsconfig.json')
-})
+    extends: join(process.cwd(), 'node_modules/papua/configuration/jsconfig.json'),
+  })
 
   expect(typeof contentsPackage.compilerOptions).toEqual('object')
 
@@ -198,8 +198,8 @@ test('Generates tsconfig extending package config.', () => {
   const contentsPackage = readFile('node_modules/papua/configuration/tsconfig.json')
 
   expect(JSON.parse(contents)).toEqual({
-  extends: join(process.cwd(), 'node_modules/papua/configuration/tsconfig.json')
-})
+    extends: join(process.cwd(), 'node_modules/papua/configuration/tsconfig.json'),
+  })
 
   expect(typeof contentsPackage.compilerOptions).toEqual('object')
   expect(contentsPackage.compilerOptions.baseUrl).toEqual('../../..')

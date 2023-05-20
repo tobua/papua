@@ -1,8 +1,7 @@
-import { cpSync } from 'fs'
+import { cpSync, existsSync, rmSync } from 'fs'
 import { join } from 'path'
 import http from 'http'
 import openBrowser from 'open'
-import { rimrafSync } from 'rimraf'
 import handler from 'serve-handler'
 import merge from 'deepmerge'
 import { log, freePort } from '../utility/helper'
@@ -32,21 +31,27 @@ export default async (inputs = {}) => {
   const hasPublicPath = publicPath && publicPath !== '/'
 
   log('Building...')
-  rimrafSync(join(getProjectBasePath(), options().output))
+  const outputPath = join(getProjectBasePath(), options().output)
+  if (existsSync(outputPath)) {
+    rmSync(outputPath, { recursive: true })
+  }
   await build(false)
 
   // Wrap dist files in public path folder.
   if (hasPublicPath) {
-    cpSync(join(getProjectBasePath(), options().output), join(getProjectBasePath(), '.temp'), {
+    const tempPath = join(getProjectBasePath(), '.temp')
+    cpSync(outputPath, tempPath, {
       recursive: true,
     })
-    rimrafSync(join(getProjectBasePath(), options().output))
-    cpSync(
-      join(getProjectBasePath(), '.temp'),
-      join(getProjectBasePath(), options().output, options().publicPath),
-      { recursive: true }
-    )
-    rimrafSync(join(getProjectBasePath(), '.temp'))
+    if (outputPath) {
+      rmSync(outputPath, { recursive: true })
+    }
+    cpSync(tempPath, join(getProjectBasePath(), options().output, options().publicPath), {
+      recursive: true,
+    })
+    if (tempPath) {
+      rmSync(tempPath, { recursive: true })
+    }
   }
 
   let configuration: ServeConfig = {

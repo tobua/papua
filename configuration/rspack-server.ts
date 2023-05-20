@@ -2,7 +2,7 @@ import { join } from 'path'
 import { Configuration as RspackConfiguration } from '@rspack/dev-server'
 import { Configuration } from 'webpack-dev-server'
 import { options } from '../utility/options'
-import { isTest } from '../utility/helper'
+import { isTest } from '../utility/test'
 
 const removeLeadingSlash = (path: string) => path.replace(/^\/*/, '')
 

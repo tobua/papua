@@ -1,10 +1,10 @@
 import merge from 'deepmerge'
 import { join } from 'path'
-import { getProjectBasePath } from '../utility/path'
+import { getPluginBasePath } from '../utility/path'
 
 export const jsconfig = (jsconfigUserOverrides = {}) => {
   let userJSConfig = {
-    extends: join(getProjectBasePath(), 'node_modules/papua/configuration/jsconfig.json'),
+    extends: join(getPluginBasePath(), 'configuration/jsconfig.json'),
   }
 
   // The local tsconfig in this package will be written and the user config is extending it.
