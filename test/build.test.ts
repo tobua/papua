@@ -20,7 +20,8 @@ process.env.PAPUA_TEST = process.cwd()
 
 registerVitest(beforeEach, afterEach, vi)
 
-environment('build')
+// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
+const [_, setCwd] = environment('build')
 
 beforeEach(refresh)
 
@@ -333,6 +334,110 @@ test('Installs listed localDependencies.', async () => {
 
   expect(mainJsContents).toContain('"anotherthang"')
   expect(mainJsContents).toContain('"somethang"')
+})
+
+test('localDependencies also work with TypeScript and ES Modules.', async () => {
+  const { dist } = prepare([
+    packageJson('local-dependencies', {
+      type: 'module',
+      localDependencies: {
+        local: '../local',
+      },
+    }),
+    json('../local/package.json', {
+      name: 'local-dependency',
+      type: 'module',
+      main: './dist/index.js',
+      exports: {
+        '.': {
+          import: {
+            default: './dist/index.js',
+          },
+        },
+      },
+    }),
+    file('../local/dist/index.js', 'export const localDependency = () => "local-dependency"'),
+    // Ensure node_modules exist (which is the case on postinstall).
+    json('node_modules/installed/package.json', { name: 'installed' }),
+    // Imports symlinked modules.
+    file('index.ts', `import { localDependency } from 'local'; console.log(localDependency())`),
+  ])
+
+  await writeConfiguration(false)
+
+  const files = listFilesMatching('**/*', '.')
+  const somethangIndexContents = readFile('node_modules/local/dist/index.js')
+
+  expect(files).toContain('node_modules/local/package.json')
+  expect(files).toContain('node_modules/local/dist/index.js')
+  expect(somethangIndexContents).toContain('"local-dependency"')
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('"local-dependency"')
+})
+
+test('localDependencies work when importing horizontally (even with cycles).', async () => {
+  prepare([
+    packageJson('higher', {
+      type: 'module',
+      main: './index.js',
+      exports: {
+        '.': {
+          import: {
+            default: './index.js',
+          },
+        },
+      },
+    }),
+    json('base/package.json', {
+      name: 'base',
+      type: 'module',
+      localDependencies: {
+        higher: '..',
+        lower: './lower',
+      },
+    }),
+    json('base/lower/package.json', {
+      name: 'lower',
+      type: 'module',
+      main: './index.js',
+      exports: {
+        '.': {
+          import: {
+            default: './index.js',
+          },
+        },
+      },
+    }),
+    file('index.js', 'export const higherDependency = () => "higher-dependency"'),
+    file('base/lower/index.js', 'export const lowerDependency = () => "lower-dependency"'),
+    // Ensure node_modules exist (which is the case on postinstall).
+    json('base/node_modules/installed/package.json', { name: 'installed' }),
+    // Imports symlinked modules.
+    file(
+      'base/index.ts',
+      `import { higherDependency } from 'higher'; import { lowerDependency } from 'lower'; console.log(higherDependency(), lowerDependency())`
+    ),
+  ])
+
+  setCwd(join(process.cwd(), 'base'))
+  refresh()
+
+  await writeConfiguration(false)
+
+  expect(existsSync(join(process.cwd(), 'node_modules/higher/package.json'))).toBe(true)
+  expect(existsSync(join(process.cwd(), 'node_modules/lower/package.json'))).toBe(true)
+  expect(existsSync(join(process.cwd(), 'tsconfig.json'))).toBe(true)
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', 'dist')[0].contents
+
+  expect(mainJsContents).toContain('"higher-dependency"')
+  expect(mainJsContents).toContain('"lower-dependency"')
 })
 
 test('Supports multiple entry files.', async () => {

@@ -103,9 +103,6 @@ test('Updates old package json properties.', async () => {
         test: 'hello',
         node: '>= 13.2.0',
       },
-      stylelint: {
-        extends: 'papua/configuration/stylelint.js',
-      },
     }),
     file('index.ts', ''),
     file('test/basic.test.ts', "test('hello', () => {})"),
@@ -115,7 +112,6 @@ test('Updates old package json properties.', async () => {
 
   expect(pkg.engines.test).toEqual('hello')
   expect(pkg.engines.node).toEqual('>= 13.2.0')
-  expect(pkg.stylelint.extends).toEqual('papua/configuration/stylelint.js')
 
   await writePackageJson(false)
 
@@ -123,7 +119,6 @@ test('Updates old package json properties.', async () => {
 
   expect(pkg.engines.node).toEqual('>= 16')
   expect(pkg.engines.test).toEqual('hello')
-  expect(pkg.stylelint.extends).toEqual('./node_modules/papua/configuration/stylelint.cjs')
 })
 
 test('Adds an empty package.json if none can be found.', async () => {

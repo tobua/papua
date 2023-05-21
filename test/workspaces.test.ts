@@ -10,6 +10,7 @@ import {
   contentsForFilesMatching,
   json,
 } from 'jest-fixture'
+import { existsSync } from 'fs'
 import { build } from '../index'
 import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
@@ -110,3 +111,57 @@ test('Configuration paths properly resolved in a workspaces setup.', async () =>
 
   expect(jsFileContents[0].contents).toContain('"demo"')
 }, 10000)
+
+test('localDependencies work with workspaces setup and cyclical import.', async () => {
+  prepare([
+    packageJson('local-dependencies-workspaces', {
+      name: 'wrapper',
+      type: 'module',
+      workspaces: ['demo'],
+      main: './dist/index.js',
+      types: './dist/index.d.ts',
+      exports: {
+        '.': {
+          import: {
+            types: './dist/index.d.ts',
+            // Important: default needs to be last, otherwise build fails.
+            default: './dist/index.js',
+          },
+        },
+      },
+    }),
+    json('demo/package.json', {
+      type: 'module',
+      localDependencies: {
+        wrapper: '..',
+      },
+    }),
+    file('dist/index.js', 'export const localDependency = () => "local-dependency"'),
+    file('dist/index.d.ts', 'export declare const localDependency: () => string;'),
+    // Ensure node_modules exist (which is the case on postinstall).
+    json('demo/node_modules/installed/package.json', { name: 'installed' }),
+    // Imports symlinked modules.
+    file(
+      'demo/index.ts',
+      `import { localDependency } from 'wrapper'; console.log(localDependency())`
+    ),
+  ])
+
+  const initialCwd = process.cwd()
+
+  setCwd(join(process.cwd(), 'demo'))
+  setWorkspacePath('.')
+  refresh()
+
+  await writeConfiguration(false)
+
+  const files = listFilesMatching('**/*', initialCwd)
+
+  expect(files).toContain('demo/tsconfig.json')
+  expect(existsSync(join(process.cwd(), 'node_modules/wrapper'))).toBe(true)
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', 'dist')[0].contents
+  expect(mainJsContents).toContain('"local-dependency"')
+})

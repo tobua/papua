@@ -112,7 +112,7 @@
     "@types/serve-handler": "^6.1.1",
     "cypress": "^12.12.0",
     "jest-fixture": "^4.0.2",
-    "padua": "^1.2.3",
+    "padua": "^1.2.4",
     "react": "^18.2.0",
     "tcp-port-used": "^1.0.2",
     "vitest": "^0.31.1"

@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import { resolve, join } from 'path'
-import { RspackOptions, Compiler, Plugins } from '@rspack/core'
+import { RspackOptions, Compiler, Plugins, RspackPluginInstance } from '@rspack/core'
 import urlJoin from 'url-join'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 // import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
@@ -24,8 +24,7 @@ const getPlugins = (development: boolean) => {
 
   if (!development && options().typescript) {
     plugins.push(new PatchTypeScriptHookPlugin())
-    // @ts-ignore doesn't fail in VS Code...
-    plugins.push(new TypeScriptWebpackPlugin())
+    plugins.push(new TypeScriptWebpackPlugin() as unknown as RspackPluginInstance)
   }
 
   const serviceWorkerFileName = `service-worker.${options().typescript ? 'ts' : 'js'}`

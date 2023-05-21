@@ -264,12 +264,6 @@ export const removePropertiesToUpdate = (pkg) => {
   if (typeof pkg.engines === 'object') {
     delete pkg.engines.node
   }
-
-  // TODO still necessary?
-  if (typeof pkg.stylelint === 'object') {
-    // Switches from JS to CJS (JS file no longer available).
-    delete pkg.stylelint.extends
-  }
 }
 
 const installLocalDependencies = (dependencies: Dependencies) => {
@@ -287,6 +281,11 @@ const installLocalDependencies = (dependencies: Dependencies) => {
         // Symlinks only allowed for administrators on Windows.
         log(`Failed to create symlink for localDependency ${name}`, 'warning')
       }
+    } else if (!existsSync(absolutePath)) {
+      log(
+        `localDependency "${name}" pointing to a non-existing location: ${absolutePath}`,
+        'warning'
+      )
     }
   })
 }
