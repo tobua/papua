@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'fs'
 import { join, relative } from 'path'
 import mapWorkspaces from '@npmcli/map-workspaces'
+import { findRootSync } from '@manypkg/find-root'
 import { isTest } from './test'
 
 // Required for pnpm as modules are nested deeper.
@@ -33,7 +34,7 @@ export const getProjectBasePath = () => {
 }
 
 export const getPluginBasePath = () => {
-  const currentWorkingDirectory = process.cwd()
+  const currentWorkingDirectory = findRootSync(process.cwd()).rootDir
 
   if (isTest()) {
     const fixtureConfigPath = join(process.cwd(), 'node_modules/papua')
@@ -45,7 +46,7 @@ export const getPluginBasePath = () => {
 
   // Required for pnpm as modules are nested deeper.
   if (!inModules(currentWorkingDirectory)) {
-    return join(process.env.INIT_CWD, 'node_modules/papua')
+    return join(currentWorkingDirectory, 'node_modules/papua')
   }
 
   if (!packageInModules(currentWorkingDirectory)) {

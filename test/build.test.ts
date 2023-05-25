@@ -43,11 +43,28 @@ test('Builds without errors.', async () => {
   expect(listFilesMatching('*.js.map', dist).length).toEqual(1)
 })
 
+test('Builds without errors in production mode.', async () => {
+  const { dist } = prepare([packageJson('build'), file('index.js', `console.log('test')`)])
+
+  await build(true)
+
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+
+  // JS and map for main chunk are available.
+  expect(listFilesMatching('*.js', dist).length).toEqual(1)
+  expect(listFilesMatching('*.js.map', dist).length).toEqual(1)
+})
+
 test('No public path applied properly in bundle.', async () => {
   const { dist } = prepare([
     packageJson('publicpath'),
-    file('index.js', `import logo from 'logo.load.png'; console.log(logo)`),
-    pngLogo,
+    // TODO assets imported from root will not appear in output with 0.1.12 (issue filed).
+    file('index.js', `import logo from 'nested/logo.load.png'; console.log(logo)`),
+    {
+      name: 'nested/logo.load.png',
+      copy: 'test/asset/logo.png',
+    },
   ])
 
   await build(true)
@@ -58,12 +75,12 @@ test('No public path applied properly in bundle.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
   const mainJsName = listFilesMatching('*.js', dist)[0]
-  const pngName = listFilesMatching('*.png', dist)[0]
+  const pngName = listFilesMatching('nested/*.png', dist)[0]
 
   // Proper path to main bundle.
   expect(htmlContents).toContain(`src="${mainJsName}"`)
   // Proper path to logo.
-  expect(mainJsContents).toContain(`"${pngName}"`)
+  expect(mainJsContents).toContain(`"./${pngName}"`)
 })
 
 test('Root public path applied properly in bundle.', async () => {
@@ -81,7 +98,7 @@ test('Root public path applied properly in bundle.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
   const mainJsName = listFilesMatching('*.js', dist)[0]
-  const pngName = listFilesMatching('**/*.png', dist)[0]
+  const pngName = listFilesMatching('*.png', dist)[0]
 
   // Proper path to main bundle.
   expect(htmlContents).toContain(`src="/${mainJsName}"`)

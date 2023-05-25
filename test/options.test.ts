@@ -30,6 +30,7 @@ test('Proper options for TS project.', () => {
   expect(result.typescript).toEqual(true)
   expect(result.react).toEqual(false)
   expect(result.entry).toEqual(['index.ts'])
+  expect(result.debug).toBe(false)
 })
 
 test('Custom entry is used.', () => {
@@ -38,6 +39,7 @@ test('Custom entry is used.', () => {
       papua: {
         entry: './another.js',
         title: 'My-App',
+        debug: true,
       },
     }),
     file('another.js', ''),
@@ -49,6 +51,7 @@ test('Custom entry is used.', () => {
   expect(result.react).toEqual(false)
   expect(result.entry).toEqual(['another.js'])
   expect(result.title).toEqual('My-App')
+  expect(result.debug).toBe(true)
 })
 
 test('Cached file is used on second read.', () => {

@@ -83,4 +83,5 @@ export interface Options {
   root: boolean
   serve?: ServeConfig
   localDependencies: boolean
+  debug: boolean
 }

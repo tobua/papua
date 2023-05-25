@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import { resolve, join } from 'path'
-import { RspackOptions, Compiler, Plugins, RspackPluginInstance } from '@rspack/core'
+import { RspackOptions, Plugins, RspackPluginInstance } from '@rspack/core'
 import urlJoin from 'url-join'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 // import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
@@ -8,22 +8,12 @@ import { options } from '../utility/options'
 import { getProjectBasePath } from '../utility/path'
 import { log } from '../utility/helper'
 
-class PatchTypeScriptHookPlugin {
-  // eslint-disable-next-line class-methods-use-this
-  apply(compiler: Compiler) {
-    // Rspack includes no afterCompile hook, afterEmit is similar.
-    // @ts-ignore
-    compiler.hooks.afterCompile = compiler.hooks.afterEmit
-  }
-}
-
 const root = (folder: string) => resolve(process.cwd(), folder)
 
 const getPlugins = (development: boolean) => {
   const plugins: Plugins = []
 
   if (!development && options().typescript) {
-    plugins.push(new PatchTypeScriptHookPlugin())
     plugins.push(new TypeScriptWebpackPlugin() as unknown as RspackPluginInstance)
   }
 
@@ -102,7 +92,8 @@ export default (development: boolean): RspackOptions => ({
     path: join(getProjectBasePath(), options().output),
     publicPath: getPublicPath(),
     // Path not required when hash is present, shortens paths.
-    assetModuleFilename: development || !options().hash ? '[path][query]' : '[hash][ext][query]',
+    assetModuleFilename:
+      development || !options().hash ? '[path][name][ext][query]' : '[hash][ext][query]',
   },
   devtool: development ? 'cheap-module-source-map' : 'source-map',
   plugins: getPlugins(development),

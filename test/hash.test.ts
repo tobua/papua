@@ -63,13 +63,13 @@ test('Hashing in production can be disabled.', async () => {
     file(
       'index.js',
       `import './styles.css';
-    import './logo.load.png';
+    import './nested/logo.load.png';
     
     console.log('test')`
     ),
     file('styles.css', 'p { color: red; }'),
     {
-      name: 'logo.load.png',
+      name: 'nested/logo.load.png',
       copy: 'test/asset/logo.png',
     },
   ])
@@ -80,7 +80,7 @@ test('Hashing in production can be disabled.', async () => {
 
   expect(files).toContain('main.js')
   expect(files).toContain('main.css')
-  expect(files).toContain('logo.load.png')
+  expect(files).toContain('nested/logo.load.png')
 })
 
 test('Can load images with query parameter.', async () => {
