@@ -34,13 +34,7 @@ const faviconPath = (icon: boolean | string) => {
 
 export const htmlPlugin = (inputs?: boolean | Options) => {
   const { html, icon } = options()
-
   let template = join(getPluginBasePath(), 'configuration/template.html')
-
-  if (options().debug) {
-    // eslint-disable-next-line no-console
-    console.log('DEBUG: ', template, process.env.INIT_CWD, findRootSync(process.cwd()).rootDir)
-  }
 
   if (existsSync(join(process.cwd(), './index.html'))) {
     template = './index.html'

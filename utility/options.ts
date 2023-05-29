@@ -28,7 +28,6 @@ const defaultOptions: Options = {
   hash: true,
   root: true,
   localDependencies: false,
-  debug: false,
 }
 
 const normalizePaths = (paths: string[] | string) => {

@@ -16,7 +16,28 @@ export const setWorkspacePath = (currentPath: string) => {
   workspacePath = currentPath
 }
 
-export const isWorkspace = () => workspacePath !== '.'
+export const isWorkspace = () => {
+  if (workspacePath !== '.') {
+    return true
+  }
+
+  const rootDirectory = findRootSync(process.cwd()).rootDir
+
+  if (rootDirectory) {
+    let hasWorkSpaces = false
+    try {
+      // Avoiding full parse of package.json.
+      hasWorkSpaces = readFileSync(join(rootDirectory, 'package.json'), 'utf-8').includes(
+        '"workspaces":'
+      )
+    } catch (error) {
+      // Ignore
+    }
+    return hasWorkSpaces
+  }
+
+  return false
+}
 
 export const getProjectBasePath = () => {
   // CWD during postinstall is in package, otherwise in project.
