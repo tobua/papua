@@ -21,8 +21,10 @@ export default async (development = true) => {
   })
 
   return {
-    // eslint-disable-next-line no-promise-executor-return
-    close: () => new Promise((done) => compiler.close(done)),
+    close: () =>
+      new Promise((done) => {
+        compiler.close(done)
+      }),
     compiler,
   }
 }

@@ -124,7 +124,9 @@ export default (development: boolean): RspackOptions => ({
       'process.env.NODE_ENV': development ? '"development"' : '"production"',
     },
     copy: {
-      patterns: existsSync(join(process.cwd(), 'public')) ? [{ from: 'public' }] : [],
+      patterns: existsSync(join(process.cwd(), 'public'))
+        ? [{ from: 'public', globOptions: { ignore: ['**/.DS_Store'] } }]
+        : [],
     },
   },
 })

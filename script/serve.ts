@@ -6,7 +6,8 @@ import handler from 'serve-handler'
 import merge from 'deepmerge'
 import { log, freePort } from '../utility/helper'
 import { options } from '../utility/options'
-import build from './build'
+import runBuild from './build'
+import runWatch from './watch'
 import { getProjectBasePath } from '../utility/path'
 import { getCliInputs } from '../utility/input'
 import { ServeConfig } from '../types'
@@ -19,23 +20,40 @@ const addLeadingSlash = (path: string) => {
   return `/${path}`
 }
 
-export default async (inputs = {}) => {
-  const { port = await freePort(), open } = getCliInputs<{ port: number; open: boolean }>(
+type Inputs = {
+  port: number
+  open: boolean
+  watch: boolean
+}
+
+export default async (inputs: Partial<Inputs> = {}) => {
+  const {
+    port = await freePort(),
+    open,
+    watch = false,
+  } = getCliInputs<Inputs>(
     {
       port: 'number',
       open: 'boolean',
+      watch: 'boolean',
     },
     inputs
   )
   const publicPath = options().publicPath ? addLeadingSlash(options().publicPath) : ''
   const hasPublicPath = publicPath && publicPath !== '/'
+  let closeWatcher: () => Promise<any>
 
   log('Building...')
   const outputPath = join(getProjectBasePath(), options().output)
   if (existsSync(outputPath)) {
     rmSync(outputPath, { recursive: true })
   }
-  await build(false)
+
+  if (!watch) {
+    await runBuild(false)
+  } else {
+    closeWatcher = (await runWatch(false)).close
+  }
 
   // Wrap dist files in public path folder.
   if (hasPublicPath) {
@@ -85,7 +103,16 @@ export default async (inputs = {}) => {
         openBrowser(url)
       }
 
-      done({ close: () => server.close(), port, url })
+      done({
+        close: async () => {
+          server.close()
+          if (closeWatcher) {
+            await closeWatcher()
+          }
+        },
+        port,
+        url,
+      })
     })
   })
 }
