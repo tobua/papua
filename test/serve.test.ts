@@ -67,7 +67,7 @@ test('Build can be run in watch mode.', async () => {
 
   const { url, port, close } = await serve({ watch: true })
 
-  await wait(0.3) // Wait until first build is done.
+  await wait(0.5) // Wait until first build is done.
 
   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
@@ -84,7 +84,7 @@ test('Build can be run in watch mode.', async () => {
 
   writeFile('index.js', `console.log('changed_contents')`)
 
-  await wait(0.3) // Wait to ensure watcher recompilation done.
+  await wait(1) // Wait to ensure watcher recompilation done.
 
   jsContents = contentsForFilesMatching('*.js', dist)
 

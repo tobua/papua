@@ -210,4 +210,4 @@ test('rspack.config.js also works with multiple devServer properties that are th
   await stop()
 
   expect(await check(port, 'localhost')).toEqual(false)
-})
+}, 10000) // NOTE timed out on windows.
