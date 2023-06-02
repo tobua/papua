@@ -8,6 +8,7 @@ import {
   packageJson,
   file,
   listFilesMatching,
+  contentsForFilesMatching,
 } from 'jest-fixture'
 import { build } from '../index'
 import { refresh } from '../utility/helper'
@@ -63,13 +64,13 @@ test('Hashing in production can be disabled.', async () => {
     file(
       'index.js',
       `import './styles.css';
-    import './nested/logo.load.png';
+    import './logo.load.png';
     
     console.log('test')`
     ),
     file('styles.css', 'p { color: red; }'),
     {
-      name: 'nested/logo.load.png',
+      name: 'logo.load.png',
       copy: 'test/asset/logo.png',
     },
   ])
@@ -80,7 +81,7 @@ test('Hashing in production can be disabled.', async () => {
 
   expect(files).toContain('main.js')
   expect(files).toContain('main.css')
-  expect(files).toContain('nested/logo.load.png')
+  expect(files).toContain('logo.load.png')
 })
 
 test('Can load images with query parameter.', async () => {
@@ -88,12 +89,12 @@ test('Can load images with query parameter.', async () => {
     packageJson('hash-query', { papua: { hash: false } }),
     file(
       'index.js',
-      `import './nested/logo.load.png?width=300';
+      `import './logo.load.png?width=300';
     
     console.log('test')`
     ),
     {
-      name: 'nested/logo.load.png',
+      name: 'logo.load.png',
       copy: 'test/asset/logo.png',
     },
   ])
@@ -103,6 +104,9 @@ test('Can load images with query parameter.', async () => {
   const files = listFilesMatching('**/*', dist)
 
   expect(files).toContain('main.js')
-  // TODO query param found neither in bundle nor path...
-  expect(files).toContain('nested/logo.load.png')
+  expect(files).toContain('logo.load.png')
+
+  const jsContents = contentsForFilesMatching('**/*.js', dist)[0].contents
+
+  expect(jsContents).toContain('logo.load.png?width=300')
 })

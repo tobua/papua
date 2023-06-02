@@ -84,7 +84,7 @@ test('Build can be run in watch mode.', async () => {
 
   writeFile('index.js', `console.log('changed_contents')`)
 
-  await wait(1) // Wait to ensure watcher recompilation done.
+  await wait(0.5) // Wait to ensure watcher recompilation done.
 
   jsContents = contentsForFilesMatching('*.js', dist)
 

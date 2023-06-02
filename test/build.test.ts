@@ -59,8 +59,14 @@ test('Builds without errors in production mode.', async () => {
 test('No public path applied properly in bundle.', async () => {
   const { dist } = prepare([
     packageJson('publicpath'),
-    // TODO assets imported from root will not appear in output with 0.1.12 (issue filed).
-    file('index.js', `import logo from 'nested/logo.load.png'; console.log(logo)`),
+    file(
+      'index.js',
+      `import rootLogo from 'logo.load.png'; import logo from 'nested/logo.load.png'; console.log(rootLogo, logo)`
+    ),
+    {
+      name: 'logo.load.png',
+      copy: 'test/asset/logo.png',
+    },
     {
       name: 'nested/logo.load.png',
       copy: 'test/asset/logo.png',
@@ -75,11 +81,13 @@ test('No public path applied properly in bundle.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
   const mainJsName = listFilesMatching('*.js', dist)[0]
+  const rootPngName = listFilesMatching('*.png', dist)[0]
   const pngName = listFilesMatching('nested/*.png', dist)[0]
 
   // Proper path to main bundle.
   expect(htmlContents).toContain(`src="${mainJsName}"`)
   // Proper path to logo.
+  expect(mainJsContents).toContain(`"./${rootPngName}"`)
   expect(mainJsContents).toContain(`"./${pngName}"`)
 })
 

@@ -52,7 +52,7 @@ export default async (inputs: Partial<Inputs> = {}) => {
   if (!watch) {
     await runBuild(false)
   } else {
-    closeWatcher = (await runWatch(false)).close
+    closeWatcher = (await runWatch(true)).close
   }
 
   // Wrap dist files in public path folder.
