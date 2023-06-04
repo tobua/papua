@@ -18,10 +18,12 @@ jobs:
       - name: 🦺 Install latest npm with npm package provenance feature
         run: npm install -g npm@latest
       - run: npm install --legacy-peer-deps
+      - name: Log npm version
+        run: npm --version
       - run: npm run build
       - name: 🧪 Test
         run: npm test
-      - uses: tobua/release-npm-action@v1.6.6
+      - uses: tobua/release-npm-action@v1.6.7
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           DEBUG: true

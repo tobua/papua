@@ -1,3 +1,4 @@
+import { EOL } from 'os'
 import { test, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   registerVitest,
@@ -43,7 +44,7 @@ test('Stats list all generated assets.', async () => {
 
   await build(false)
 
-  const output = consoleLogMock.mock.calls.join('\n')
+  const output = consoleLogMock.mock.calls.join(EOL)
   const files = listFilesMatching('**/*', dist)
 
   files.forEach((fileName) => {
@@ -68,7 +69,7 @@ test('Only actual entry files are listed.', async () => {
 
   await build(false)
 
-  const output = consoleLogMock.mock.calls.join('\n')
+  const output = consoleLogMock.mock.calls.join(EOL)
 
   expect(output).toContain('Entry')
   expect(output).toContain('index.js')
@@ -93,7 +94,7 @@ test('Multiple entries are listed.', async () => {
 
   await build(false)
 
-  const output = consoleLogMock.mock.calls.join('\n')
+  const output = consoleLogMock.mock.calls.join(EOL)
 
   expect(output).toContain('Entry')
   expect(output).toContain('first.js')
@@ -114,7 +115,7 @@ test('Entry chunks and files are listed.', async () => {
 
   await build(false)
 
-  const output = consoleLogMock.mock.calls.join('\n')
+  const output = consoleLogMock.mock.calls.join(EOL)
 
   expect(output).toContain('Entry')
   expect(output).not.toContain('(main)')
@@ -128,7 +129,7 @@ test('Message for successful type check when building for production.', async ()
   configure() // Required for tsconfig.json
   await build(false)
 
-  const output = consoleLogMock.mock.calls.join('\n')
+  const output = consoleLogMock.mock.calls.join(EOL)
 
   expect(output).toContain('Type check finished')
   expect(output).toContain('index.ts (main)')
@@ -140,7 +141,7 @@ test('Message for successful type check also present when errors.', async () => 
   configure() // Required for tsconfig.json
   await build(false)
 
-  const output = consoleLogMock.mock.calls.join('\n')
+  const output = consoleLogMock.mock.calls.join(EOL)
 
   expect(output).toContain("'number' is not assignable to type 'string'")
   expect(output).toContain('Type check finished')
