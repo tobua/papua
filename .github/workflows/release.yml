@@ -21,7 +21,7 @@ jobs:
       - run: npm run build
       - name: 🧪 Test
         run: npm test
-      - uses: tobua/release-npm-action@v1.6.3
+      - uses: tobua/release-npm-action@v1.6.4
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           DEBUG: true
