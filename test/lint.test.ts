@@ -1,5 +1,4 @@
 import { join, sep } from 'path'
-import { EOL } from 'os'
 import {
   registerVitest,
   environment,
@@ -87,8 +86,8 @@ console.log(first, second)`
   const formattedIndexJs = readFile('index.js')
 
   // Prettier
-  expect(initialIndexJs).not.toContain(EOL)
-  expect(formattedIndexJs).toContain(EOL)
+  expect(initialIndexJs).not.toContain('\n')
+  expect(formattedIndexJs).toContain('\n')
 
   // NOTE might be failing due to debug statements...
   expect(consoleLogMock.mock.calls.length).toEqual(5)
