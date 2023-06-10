@@ -111,6 +111,8 @@ a `papua` property to your `package.json` with the following options available:
     hash: false,
     // Do not resolve file imports relative to root before modules, e.g. markup/component.js instead of ./markup/component.js.
     root: false,
+    // Create source maps in production builds (bundle.js.map).
+    sourceMap: true,
     // Passed to serve-handler in serve script.
     serve: {
       cleanUrls: false

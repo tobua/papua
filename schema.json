@@ -52,6 +52,11 @@
         "title": {
           "type": "string"
         },
+        "sourceMap": {
+          "description": "Generate source map files in production.",
+          "type": "boolean",
+          "default": false
+        },
         "html": {
           "type": "object",
           "properties": {

@@ -84,6 +84,21 @@ const getPublicPath = () => {
   return ''
 }
 
+const getSourceMap = (development: boolean) => {
+  if (development) {
+    // Inlined quick source map.
+    return 'eval-cheap-module-source-map'
+  }
+
+  if (options().sourceMap) {
+    // .js.map file with high quality source map for production debugging.
+    return 'source-map'
+  }
+
+  // By default no source maps in production for obfuscation.
+  return false
+}
+
 export default (development: boolean): RspackOptions => ({
   mode: development ? 'development' : 'production',
   entry: options().entry,
@@ -95,7 +110,7 @@ export default (development: boolean): RspackOptions => ({
     assetModuleFilename:
       development || !options().hash ? '[path][name][ext][query]' : '[hash][ext][query]',
   },
-  devtool: development ? 'cheap-module-source-map' : 'source-map',
+  devtool: getSourceMap(development),
   plugins: getPlugins(development),
   resolve: {
     modules: getRoots(),

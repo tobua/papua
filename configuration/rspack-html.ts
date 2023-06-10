@@ -2,7 +2,6 @@ import { join } from 'path'
 import { existsSync } from 'fs'
 // eslint-disable-next-line import/no-named-default
 import { default as HtmlPlugin, Options } from '@rspack/plugin-html'
-import { findRootSync } from '@manypkg/find-root'
 import merge from 'deepmerge'
 import { options } from '../utility/options'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'

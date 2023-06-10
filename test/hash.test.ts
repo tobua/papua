@@ -23,7 +23,7 @@ beforeEach(refresh)
 
 test('Various production file types contain content hashes.', async () => {
   const { dist } = prepare([
-    packageJson('hash'),
+    packageJson('hash', { papua: { sourceMap: true } }),
     file(
       'index.js',
       `import './styles.css';

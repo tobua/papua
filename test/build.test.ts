@@ -38,22 +38,46 @@ test('Builds without errors.', async () => {
   expect(existsSync(dist)).toEqual(true)
   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-  // JS and map for main chunk are available.
+  // JS for main chunk is available.
   expect(listFilesMatching('*.js', dist).length).toEqual(1)
+  // No source map in production.
+  expect(listFilesMatching('*.js.map', dist).length).toEqual(0)
+})
+
+test('Source map support can be enabled for production.', async () => {
+  const { dist } = prepare([
+    packageJson('build-source', { papua: { sourceMap: true } }),
+    file('index.js', `console.log('test')`),
+  ])
+
+  await build(false)
+
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+
+  // JS for main chunk is available.
+  expect(listFilesMatching('*.js', dist).length).toEqual(1)
+  // Source map enabled.
   expect(listFilesMatching('*.js.map', dist).length).toEqual(1)
 })
 
-test('Builds without errors in production mode.', async () => {
-  const { dist } = prepare([packageJson('build'), file('index.js', `console.log('test')`)])
+test('Builds without errors in development mode.', async () => {
+  const { dist } = prepare([
+    packageJson('build-development'),
+    file('index.js', `console.log('test')`),
+  ])
 
   await build(true)
 
   expect(existsSync(dist)).toEqual(true)
   expect(existsSync(join(dist, 'index.html'))).toEqual(true)
 
-  // JS and map for main chunk are available.
+  // JS for main chunk is available.
   expect(listFilesMatching('*.js', dist).length).toEqual(1)
-  expect(listFilesMatching('*.js.map', dist).length).toEqual(1)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  // Bundle contains inlined source map.
+  expect(mainJsContents).toContain('sourceMappingURL=data:application/json')
 })
 
 test('No public path applied properly in bundle.', async () => {
@@ -274,13 +298,40 @@ test('Can import CSS.', async () => {
   const cssContents = contentsForFilesMatching('*.css', dist)[0].contents
 
   expect(listFilesMatching('*.css', dist).length).toEqual(1)
-  expect(listFilesMatching('*.css.map', dist).length).toEqual(1)
+  expect(listFilesMatching('*.css.map', dist).length).toEqual(0)
 
   // Minified in production.
   expect(cssContents).toContain('background:red')
   // CSS file injected into HTML template.
   expect(htmlContents).toContain(`href="${cssFileName}"`)
   expect(htmlContents).toContain('rel="stylesheet"')
+})
+
+test('Can import CSS in development mode.', async () => {
+  const { dist } = prepare([
+    packageJson('build'),
+    file('index.js', `import './index.css'`),
+    file('index.css', 'body { background: red; }'),
+  ])
+
+  await build(true)
+
+  expect(listFilesMatching('*.css', dist).length).toEqual(1)
+  // CSS unchanged in development.
+  expect(listFilesMatching('*.css.map', dist).length).toEqual(0)
+})
+
+test('Can import CSS with source map.', async () => {
+  const { dist } = prepare([
+    packageJson('build', { papua: { sourceMap: true } }),
+    file('index.js', `import './index.css'`),
+    file('index.css', 'body { background: red; }'),
+  ])
+
+  await build(false)
+
+  expect(listFilesMatching('*.css', dist).length).toEqual(1)
+  expect(listFilesMatching('*.css.map', dist).length).toEqual(1)
 })
 
 test('Can import JSON.', async () => {

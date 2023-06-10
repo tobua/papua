@@ -34,11 +34,30 @@ export interface ServeConfig {
 
 export type Dependencies = { [key: string]: string }
 
+export interface Options {
+  output: string
+  react: boolean
+  entry: NormalizedEntry
+  typescript: boolean
+  test: false | string
+  publicPath: string
+  workbox: Optional<WebpackInjectManifestOptions, 'swSrc'>
+  hasTest: boolean
+  title: string
+  html: boolean | HtmlOptions
+  icon: boolean | string
+  hash: boolean
+  root: boolean
+  serve?: ServeConfig
+  localDependencies: boolean
+  sourceMap: boolean
+}
+
 export interface Package {
   $schema?: string
   name?: string
   version?: string
-  papua?: Object
+  papua?: Partial<Options>
   dependencies?: Dependencies
   devDependencies?: Dependencies
   peerDependencies?: Dependencies
@@ -66,21 +85,3 @@ export type Entry = string | string[] | { [key: string]: string | string[] }
 export type NormalizedEntry = string[] | { [key: string]: string[] }
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
-
-export interface Options {
-  output: string
-  react: boolean
-  entry: NormalizedEntry
-  typescript: boolean
-  test: false | string
-  publicPath: string
-  workbox: Optional<WebpackInjectManifestOptions, 'swSrc'>
-  hasTest: boolean
-  title: string
-  html: boolean | HtmlOptions
-  icon: boolean | string
-  hash: boolean
-  root: boolean
-  serve?: ServeConfig
-  localDependencies: boolean
-}

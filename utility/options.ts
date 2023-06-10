@@ -1,4 +1,4 @@
-import { join, relative } from 'path'
+import { join, relative, isAbsolute } from 'path'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import glob from 'fast-glob'
 import merge from 'deepmerge'
@@ -28,6 +28,7 @@ const defaultOptions: Options = {
   hash: true,
   root: true,
   localDependencies: false,
+  sourceMap: false,
 }
 
 const normalizePaths = (paths: string[] | string) => {
@@ -37,7 +38,9 @@ const normalizePaths = (paths: string[] | string) => {
     result = [paths]
   }
 
-  result = result.map((path) => relative(getProjectBasePath(), join(getProjectBasePath(), path)))
+  result = result.map((path) =>
+    relative(getProjectBasePath(), isAbsolute(path) ? path : join(getProjectBasePath(), path))
+  )
 
   // Remove duplicates.
   result = [...new Set(result)]
