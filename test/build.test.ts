@@ -717,3 +717,81 @@ test('Tree-shaking is applied to ES Modules.', async () => {
   expect(jsContents[0].contents).toContain('keep-me')
   expect(jsContents[0].contents).not.toContain('remove-me')
 })
+
+test('Older syntax is not transformed by default.', async () => {
+  const { dist } = prepare([
+    packageJson('build-default'),
+    file(
+      'index.js',
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first }, first?.hello, first.id ||= 1)`
+    ),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('...')
+  expect(mainJsContents).toContain('?.')
+  expect(mainJsContents).toContain('||=')
+})
+
+test('Code is transformed to specified ECMSScript version.', async () => {
+  const { dist } = prepare([
+    packageJson('build-es-version', { papua: { esVersion: 'es5' } }),
+    file(
+      'index.js',
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first }, first?.hello)`
+    ),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).not.toContain('...')
+  expect(mainJsContents).toContain('Object.getOwnPropertySymbols') // Polyfill
+  expect(mainJsContents).not.toContain('?.')
+})
+
+test('Code is transformed according to ES version derived from browserslist.', async () => {
+  const { dist } = prepare([
+    packageJson('build-es-version', {
+      papua: {
+        esVersion: 'browserslist',
+      },
+      browserslist: ['> 1%', 'last 3 versions', 'not dead', 'IE 11'],
+    }),
+    file(
+      'index.js',
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first })`
+    ),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).not.toContain('...')
+})
+
+test('Code is transformed according to ES version derived from browserslist.', async () => {
+  const { dist } = prepare([
+    packageJson('build-es-version-file', {
+      papua: {
+        esVersion: 'browserslist',
+      },
+    }),
+    file(
+      'index.js',
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first })`
+    ),
+    file('.browserslistrc', `IE 11`),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).not.toContain('...')
+})

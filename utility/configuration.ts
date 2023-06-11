@@ -46,6 +46,7 @@ const createSingleRspackConfiguration = (
         html: [...baseConfiguration.builtins.html],
         copy: { ...baseConfiguration.builtins.copy },
         define: { ...baseConfiguration.builtins.define },
+        presetEnv: { ...baseConfiguration.builtins.presetEnv },
       },
     },
   }
@@ -60,6 +61,10 @@ const createSingleRspackConfiguration = (
 
   if (userConfiguration.builtins?.define) {
     delete configuration.builtins.define
+  }
+
+  if (userConfiguration.builtins?.presetEnv) {
+    delete configuration.builtins.presetEnv
   }
 
   // With clone plugins etc. (non-serializable properties) will be gone.

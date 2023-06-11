@@ -117,6 +117,8 @@ a `papua` property to your `package.json` with the following options available:
     serve: {
       cleanUrls: false
     },
+    // Use browserslist to determine environment or set to es5, es2015, es2022, etc.
+    esVersion: 'browserslist',
     // Configure cypress front end tests.
     cypress: {
       defaultCommandTimeout: 6000

@@ -1,4 +1,4 @@
-import type { Builtins } from '@rspack/core'
+import type { Builtins, RspackOptions } from '@rspack/core'
 import type { WebpackInjectManifestOptions } from 'workbox-build'
 
 type Unpacked<T> = T extends (infer U)[] ? U : T
@@ -55,6 +55,7 @@ export interface Options {
   serve?: ServeConfig
   localDependencies: boolean
   sourceMap: boolean
+  esVersion?: Unpacked<RspackOptions['target']>
 }
 
 export interface Package {

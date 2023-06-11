@@ -52,6 +52,9 @@
         "title": {
           "type": "string"
         },
+        "esVersion": {
+          "type": "string"
+        },
         "sourceMap": {
           "description": "Generate source map files in production.",
           "type": "boolean",

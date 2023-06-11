@@ -100,7 +100,19 @@ const getSourceMap = (development: boolean) => {
   return false
 }
 
+const getTarget = () => {
+  const targets: RspackOptions['target'] = ['web']
+  const version = options().esVersion
+
+  if (typeof version === 'string') {
+    targets.push(version)
+  }
+
+  return targets
+}
+
 export default (development: boolean): RspackOptions => ({
+  target: getTarget(),
   mode: development ? 'development' : 'production',
   entry: options().entry,
   output: {

@@ -1,6 +1,7 @@
 import { join, relative } from 'path'
 import { existsSync } from 'fs'
 import merge from 'deepmerge'
+import { RspackOptions } from '@rspack/core'
 import { options } from '../utility/options'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'
 import type { HtmlOptions, CopyOptions } from '../types'
@@ -87,11 +88,19 @@ const getCopyPlugin = () => {
   return result
 }
 
-export const getBuiltins = (development: boolean, publicPath: string) => ({
+export const getBuiltins = (
+  development: boolean,
+  publicPath: string
+): RspackOptions['builtins'] => ({
   define: {
     'process.env.PUBLIC_URL': JSON.stringify(publicPath),
     'process.env.NODE_ENV': development ? '"development"' : '"production"',
   },
   html: options().html ? [htmlPlugin(development, options().html)] : [],
   copy: getCopyPlugin(),
+  presetEnv: {
+    mode: 'entry',
+    targets:
+      options().esVersion !== 'browserslist' ? ['last 3 versions', '> 1%', 'not dead'] : undefined,
+  },
 })
