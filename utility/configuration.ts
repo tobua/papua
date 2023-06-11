@@ -11,7 +11,6 @@ import { join, normalize } from 'path'
 import formatJson from 'pakag'
 import merge from 'deepmerge'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
-import { Options } from '@rspack/plugin-html'
 import parse from 'parse-gitignore'
 import { tsconfig } from '../configuration/tsconfig.js'
 import { jsconfig } from '../configuration/jsconfig.js'
@@ -28,11 +27,10 @@ import {
 } from './helper'
 import { options } from './options'
 import { getProjectBasePath, getWorkspacePaths, isWorkspace, setWorkspacePath } from './path'
-import { htmlPlugin } from '../configuration/rspack-html'
-import { Dependencies } from '../types.js'
-import { isTest } from './test.js'
+import { Dependencies, HtmlOptions } from '../types'
+import { isTest } from './test'
 
-type UserConfiguration = RspackOptions & { after?: Function; html?: boolean | Options }
+type UserConfiguration = RspackOptions & { after?: Function; html?: boolean | HtmlOptions }
 
 const createSingleRspackConfiguration = (
   baseConfiguration: RspackOptions,
@@ -40,23 +38,32 @@ const createSingleRspackConfiguration = (
   afterMergeConfiguration: Function,
   index = 0
 ) => {
+  // Quick copy of builtins, as baseConfiguration is generated only once.
+  let configuration: RspackOptions = {
+    ...baseConfiguration,
+    builtins: {
+      ...{
+        html: [...baseConfiguration.builtins.html],
+        copy: { ...baseConfiguration.builtins.copy },
+        define: { ...baseConfiguration.builtins.define },
+      },
+    },
+  }
+
+  if (userConfiguration.builtins?.html || index !== 0) {
+    delete configuration.builtins.html
+  }
+
+  if (userConfiguration.builtins?.copy) {
+    delete configuration.builtins.copy
+  }
+
+  if (userConfiguration.builtins?.define) {
+    delete configuration.builtins.define
+  }
+
   // With clone plugins etc. (non-serializable properties) will be gone.
-  let configuration = merge(baseConfiguration, userConfiguration, { clone: false })
-
-  // Allows the user to configure different html templates.
-  if (index > 0 && userConfiguration.html !== false) {
-    configuration.plugins = [...configuration.plugins, htmlPlugin(userConfiguration.html)]
-  }
-
-  if (index === 0 && options().html !== false && userConfiguration.html !== false) {
-    configuration.plugins = [
-      ...configuration.plugins,
-      htmlPlugin(userConfiguration.html || options().html),
-    ]
-  }
-
-  // @ts-ignore
-  delete configuration.html
+  configuration = merge(configuration, userConfiguration, { clone: false })
 
   // Apply user edits.
   if (afterMergeConfiguration) {

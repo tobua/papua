@@ -7,6 +7,7 @@ import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import { options } from '../utility/options'
 import { getProjectBasePath } from '../utility/path'
 import { log } from '../utility/helper'
+import { getBuiltins } from './rspack-builtins'
 
 const root = (folder: string) => resolve(process.cwd(), folder)
 
@@ -132,16 +133,5 @@ export default (development: boolean): RspackOptions => ({
       },
     ],
   },
-  builtins: {
-    // NOTE builtins html plugin has issues with publicPath.
-    define: {
-      'process.env.PUBLIC_URL': JSON.stringify(getPublicPath()),
-      'process.env.NODE_ENV': development ? '"development"' : '"production"',
-    },
-    copy: {
-      patterns: existsSync(join(process.cwd(), 'public'))
-        ? [{ from: 'public', globOptions: { ignore: ['**/.DS_Store'] } }]
-        : [],
-    },
-  },
+  builtins: getBuiltins(development, getPublicPath()),
 })

@@ -118,7 +118,9 @@ test('Multiple builds with different output locations.', async () => {
           import: 'extension.js',
         },
       },
-      html: false,
+      builtins: {
+        html: [],
+      },
       output: {
         path: join(fixturePath, 'extension/dist'),
       },
@@ -129,8 +131,12 @@ test('Multiple builds with different output locations.', async () => {
           import: 'blog.js',
         },
       },
-      html: {
-        publicPath: 'our/blog/',
+      builtins: {
+        html: [
+          {
+            publicPath: 'our/blog/',
+          },
+        ],
       },
       output: {
         path: join(fixturePath, 'blog/dist'),
@@ -300,15 +306,21 @@ test('Multiple html files can be generated with multiple configurations.', async
   rspackConfig.default = () => [
     {
       entry: './first.js',
-      html: false, // Disable default html template.
+      builtins: {
+        html: [], // Disable default html template.
+      },
       devServer: {
         open: false,
       },
     },
     {
       entry: './second.js',
-      html: {
-        filename: 'second.html',
+      builtins: {
+        html: [
+          {
+            filename: 'second.html',
+          },
+        ],
       },
     },
     {
@@ -316,8 +328,12 @@ test('Multiple html files can be generated with multiple configurations.', async
       output: {
         path: join(fixturePath, 'dist/third'),
       },
-      html: {
-        filename: 'third.html',
+      builtins: {
+        html: [
+          {
+            filename: 'third.html',
+          },
+        ],
       },
     },
   ]

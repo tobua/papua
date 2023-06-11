@@ -150,7 +150,7 @@ One of these files will automatically be created extending the default configura
 
 `index.html`
 
-If available papua will look for a HTML template in `index.html` and use a default fallback if none is available. Use the `package.json` → `papua` → `html` option to configure the template to look for and other options passed to `@rspack/plugin-html`. Run `npx papua eject --template html` to place the default template in the root to make your own edits.
+If available papua will look for a HTML template in `index.html` and use a default fallback if none is available. Use the `package.json` → `papua` → `html` option to configure the template to look for and other options passed to `builtins.html`. Run `npx papua eject --template html` to place the default template in the root to make your own edits.
 
 ### Rspack
 

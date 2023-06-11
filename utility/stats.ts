@@ -58,7 +58,7 @@ export const logStats = (
         .join(', ')}`
     )
 
-    const assets = Object.keys(stats.compilation.assets).map((name) => {
+    let assets = Object.keys(stats.compilation.assets).map((name) => {
       const asset = stats.compilation.assets[name]
 
       return {
@@ -66,6 +66,9 @@ export const logStats = (
         size: asset.size(),
       }
     })
+
+    // Do not display use of built in icon (is already listed due to copy).
+    assets = assets.filter((asset) => asset.name !== '../../../configuration/logo.png')
 
     assets.forEach((asset) =>
       console.log(`  ${chalk.bold.cyan(asset.name)}  ${prettyBytes(asset.size)}`)

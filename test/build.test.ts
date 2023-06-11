@@ -133,7 +133,7 @@ test('Root public path applied properly in bundle.', async () => {
   const pngName = listFilesMatching('*.png', dist)[0]
 
   // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="/${mainJsName}"`)
+  expect(htmlContents).toContain(`src=/${mainJsName}`)
   // Proper path to logo, public path programmatically added only once.
   expect(mainJsContents).toContain(`"${pngName}"`)
   // TODO JavaScript should not contain backslash on windows...
@@ -159,7 +159,7 @@ test('Deep public path applied properly in bundle.', async () => {
   const pngName = listFilesMatching('*.png', dist)[0]
 
   // Proper path to main bundle.
-  expect(htmlContents).toContain(`src="${path}/${mainJsName}"`)
+  expect(htmlContents).toContain(`src=${path}/${mainJsName}`)
   // Proper path to logo, public path programmatically added only once.
   expect(mainJsContents).toContain(`"${path}/"`)
   expect(mainJsContents).toContain(`"${pngName}"`)
@@ -189,12 +189,13 @@ test('Html template can be customized.', async () => {
   const loadingMessage = 'Still loading, sorry for the inconvenience.'
   const { dist } = prepare([
     packageJson('custom-template', {
-      papua: { html: { template: 'custom.html' } },
+      papua: { html: { template: 'custom.html', title } },
     }),
     file('index.js', ''),
     file(
       'custom.html',
-      `<html>
+      `<!DOCTYPE html>
+<html>
   <body>
     <p>${loadingMessage}</p>
   </body>
@@ -210,9 +211,38 @@ test('Html template can be customized.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
 
   // Custom user template is used.
-  expect(htmlContents).not.toContain(title)
+  expect(htmlContents).toContain(title)
+  expect(htmlContents).toContain('<title>')
   expect(htmlContents).toContain(loadingMessage)
   expect(htmlContents).not.toContain('width=device-width')
+})
+
+test('Html template has no default title injected if set to false.', async () => {
+  const { dist } = prepare([
+    packageJson('custom-template', {
+      papua: { html: { template: 'nested/custom.html', title: false } },
+    }),
+    file('index.js', ''),
+    file(
+      'nested/custom.html',
+      `<!DOCTYPE html>
+<html>
+  <body>
+  </body>
+</html>`
+    ),
+  ])
+
+  await build(false)
+
+  expect(existsSync(dist)).toEqual(true)
+  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+
+  // Custom user template is used.
+  expect(htmlContents).not.toContain('custom-template App')
+  expect(htmlContents).not.toContain('<title>')
 })
 
 test('Defined environment variables are resolved.', async () => {
@@ -248,7 +278,14 @@ test('Files inside the /public folder are copied over to the root.', async () =>
 })
 
 test('Generates and injects favicons.', async () => {
-  const { dist } = prepare([packageJson('favicons'), file('index.js', '')])
+  const { dist } = prepare([
+    packageJson('favicons'),
+    file('index.js', ''),
+    {
+      name: 'logo.png',
+      copy: 'test/asset/logo.png',
+    },
+  ])
 
   await build(false)
 
@@ -259,7 +296,7 @@ test('Generates and injects favicons.', async () => {
   const imageFiles = listFilesMatching('**/*.png', '.')
 
   // Favicon is injected.
-  expect(htmlContents).toContain('<link rel="icon" href="logo.png">')
+  expect(htmlContents).toContain('<link rel=icon href=logo.png>')
   // Image is present in output.
   expect(imageFiles).toContain('dist/logo.png')
 })
@@ -279,9 +316,23 @@ test('Favicon can be customized.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
   const imageFiles = listFilesMatching('**/*.png', '.')
 
-  // Nesting is removed, as unnecessary.
-  expect(htmlContents).toContain('<link rel="icon" href="hello.png">')
-  expect(imageFiles).toContain('dist/hello.png')
+  expect(htmlContents).toContain('<link rel=icon href=nested/hello.png>')
+  expect(imageFiles).toContain('dist/nested/hello.png')
+})
+
+test('Favicon can be disabled.', async () => {
+  const { dist } = prepare([
+    packageJson('custom-favicon', { papua: { icon: false } }),
+    file('index.js', ''),
+  ])
+
+  await build(false)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const imageFiles = listFilesMatching('**/*.png', dist)
+
+  expect(htmlContents).not.toContain('<link rel=icon')
+  expect(imageFiles.length).toBe(0)
 })
 
 test('Can import CSS.', async () => {
@@ -303,8 +354,8 @@ test('Can import CSS.', async () => {
   // Minified in production.
   expect(cssContents).toContain('background:red')
   // CSS file injected into HTML template.
-  expect(htmlContents).toContain(`href="${cssFileName}"`)
-  expect(htmlContents).toContain('rel="stylesheet"')
+  expect(htmlContents).toContain(`href=${cssFileName}`)
+  expect(htmlContents).toContain('rel=stylesheet')
 })
 
 test('Can import CSS in development mode.', async () => {

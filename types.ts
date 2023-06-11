@@ -1,5 +1,9 @@
-import { Options as HtmlOptions } from '@rspack/plugin-html'
+import type { Builtins } from '@rspack/core'
 import type { WebpackInjectManifestOptions } from 'workbox-build'
+
+type Unpacked<T> = T extends (infer U)[] ? U : T
+export type HtmlOptions = Unpacked<Builtins['html']>
+export type CopyOptions = Builtins['copy']
 
 interface Rewrite {
   source: string

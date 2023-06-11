@@ -1,18 +1,11 @@
-import { RspackOptions, MultiCompilerOptions } from '@rspack/core'
-import { Options } from '@rspack/plugin-html'
-
-export type HtmlRspackOptions = RspackOptions & { html?: boolean | Options }
-export type MultiHtmlRspackOptions = ReadonlyArray<HtmlRspackOptions> & MultiCompilerOptions
+import { RspackOptions, MultiRspackOptions } from '@rspack/core'
 
 type RspackConfigMock = {
   __esModule: boolean
   default:
-    | HtmlRspackOptions
-    | MultiHtmlRspackOptions
-    | ((
-        configuration: RspackOptions,
-        isDevelopment: boolean
-      ) => HtmlRspackOptions | MultiHtmlRspackOptions)
+    | RspackOptions
+    | MultiRspackOptions
+    | ((configuration: RspackOptions, isDevelopment: boolean) => RspackOptions | MultiRspackOptions)
   after: Function | undefined
 }
 

@@ -36,7 +36,6 @@
     "@npmcli/map-workspaces": "^3.0.4",
     "@rspack/core": "^0.2.1",
     "@rspack/dev-server": "^0.2.1",
-    "@rspack/plugin-html": "^0.2.1",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
     "ajv": "^8.12.0",

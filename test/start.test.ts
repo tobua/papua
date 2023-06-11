@@ -178,8 +178,12 @@ test('rspack.config.js also works with multiple devServer properties that are th
     },
     {
       entry: { second: 'second.js' },
-      html: {
-        filename: 'second.html',
+      builtins: {
+        html: [
+          {
+            filename: 'second.html',
+          },
+        ],
       },
       devServer: {
         devMiddleware: {
