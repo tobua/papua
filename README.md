@@ -65,12 +65,11 @@ Builds the production assets and serves them. Can be configured through the `pap
 
 Arguments: `--open` open in default browser, `--port 5000` specify a port.
 
-### `npx papua eject [--template <html | icon | rspack>] [--file <name>]`
+### `npx papua eject [--template <html | rspack>] [--file <name>]`
 
 Eject certain files to allow for more fine grained configuration. If no default values are provided the plugin will prompt for values. The following templates are available:
 
 - HTML (index.html)
-- Icon (logo.png)
 - Rspack (rspack.config.js - file cannot be set)
 
 ### `npx papua watch`
@@ -105,8 +104,10 @@ a `papua` property to your `package.json` with the following options available:
     title: 'My papua App',
     // Configure html file to be generated.
     html: { template: 'page.html', filename: 'modern.html' },
-    // Customize favicon.
+    // Set favicon, can also be png or svg, will automatically look for icon.png / logo.png (also svg and also inside /asset).
     icon: 'my-favicon.ico',
+    icon: 'logo.png', // Not needed, automatically loaded.
+    icon: '../logo.png', // Will be copied to project root.
     // Disable content hashes added to assets in production build.
     hash: false,
     // Do not resolve file imports relative to root before modules, e.g. markup/component.js instead of ./markup/component.js.

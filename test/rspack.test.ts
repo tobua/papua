@@ -1,8 +1,7 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import { test, expect, afterEach, vi } from 'vitest'
 import {
-  registerVitest,
   environment,
   prepare,
   packageJson,
@@ -15,15 +14,8 @@ import { Compiler } from '@rspack/core'
 import { createRspackConfig } from './utility/configuration'
 import { build } from '../index'
 import { loadRspackConfig } from '../utility/configuration'
-import { refresh } from '../utility/helper'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 const [fixturePath] = environment('webpack')
-
-beforeEach(refresh)
 
 afterEach(() => {
   vi.resetModules()

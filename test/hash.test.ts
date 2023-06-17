@@ -1,8 +1,7 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import { test, expect } from 'vitest'
 import {
-  registerVitest,
   environment,
   prepare,
   packageJson,
@@ -11,15 +10,8 @@ import {
   contentsForFilesMatching,
 } from 'jest-fixture'
 import { build } from '../index'
-import { refresh } from '../utility/helper'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 environment('hash')
-
-beforeEach(refresh)
 
 test('Various production file types contain content hashes.', async () => {
   const { dist } = prepare([
@@ -52,7 +44,7 @@ test('Various production file types contain content hashes.', async () => {
   expect(mainJsFiles.length).toEqual(1)
   expect(mainJsMapFiles.length).toEqual(1)
   expect(stylesFiles.length).toEqual(1)
-  expect(imagesFiles.length).toEqual(2)
+  expect(imagesFiles.length).toEqual(1)
   // Includes a lengthy contenthash.
   expect(mainJsFiles[0].length).toBeGreaterThan(20)
   expect(mainJsMapFiles[0].length).toBeGreaterThan(20)

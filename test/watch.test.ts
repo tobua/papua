@@ -1,7 +1,6 @@
 import { existsSync } from 'fs'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import { test, expect } from 'vitest'
 import {
-  registerVitest,
   environment,
   prepare,
   packageJson,
@@ -12,15 +11,8 @@ import {
   wait,
 } from 'jest-fixture'
 import { watch } from '../index'
-import { refresh } from '../utility/helper'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 const [fixturePath] = environment('watch')
-
-beforeEach(refresh)
 
 test('Watcher rebuilds on file change.', async () => {
   const watchRebuildStructure = [
@@ -91,7 +83,7 @@ test('Removed imports are not removed from dist during watch.', async () => {
 
   let imageFiles = listFilesMatching('*.png', dist)
 
-  expect(imageFiles.length).toEqual(2)
+  expect(imageFiles.length).toEqual(1)
 
   // No longer imports image.
   writeFile('index.js', `console.log('empty')`)
@@ -101,7 +93,7 @@ test('Removed imports are not removed from dist during watch.', async () => {
 
   imageFiles = listFilesMatching('*.png', dist)
 
-  expect(imageFiles.length).toEqual(2)
+  expect(imageFiles.length).toEqual(1)
 
   await close()
 })

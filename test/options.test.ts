@@ -1,15 +1,8 @@
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
-import { registerVitest, environment, prepare, packageJson, file } from 'jest-fixture'
+import { test, expect } from 'vitest'
+import { environment, prepare, packageJson, file } from 'jest-fixture'
 import { options } from '../utility/options'
-import { refresh } from '../utility/helper'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 environment('options')
-
-beforeEach(refresh)
 
 test('Options set correctly for simple project.', () => {
   prepare([packageJson('simple')])

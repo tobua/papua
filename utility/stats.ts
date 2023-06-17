@@ -67,9 +67,6 @@ export const logStats = (
       }
     })
 
-    // Do not display use of built in icon (is already listed due to copy).
-    assets = assets.filter((asset) => asset.name !== '../../../configuration/logo.png')
-
     assets.forEach((asset) =>
       console.log(`  ${chalk.bold.cyan(asset.name)}  ${prettyBytes(asset.size)}`)
     )

@@ -1,18 +1,11 @@
 import { join } from 'path'
 import { check } from 'tcp-port-used'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
-import { registerVitest, environment, prepare, packageJson, file } from 'jest-fixture'
+import { test, expect, afterEach, vi } from 'vitest'
+import { environment, prepare, packageJson, file } from 'jest-fixture'
 import { createRspackConfig } from './utility/configuration'
 import { start } from '../index'
-import { refresh } from '../utility/helper'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 const [fixturePath] = environment('start')
-
-beforeEach(refresh)
 
 afterEach(() => {
   vi.resetModules()

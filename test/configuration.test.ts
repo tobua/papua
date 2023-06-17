@@ -1,16 +1,7 @@
 import { cpSync, existsSync, readFileSync } from 'fs'
 import { join } from 'path'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
-import {
-  registerVitest,
-  environment,
-  prepare,
-  packageJson,
-  file,
-  json,
-  readFile,
-  writeFile,
-} from 'jest-fixture'
+import { test, expect, afterEach, vi } from 'vitest'
+import { environment, prepare, packageJson, file, json, readFile, writeFile } from 'jest-fixture'
 import {
   writeGitIgnore,
   writeJSConfig,
@@ -18,16 +9,9 @@ import {
   writePackageJson,
   writeConfiguration,
 } from '../utility/configuration'
-import { refresh } from '../utility/helper'
 import { createConfigurationDirectory } from './utility/create-configuration-directory'
 
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
-
 const [fixturePath] = environment('configuration')
-
-beforeEach(refresh)
 
 afterEach(() => {
   vi.resetModules()

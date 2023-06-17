@@ -23,24 +23,6 @@ const templates = {
       }
     },
   },
-  icon: {
-    title: 'Icon',
-    file: 'logo.png',
-    handler: (file: string) => {
-      if (file !== 'logo.png' && file !== 'logo.svg') {
-        editPackageJson({ papua: { icon: file } })
-        log(`Icon configuration edited in package.json to point to ${file}`)
-      }
-
-      cpSync(
-        join(getPluginBasePath(), 'configuration/logo.png'),
-        join(getProjectBasePath(), file),
-        { recursive: true }
-      )
-
-      log(`Icon added in ${join(getProjectBasePath(), file)}`)
-    },
-  },
   rspack: {
     title: 'rspack configuration',
     handler: () => {

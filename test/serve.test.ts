@@ -1,9 +1,8 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
 import { check } from 'tcp-port-used'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import { test, expect } from 'vitest'
 import {
-  registerVitest,
   environment,
   prepare,
   packageJson,
@@ -13,15 +12,8 @@ import {
   wait,
 } from 'jest-fixture'
 import { serve } from '../index'
-import { refresh } from '../utility/helper'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 environment('serve')
-
-beforeEach(refresh)
 
 test('Serve script builds assets in production and serves them on the default port.', async () => {
   const { dist } = prepare([packageJson('serve'), file('index.js', `console.log('serve-script')`)])

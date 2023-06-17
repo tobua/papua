@@ -1,8 +1,7 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import { test, expect, beforeEach } from 'vitest'
 import {
-  registerVitest,
   environment,
   prepare,
   packageJson,
@@ -15,10 +14,6 @@ import {
 import { build } from '../index'
 import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
 const [_, setCwd] = environment('build')
@@ -35,13 +30,15 @@ test('Builds without errors.', async () => {
 
   await build(false)
 
-  expect(existsSync(dist)).toEqual(true)
-  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toBe(true)
+  expect(existsSync(join(dist, 'index.html'))).toBe(true)
 
   // JS for main chunk is available.
-  expect(listFilesMatching('*.js', dist).length).toEqual(1)
+  expect(listFilesMatching('*.js', dist).length).toBe(1)
   // No source map in production.
-  expect(listFilesMatching('*.js.map', dist).length).toEqual(0)
+  expect(listFilesMatching('*.js.map', dist).length).toBe(0)
+  // No favicon by default.
+  expect(listFilesMatching('**/*.png', dist).length).toBe(0)
 })
 
 test('Source map support can be enabled for production.', async () => {
@@ -52,13 +49,13 @@ test('Source map support can be enabled for production.', async () => {
 
   await build(false)
 
-  expect(existsSync(dist)).toEqual(true)
-  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toBe(true)
+  expect(existsSync(join(dist, 'index.html'))).toBe(true)
 
   // JS for main chunk is available.
-  expect(listFilesMatching('*.js', dist).length).toEqual(1)
+  expect(listFilesMatching('*.js', dist).length).toBe(1)
   // Source map enabled.
-  expect(listFilesMatching('*.js.map', dist).length).toEqual(1)
+  expect(listFilesMatching('*.js.map', dist).length).toBe(1)
 })
 
 test('Builds without errors in development mode.', async () => {
@@ -69,11 +66,13 @@ test('Builds without errors in development mode.', async () => {
 
   await build(true)
 
-  expect(existsSync(dist)).toEqual(true)
-  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toBe(true)
+  expect(existsSync(join(dist, 'index.html'))).toBe(true)
 
   // JS for main chunk is available.
-  expect(listFilesMatching('*.js', dist).length).toEqual(1)
+  expect(listFilesMatching('*.js', dist).length).toBe(1)
+  // No favicon by default.
+  expect(listFilesMatching('**/*.png', dist).length).toBe(0)
 
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
   // Bundle contains inlined source map.
@@ -99,8 +98,8 @@ test('No public path applied properly in bundle.', async () => {
 
   await build(true)
 
-  expect(existsSync(dist)).toEqual(true)
-  expect(existsSync(join(dist, 'index.html'))).toEqual(true)
+  expect(existsSync(dist)).toBe(true)
+  expect(existsSync(join(dist, 'index.html'))).toBe(true)
 
   const htmlContents = readFile(join(dist, 'index.html'))
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
@@ -318,6 +317,47 @@ test('Favicon can be customized.', async () => {
 
   expect(htmlContents).toContain('<link rel=icon href=nested/hello.png>')
   expect(imageFiles).toContain('dist/nested/hello.png')
+})
+
+test('External favicon is copied to root.', async () => {
+  const { dist } = prepare([
+    packageJson('external-favicon', { papua: { icon: '../logo.png' } }),
+    file('index.js', ''),
+    {
+      name: '../logo.png',
+      copy: 'test/asset/logo.png',
+    },
+  ])
+
+  await build(false)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const imageFiles = listFilesMatching('**/*.png', '.')
+
+  expect(htmlContents).toContain('<link rel=icon href=logo.png>')
+  expect(imageFiles).toContain('dist/logo.png')
+})
+
+test('External favicon will not override existing images.', async () => {
+  const { dist } = prepare([
+    packageJson('external-favicon', { papua: { icon: '../hello-favicon.png' } }),
+    file('index.js', ''),
+    {
+      name: '../hello-favicon.png',
+      copy: 'test/asset/logo.png',
+    },
+    file('hello-favicon.png', 'empty'),
+  ])
+
+  await build(false)
+
+  const htmlContents = readFile(join(dist, 'index.html'))
+  const imageFiles = listFilesMatching('**/*.png', '.')
+
+  expect(htmlContents).toContain('<link rel=icon href=hello-favicon.png>')
+  expect(imageFiles).toContain('dist/hello-favicon.png')
+  // Existing icon will be used.
+  expect(readFile('dist/hello-favicon.png')).toContain('empty')
 })
 
 test('Favicon can be disabled.', async () => {

@@ -1,21 +1,8 @@
 import { join, sep } from 'path'
-import {
-  registerVitest,
-  environment,
-  prepare,
-  packageJson,
-  file,
-  readFile,
-  writeFile,
-} from 'jest-fixture'
-import { test, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest'
+import { environment, prepare, packageJson, file, readFile, writeFile } from 'jest-fixture'
+import { test, expect, beforeAll, afterAll, vi } from 'vitest'
 import lint from '../script/lint'
-import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 const initialCwd = process.cwd()
 let packageContents = {}
@@ -42,8 +29,6 @@ const prettierIgnore = readFile('configuration/.prettierignore')
 const stylelintConfig = readFile('configuration/stylelint.cjs')
 
 environment('lint')
-
-beforeEach(refresh)
 
 const consoleLogMock = vi.fn()
 console.log = consoleLogMock

@@ -1,19 +1,7 @@
 import { EOL } from 'os'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
-import {
-  registerVitest,
-  environment,
-  prepare,
-  packageJson,
-  file,
-  listFilesMatching,
-} from 'jest-fixture'
+import { test, expect, beforeEach, vi } from 'vitest'
+import { environment, prepare, packageJson, file, listFilesMatching } from 'jest-fixture'
 import { build, configure } from '../index'
-import { refresh } from '../utility/helper'
-
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
 
 environment('stats')
 
@@ -21,7 +9,6 @@ const consoleLogMock = vi.fn()
 console.log = consoleLogMock
 
 beforeEach(() => {
-  refresh()
   consoleLogMock.mockClear()
 })
 

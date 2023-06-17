@@ -1,7 +1,6 @@
 import { join } from 'path'
-import { test, expect, beforeEach, afterEach, vi } from 'vitest'
+import { test, expect } from 'vitest'
 import {
-  registerVitest,
   environment,
   prepare,
   packageJson,
@@ -16,14 +15,8 @@ import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
 import { setWorkspacePath } from '../utility/path'
 
-process.env.PAPUA_TEST = process.cwd()
-
-registerVitest(beforeEach, afterEach, vi)
-
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
 const [_, setCwd] = environment('workspaces')
-
-beforeEach(refresh)
 
 test('Configuration paths properly resolved in a workspaces setup.', async () => {
   prepare([
@@ -88,7 +81,6 @@ test('Configuration paths properly resolved in a workspaces setup.', async () =>
   let files = listFilesMatching('**/*', 'dist')
 
   expect(files).toContain('index.html')
-  expect(files).toContain('logo.png')
 
   let jsFileContents = contentsForFilesMatching('**/*.js', 'dist')
 
@@ -105,7 +97,6 @@ test('Configuration paths properly resolved in a workspaces setup.', async () =>
   files = listFilesMatching('**/*', 'dist')
 
   expect(files).toContain('index.html')
-  expect(files).toContain('logo.png')
 
   jsFileContents = contentsForFilesMatching('**/*.js', 'dist')
 

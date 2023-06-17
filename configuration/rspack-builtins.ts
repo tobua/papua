@@ -1,43 +1,56 @@
-import { join, relative } from 'path'
-import { existsSync } from 'fs'
+import { basename, join, relative } from 'path'
+import { cpSync, existsSync } from 'fs'
 import merge from 'deepmerge'
 import { RspackOptions } from '@rspack/core'
 import { options } from '../utility/options'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'
 import type { HtmlOptions, CopyOptions } from '../types'
+import { log } from '../utility/helper'
+
+const defaultIconFiles = ['logo.png', 'logo.svg', 'icon.png', 'icon.svg']
 
 const faviconPath = (icon: boolean | string) => {
-  const defaultIconPath = join(getPluginBasePath(), 'configuration/logo.png')
-  let path = defaultIconPath
+  let path = null
+  const files = defaultIconFiles.concat(defaultIconFiles.map((file) => `asset/${file}`))
 
-  const logoPngProjectPath = join(getProjectBasePath(), 'logo.png')
-  const logoSvgProjectPath = join(getProjectBasePath(), 'logo.svg')
+  files.forEach((file) => {
+    const fileProjectPath = join(getProjectBasePath(), file)
 
-  if (existsSync(logoPngProjectPath)) {
-    path = logoPngProjectPath
-  }
-
-  if (existsSync(logoSvgProjectPath)) {
-    path = logoSvgProjectPath
-  }
+    if (existsSync(fileProjectPath)) {
+      path = fileProjectPath
+    }
+  })
 
   if (typeof icon === 'string') {
     const customIconPath = join(getProjectBasePath(), icon)
 
     if (existsSync(customIconPath)) {
-      path = customIconPath
+      if (!customIconPath.includes(getProjectBasePath())) {
+        log(
+          `icon "${icon}" is located outside the project "${getProjectBasePath()}" and will be copied to the root.`,
+          'warning'
+        )
+
+        const iconFileName = basename(customIconPath)
+        const iconDestinationPath = join(getProjectBasePath(), iconFileName)
+
+        // Skip if file already exists (from previous runs or otherwise).
+        if (!existsSync(iconDestinationPath)) {
+          cpSync(customIconPath, iconDestinationPath)
+        }
+
+        path = iconFileName
+      } else {
+        path = customIconPath
+      }
     }
   }
 
-  return {
-    absolute: path,
-    relative: relative(getProjectBasePath(), path),
-    display: path === defaultIconPath ? 'logo.png' : undefined,
-  }
+  return path && relative(getProjectBasePath(), path)
 }
 
 export const htmlPlugin = (development: boolean, inputs?: boolean | HtmlOptions) => {
-  const { html, icon } = options()
+  const { html, icon, title, publicPath } = options()
   let template = join(getPluginBasePath(), 'configuration/template.html')
 
   if (existsSync(join(process.cwd(), './index.html'))) {
@@ -46,10 +59,10 @@ export const htmlPlugin = (development: boolean, inputs?: boolean | HtmlOptions)
 
   let htmlOptions: HtmlOptions = {
     template,
-    title: options().title,
+    title,
     minify: !development,
-    publicPath: options().publicPath,
-    favicon: options().icon && faviconPath(icon).relative,
+    publicPath,
+    favicon: icon && faviconPath(icon),
   }
 
   if (typeof html === 'object') {
@@ -75,11 +88,6 @@ export const htmlPlugin = (development: boolean, inputs?: boolean | HtmlOptions)
 
 const getCopyPlugin = () => {
   const result: CopyOptions = { patterns: [] }
-
-  if (options().icon) {
-    const paths = faviconPath(options().icon)
-    result.patterns.push({ from: paths.absolute, to: paths.display || paths.relative })
-  }
 
   if (existsSync(join(process.cwd(), 'public'))) {
     result.patterns.push({ from: 'public', globOptions: { ignore: ['**/.DS_Store'] } })
