@@ -1,6 +1,6 @@
 import { basename, join, relative } from 'path'
 import { cpSync, existsSync } from 'fs'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { RspackOptions } from '@rspack/core'
 import { options } from '../utility/options'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'
@@ -66,13 +66,11 @@ export const htmlPlugin = (development: boolean, inputs?: boolean | HtmlOptions)
   }
 
   if (typeof html === 'object') {
-    htmlOptions = merge(htmlOptions, html, {
-      clone: true,
-    })
+    htmlOptions = deepmerge(htmlOptions, html)
   }
 
   if (typeof inputs === 'object') {
-    htmlOptions = merge(htmlOptions, inputs, { clone: true })
+    htmlOptions = deepmerge(htmlOptions, inputs)
   }
 
   if (!htmlOptions.title) {

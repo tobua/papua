@@ -42,7 +42,7 @@
     "chalk": "^5.2.0",
     "commander": "^11.0.0",
     "css-loader": "^6.8.1",
-    "deepmerge": "^4.3.1",
+    "deepmerge-ts": "^5.1.0",
     "ejs": "^3.1.9",
     "eslint": "^8.43.0",
     "eslint-config-airbnb": "^19.0.4",

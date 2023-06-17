@@ -3,7 +3,7 @@ import { join } from 'path'
 import { create } from 'logua'
 import formatPackageJson from 'pakag'
 import getPort, { portNumbers } from 'get-port'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import isPlainObject from 'lodash.isplainobject'
 import { getPluginBasePath, getProjectBasePath } from './path'
 import { Package } from '../types'
@@ -44,7 +44,7 @@ export const editPackageJson = (edits = {}) => {
   const packageJsonPath = join(getProjectBasePath(), 'package.json')
   let packageContents = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
 
-  packageContents = merge(packageContents, edits, { clone: false })
+  packageContents = deepmerge(packageContents, edits)
 
   const formattedContents = formatPackageJson(JSON.stringify(packageContents))
 

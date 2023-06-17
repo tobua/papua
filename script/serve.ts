@@ -3,7 +3,7 @@ import { join } from 'path'
 import http from 'http'
 import openBrowser from 'open'
 import handler from 'serve-handler'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { log, freePort } from '../utility/helper'
 import { options } from '../utility/options'
 import runBuild from './build'
@@ -89,7 +89,7 @@ export default async (inputs: Partial<Inputs> = {}) => {
   }
 
   if (typeof options().serve === 'object') {
-    configuration = merge(configuration, options().serve)
+    configuration = deepmerge(configuration, options().serve)
   }
 
   const server = http.createServer((request, response) => handler(request, response, configuration))

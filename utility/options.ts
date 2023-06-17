@@ -1,7 +1,7 @@
 import { join, relative, isAbsolute } from 'path'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import glob from 'fast-glob'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { log, cache, hasLocalDependencies } from './helper'
 import { getProjectBasePath } from './path'
 import { Entry, NormalizedEntry, Options, Package } from '../types'
@@ -108,7 +108,7 @@ const analyzeEntries = (entry: NormalizedEntry) => {
 // Get the options for this project, either from the filesystem or explicit configuration.
 export const options = cache(() => {
   let packageContents: Package
-  let result: Options = merge({}, defaultOptions, { clone: true })
+  let result: Partial<Options> = deepmerge({}, defaultOptions)
 
   try {
     const packageJsonPath = join(getProjectBasePath(), 'package.json')
@@ -119,7 +119,7 @@ export const options = cache(() => {
 
   if (typeof packageContents.papua === 'object') {
     // Include project specific overrides
-    result = merge(result, packageContents.papua, { clone: false })
+    result = deepmerge(result, packageContents.papua)
   }
 
   result.localDependencies = hasLocalDependencies(packageContents.localDependencies)

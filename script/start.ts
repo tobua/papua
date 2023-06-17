@@ -1,6 +1,6 @@
-import { rspack } from '@rspack/core'
+import { RspackOptions, rspack } from '@rspack/core'
 import { RspackDevServer, Configuration } from '@rspack/dev-server'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { startServer, recompiling, logStats } from '../utility/stats'
 import { freePort, log } from '../utility/helper'
 import { getCliInputs } from '../utility/input'
@@ -26,16 +26,14 @@ export default async (options: Configuration = {}, inputs = {}) => {
   const compiler = rspack(configuration)
 
   const devServerConfigurations = configuration.reduce(
-    (result, current) => merge(result, current.devServer ?? {}, { clone: true }),
+    (result, current) => deepmerge(result, current.devServer ?? ({} as RspackOptions)),
     {}
   )
 
-  const devServerConfiguration: Configuration = merge(
-    merge(devServer(port, headless), devServerConfigurations, { clone: false }),
-    options,
-    {
-      clone: false,
-    }
+  const devServerConfiguration: Configuration = deepmerge(
+    devServer(port, headless),
+    devServerConfigurations,
+    options
   )
 
   // Run webpack with webpack-dev-server.

@@ -9,7 +9,7 @@ import {
 } from 'fs'
 import { join, normalize } from 'path'
 import formatJson from 'pakag'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
 import parse from 'parse-gitignore'
 import { tsconfig } from '../configuration/tsconfig.js'
@@ -68,7 +68,7 @@ const createSingleRspackConfiguration = (
   }
 
   // With clone plugins etc. (non-serializable properties) will be gone.
-  configuration = merge(configuration, userConfiguration, { clone: false })
+  configuration = deepmerge(configuration, userConfiguration)
 
   // Apply user edits.
   if (afterMergeConfiguration) {
@@ -195,7 +195,7 @@ const writeOnlyUserConfig = (
     // eslint-disable-next-line no-param-reassign
     delete userConfig.extends
     adaptConfigToRoot(packageConfig)
-    const mergedUserConfig = merge(userConfig, packageConfig, { clone: false })
+    const mergedUserConfig = deepmerge(userConfig, packageConfig)
     writeFileSync(userTSConfigPath, formatJson(JSON.stringify(mergedUserConfig), { sort: false }))
   } catch (_) {
     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
@@ -323,7 +323,7 @@ export const writePackageJson = async (postinstall: boolean) => {
   // Merge existing configuration with additional required attributes.
   // Existing properties override generated configuration to allow
   // the user to configure it their way.
-  const mergedPackageJson = merge(generatedPackageJson, packageContents)
+  const mergedPackageJson = deepmerge(generatedPackageJson, packageContents)
 
   // Format with prettier and sort before writing.
   writeFileSync(packageJsonPath, formatJson(JSON.stringify(mergedPackageJson)))

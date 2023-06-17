@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'fs'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { defineConfig } from 'cypress'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { join } from 'path'
 
 const importFileIfExists = async (path, readableName, warn = false) => {
@@ -68,6 +68,4 @@ const defaults = {
   },
 }
 
-export default defineConfig(
-  merge(merge(defaults, userConfig, { clone: true }), packageJsonConfig, { clone: true })
-)
+export default defineConfig(deepmerge(defaults, userConfig, packageJsonConfig))

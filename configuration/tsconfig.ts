@@ -1,4 +1,4 @@
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { join } from 'path'
 import { NormalizedEntry } from '../types'
 import { options } from '../utility/options'
@@ -39,7 +39,7 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
     packageTSConfig.include.push('../../../test')
   }
 
-  userTSConfig = merge(userTSConfig, tsconfigUserOverrides, { clone: false })
+  userTSConfig = deepmerge(userTSConfig, tsconfigUserOverrides)
 
   return [userTSConfig, packageTSConfig]
 }

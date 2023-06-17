@@ -1,6 +1,6 @@
 import { sep } from 'path'
 import { Command } from 'commander'
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 
 export const getCliInputs = <T>(
   specification: { [key: string]: 'string' | 'number' | 'boolean' },
@@ -21,5 +21,5 @@ export const getCliInputs = <T>(
 
   // 3 Input methods: Programmatic (options argument), CLI (argv) or
   // User prompt if previous input methods empty.
-  return merge(options, program.opts(), { clone: true }) as T
+  return deepmerge(options, program.opts()) as T
 }

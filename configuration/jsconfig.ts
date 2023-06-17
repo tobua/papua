@@ -1,4 +1,4 @@
-import merge from 'deepmerge'
+import { deepmerge } from 'deepmerge-ts'
 import { join } from 'path'
 import { getPluginBasePath } from '../utility/path'
 
@@ -15,7 +15,7 @@ export const jsconfig = (jsconfigUserOverrides = {}) => {
     },
   }
 
-  userJSConfig = merge(userJSConfig, jsconfigUserOverrides, { clone: false })
+  userJSConfig = deepmerge(userJSConfig, jsconfigUserOverrides)
 
   return [userJSConfig, packageJSConfig]
 }
