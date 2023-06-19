@@ -26,6 +26,9 @@ export const tsconfig = (tsconfigUserOverrides = {}) => {
     compilerOptions: {
       jsx: 'react-jsx',
       esModuleInterop: true,
+      target: 'esnext',
+      module: 'esnext',
+      moduleResolution: 'bundler',
       outDir: `../../../${options().output}`,
       baseUrl: '../../..',
       lib: ['esnext', 'dom'],

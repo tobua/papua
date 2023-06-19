@@ -195,7 +195,7 @@ const writeOnlyUserConfig = (
     // eslint-disable-next-line no-param-reassign
     delete userConfig.extends
     adaptConfigToRoot(packageConfig)
-    const mergedUserConfig = deepmerge(userConfig, packageConfig)
+    const mergedUserConfig = deepmerge(packageConfig, userConfig)
     writeFileSync(userTSConfigPath, formatJson(JSON.stringify(mergedUserConfig), { sort: false }))
   } catch (_) {
     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
