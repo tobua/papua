@@ -4,6 +4,7 @@ import { RspackOptions, Plugins, RspackPluginInstance } from '@rspack/core'
 import urlJoin from 'url-join'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 // import WorkboxWebpackPlugin from 'workbox-webpack-plugin'
+import type { WebpackInjectManifestOptions } from 'workbox-build'
 import { options } from '../utility/options'
 import { getProjectBasePath } from '../utility/path'
 import { log } from '../utility/helper'
@@ -36,7 +37,7 @@ const getPlugins = (development: boolean) => {
     }
 
     // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.InjectManifest#InjectManifest
-    const workboxOptions = {
+    const workboxOptions: WebpackInjectManifestOptions = {
       swSrc: serviceWorkerSourcePath,
       ...options().workbox,
     }

@@ -1,14 +1,23 @@
 import { join } from 'path'
 import { check } from 'tcp-port-used'
 import { test, expect, afterEach, vi } from 'vitest'
-import { environment, prepare, packageJson, file } from 'jest-fixture'
+import {
+  environment,
+  prepare,
+  packageJson,
+  file,
+  listFilesMatching,
+  wait,
+  readFile,
+} from 'jest-fixture'
 import { createRspackConfig } from './utility/configuration'
 import { start } from '../index'
 
 const [fixturePath] = environment('start')
 
 afterEach(() => {
-  vi.resetModules()
+  // resetMocks or resetModules will have no effect.
+  vi.doUnmock(join(fixturePath, 'rspack.config.js'))
 })
 
 const rspackConfig = createRspackConfig()
@@ -16,13 +25,7 @@ const rspackConfig = createRspackConfig()
 test('Start script builds assets and occupies port.', async () => {
   prepare([packageJson('start'), file('index.js', `console.log('start-script')`)])
 
-  const { url, port, stop } = await start({
-    devMiddleware: {
-      // NOTE writeToDisk option currently disabled in @rspack/dev-middleware as it doesn't work yet.
-      // https://github.com/web-infra-dev/rspack/blob/44dc1e8ba98eb21e9b412b59a551fd08c8747c35/packages/rspack-dev-middleware/src/index.ts
-      writeToDisk: true,
-    },
-  })
+  const { url, port, stop } = await start({})
 
   expect(url).toEqual(`localhost:${port}`)
 
@@ -208,3 +211,26 @@ test('rspack.config.js also works with multiple devServer properties that are th
 
   expect(await check(port, 'localhost')).toEqual(false)
 }, 10000) // NOTE timed out on windows.
+
+test('Files can be written to disk by dev-server.', async () => {
+  const { dist } = prepare([packageJson('start'), file('index.js', `console.log('start-script')`)])
+
+  const { stop } = await start({
+    devMiddleware: {
+      writeToDisk: true,
+    },
+  })
+
+  await wait(1)
+
+  const files = listFilesMatching('*', dist)
+
+  expect(files.length).toBe(2)
+  expect(files).toContain('index.html')
+  expect(files).toContain('main.js')
+
+  expect(readFile(join(dist, 'index.html'))).toContain('start App')
+  expect(readFile(join(dist, 'main.js'))).toContain('start-script')
+
+  await stop()
+})
