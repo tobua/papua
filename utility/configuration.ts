@@ -103,12 +103,11 @@ export const loadRspackConfig = async (development: boolean) => {
   let userConfiguration: UserConfiguration & { default?: any } = {}
   let afterMergeConfiguration
   const userConfigurationPath = join(getProjectBasePath(), 'rspack.config.js')
-  const windowsFileProtocol = process.platform === 'win32' ? 'file://' : ''
 
   try {
     // Works with module.exports = {} and export default {}.
     // The latter only if type in project is set to ES Modules.
-    userConfiguration = await import(`${windowsFileProtocol}${userConfigurationPath}`)
+    userConfiguration = await import(userConfigurationPath)
 
     if (userConfiguration.after && typeof userConfiguration.after === 'function') {
       afterMergeConfiguration = userConfiguration.after

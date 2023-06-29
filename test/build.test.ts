@@ -1,5 +1,5 @@
 import { existsSync } from 'fs'
-import { join } from 'path'
+import { join, sep } from 'path'
 import { test, expect, beforeEach } from 'vitest'
 import {
   environment,
@@ -315,7 +315,7 @@ test('Favicon can be customized.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
   const imageFiles = listFilesMatching('**/*.png', '.')
 
-  expect(htmlContents).toContain('<link rel=icon href=nested/hello.png>')
+  expect(htmlContents).toContain(`<link rel=icon href=nested${sep}hello.png>`)
   expect(imageFiles).toContain('dist/nested/hello.png')
 })
 
