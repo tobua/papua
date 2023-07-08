@@ -1,4 +1,4 @@
-import { cpSync, existsSync, rmSync } from 'fs'
+import { cpSync, existsSync, rmSync, mkdirSync } from 'fs'
 import { join } from 'path'
 import http from 'http'
 import openBrowser from 'open'
@@ -45,9 +45,7 @@ export default async (inputs: Partial<Inputs> = {}) => {
 
   log('Building...')
   const outputPath = join(getProjectBasePath(), options().output)
-  if (existsSync(outputPath)) {
-    rmSync(outputPath, { recursive: true })
-  }
+  rmSync(outputPath, { recursive: true, force: true })
 
   if (!watch) {
     await runBuild(false)
@@ -56,20 +54,19 @@ export default async (inputs: Partial<Inputs> = {}) => {
   }
 
   // Wrap dist files in public path folder.
-  if (hasPublicPath) {
+  if (hasPublicPath && existsSync(outputPath)) {
     const tempPath = join(getProjectBasePath(), '.temp')
+    mkdirSync(tempPath, { recursive: true })
     cpSync(outputPath, tempPath, {
       recursive: true,
     })
-    if (outputPath) {
-      rmSync(outputPath, { recursive: true })
-    }
-    cpSync(tempPath, join(getProjectBasePath(), options().output, options().publicPath), {
+    rmSync(outputPath, { recursive: true, force: true })
+    const publicPathWrapperPath = join(getProjectBasePath(), options().output, options().publicPath)
+    mkdirSync(publicPathWrapperPath, { recursive: true })
+    cpSync(tempPath, publicPathWrapperPath, {
       recursive: true,
     })
-    if (tempPath) {
-      rmSync(tempPath, { recursive: true })
-    }
+    rmSync(tempPath, { recursive: true, force: true })
   }
 
   let configuration: ServeConfig = {

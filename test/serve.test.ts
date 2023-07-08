@@ -51,6 +51,31 @@ test('Port can be customized.', async () => {
   expect(await check(port, 'localhost')).toEqual(false)
 })
 
+test('Public path can be added and output location be changed.', async () => {
+  prepare([
+    packageJson('serve-public-path', { papua: { publicPath: '/nested', output: 'build' } }),
+    file('index.js', `console.log('serve-public-path')`),
+  ])
+
+  const dist = join(process.cwd(), 'build')
+
+  const { url, port, close } = await serve()
+
+  expect(existsSync(join(dist, 'nested/index.html'))).toEqual(true)
+
+  expect(url).toEqual(`http://localhost:${port}/nested`)
+
+  expect(await check(port, 'localhost')).toEqual(true)
+
+  const html = await (await fetch(`http://localhost:${port}/nested/index.html`)).text()
+
+  expect(html).toContain('serve-public-path App')
+
+  await close()
+
+  expect(await check(port, 'localhost')).toEqual(false)
+})
+
 test('Build can be run in watch mode.', async () => {
   const { dist } = prepare([
     packageJson('serve-watch'),
