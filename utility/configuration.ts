@@ -26,7 +26,13 @@ import {
   refresh,
 } from './helper'
 import { options } from './options'
-import { getProjectBasePath, getWorkspacePaths, isWorkspace, setWorkspacePath } from './path'
+import {
+  getPluginBasePath,
+  getProjectBasePath,
+  getWorkspacePaths,
+  isWorkspace,
+  setWorkspacePath,
+} from './path'
 import { Dependencies, HtmlOptions } from '../types'
 import { isTest } from './test'
 
@@ -258,7 +264,6 @@ export const writeGitIgnore = (gitIgnoreUserOverrides: string[] = []) => {
   let entries = []
 
   if (existsSync(gitIgnorePath)) {
-    // @ts-ignore
     const existingGitignoreLines = parse(readFileSync(gitIgnorePath, 'utf8')).patterns
     entries = entries.concat(existingGitignoreLines)
   }
@@ -269,6 +274,18 @@ export const writeGitIgnore = (gitIgnoreUserOverrides: string[] = []) => {
   entries = [...new Set(entries), '']
 
   writeFileSync(gitIgnorePath, entries.join('\r\n'))
+}
+
+export const writePrettierIgnore = (prettierIgnoreUserOverrides: string[] = []) => {
+  const prettierIgnorePath = join(getPluginBasePath(), 'configuration/.prettierignore')
+  let entries = []
+
+  entries = entries.concat([options().output]).concat(prettierIgnoreUserOverrides)
+
+  // Remove duplicates, add empty line at the end
+  entries = [...new Set(entries), '']
+
+  writeFileSync(prettierIgnorePath, entries.join('\r\n'))
 }
 
 export const removePropertiesToUpdate = (pkg) => {
@@ -352,6 +369,7 @@ export async function writeConfiguration(postinstall = false) {
     writeJSConfig(packageContents.papua.jsconfig)
     writeTSConfig(packageContents.papua.tsconfig)
     writeGitIgnore(packageContents.papua.gitignore)
+    writePrettierIgnore(packageContents.papua.prettierIgnore)
     installLocalDependencies(packageContents.localDependencies)
     setWorkspacePath('.')
   }

@@ -34,7 +34,7 @@ const consoleLogMock = vi.fn()
 console.log = consoleLogMock
 
 test('Basic check of all three linters.', async () => {
-  const initialIndexJs = `import { styles } from './cli.js'; console.log('test')`
+  const initialIndexJs = `import { styles } from './cli.js'; const method = (value) => value * 2; console.log('test',method());`
 
   prepare([
     packageJson('lint'),
@@ -73,6 +73,9 @@ console.log(first, second)`
   // Prettier
   expect(initialIndexJs).not.toContain('\n')
   expect(formattedIndexJs).toContain('\n')
+  expect(formattedIndexJs).not.toContain(':') // semi: false
+  expect(formattedIndexJs).toContain('(value)') // No trailingComma all
+  expect(formattedIndexJs).toContain("'test', method()") // Space added
 
   // NOTE might be failing due to debug statements...
   expect(consoleLogMock.mock.calls.length).toEqual(5)

@@ -10,6 +10,7 @@ import {
   contentsForFilesMatching,
   readFile,
   json,
+  writeFile,
 } from 'jest-fixture'
 import { build } from '../index'
 import { refresh } from '../utility/helper'
@@ -484,6 +485,15 @@ test('Installs listed localDependencies.', async () => {
     ),
   ])
 
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore')
+  )
+  writeFile(
+    'node_modules/papua/configuration/template.html',
+    readFile('../../../configuration/template.html')
+  )
+
   await writeConfiguration(false)
   await writeConfiguration(false) // Can be run multiple times.
 
@@ -529,6 +539,15 @@ test('localDependencies also work with TypeScript and ES Modules.', async () => 
     // Imports symlinked modules.
     file('index.ts', `import { localDependency } from 'local'; console.log(localDependency())`),
   ])
+
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore')
+  )
+  writeFile(
+    'node_modules/papua/configuration/template.html',
+    readFile('../../../configuration/template.html')
+  )
 
   await writeConfiguration(false)
 
@@ -589,6 +608,24 @@ test('localDependencies work when importing horizontally (even with cycles).', a
       `import { higherDependency } from 'higher'; import { lowerDependency } from 'lower'; console.log(higherDependency(), lowerDependency())`
     ),
   ])
+
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore')
+  )
+  writeFile(
+    'node_modules/papua/configuration/template.html',
+    readFile('../../../configuration/template.html')
+  )
+
+  writeFile(
+    'base/node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore')
+  )
+  writeFile(
+    'base/node_modules/papua/configuration/template.html',
+    readFile('../../../configuration/template.html')
+  )
 
   setCwd(join(process.cwd(), 'base'))
   refresh()

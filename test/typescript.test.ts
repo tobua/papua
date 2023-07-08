@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import { test, expect, vi } from 'vitest'
-import { environment, prepare, packageJson, file } from 'jest-fixture'
+import { environment, prepare, packageJson, file, writeFile, readFile } from 'jest-fixture'
 import { build, configure } from '../index'
 
 environment('typescript')
@@ -17,6 +17,15 @@ test('Build with typescript errors fails.', async () => {
   // If build fails process.exit will be called with 1.
   // @ts-ignore
   const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {})
+
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore')
+  )
+  writeFile(
+    'node_modules/papua/configuration/template.html',
+    readFile('../../../configuration/template.html')
+  )
 
   configure()
   await build(false)

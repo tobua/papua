@@ -194,6 +194,18 @@
         "react": {
           "type": "boolean"
         },
+        "gitignore": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prettierIgnore": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "cypress": {
           "description": "Configuration added to default Cypress configuration.",
           "type": "object"

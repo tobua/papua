@@ -8,6 +8,7 @@ import {
   writeTSConfig,
   writePackageJson,
   writeConfiguration,
+  writePrettierIgnore,
 } from '../utility/configuration'
 import { createConfigurationDirectory } from './utility/create-configuration-directory'
 
@@ -71,6 +72,11 @@ test('Configures multiple packages in workspaces setup.', async () => {
       },
     }),
   ])
+
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore')
+  )
 
   await writeConfiguration(false)
 
@@ -244,6 +250,41 @@ test('Generates proper gitignore for typescript.', () => {
   expect(contents).toEqual(
     ['node_modules', 'package-lock.json', 'tsconfig.json', 'dist', ''].join('\r\n')
   )
+})
+
+test('Generates prettierignore with default entries.', () => {
+  prepare([packageJson('prettierignore'), file('index.js', '')])
+
+  const prettierignorePath = join(fixturePath, 'node_modules/papua/configuration/.prettierignore')
+  writeFile(prettierignorePath, readFile('../../../configuration/.prettierignore'))
+
+  writePrettierIgnore([])
+
+  expect(existsSync(prettierignorePath)).toEqual(true)
+
+  const contents = readFile(prettierignorePath)
+
+  expect(contents).toEqual(['dist', ''].join('\r\n'))
+})
+
+test('Generates prettierignore with additional entries and custom output directory.', async () => {
+  prepare([
+    packageJson('prettierignore', {
+      papua: { prettierIgnore: ['configuration'], output: 'build' },
+    }),
+    file('index.js', ''),
+  ])
+
+  const prettierignorePath = join(fixturePath, 'node_modules/papua/configuration/.prettierignore')
+  writeFile(prettierignorePath, readFile('../../../configuration/.prettierignore'))
+
+  await writeConfiguration(false)
+
+  expect(existsSync(prettierignorePath)).toEqual(true)
+
+  const contents = readFile(prettierignorePath)
+
+  expect(contents).toEqual(['build', 'configuration', ''].join('\r\n'))
 })
 
 test('Creates cypress.config.js with project default properties.', async () => {

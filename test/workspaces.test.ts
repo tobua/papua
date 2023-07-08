@@ -8,6 +8,8 @@ import {
   listFilesMatching,
   contentsForFilesMatching,
   json,
+  writeFile,
+  readFile,
 } from 'jest-fixture'
 import { existsSync } from 'fs'
 import { build } from '../index'
@@ -28,6 +30,15 @@ test('Configuration paths properly resolved in a workspaces setup.', async () =>
     json('nested/deep/second/package.json', { dependencies: { papua: 'latest' } }),
     file('nested/deep/second/index.ts', `console.log('second')`),
   ])
+
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore')
+  )
+  writeFile(
+    'node_modules/papua/configuration/template.html',
+    readFile('../../../configuration/template.html')
+  )
 
   await writeConfiguration(false)
 
@@ -143,6 +154,15 @@ test('localDependencies work with workspaces setup and cyclical import.', async 
   setCwd(join(process.cwd(), 'demo'))
   setWorkspacePath('.')
   refresh()
+
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../../configuration/.prettierignore')
+  )
+  writeFile(
+    'node_modules/papua/configuration/template.html',
+    readFile('../../../../configuration/template.html')
+  )
 
   await writeConfiguration(false)
 

@@ -18,7 +18,9 @@
     },
     "workbox": {
       "hello": 1
-    }
+    },
+    "gitignore": ["test/fixture"],
+    "prettierIgnore": ["test"]
   },
   "localDependencies": {
     "padua": "../padua"
