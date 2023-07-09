@@ -872,3 +872,26 @@ test('Code is transformed according to ES version derived from browserslist.', a
 
   expect(mainJsContents).not.toContain('...')
 })
+
+test('Builds multiple times with customized output.', async () => {
+  prepare([
+    packageJson('build-custom-output', { papua: { output: 'public' } }),
+    file('index.js', `console.log('test')`),
+  ])
+
+  const dist = join(process.cwd(), 'public')
+
+  // Rspack will fail if file with same hash is emitted again, build cleans output first.
+  await build(false)
+  await build(false)
+
+  expect(existsSync(dist)).toBe(true)
+  expect(existsSync(join(dist, 'index.html'))).toBe(true)
+
+  // JS for main chunk is available.
+  expect(listFilesMatching('*.js', dist).length).toBe(1)
+  // No source map in production.
+  expect(listFilesMatching('*.js.map', dist).length).toBe(0)
+  // No favicon by default.
+  expect(listFilesMatching('**/*.png', dist).length).toBe(0)
+})

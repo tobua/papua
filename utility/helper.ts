@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync, writeFileSync, rmSync } from 'fs'
 import { join } from 'path'
 import { create } from 'logua'
 import formatPackageJson from 'pakag'
@@ -90,3 +90,8 @@ export const deepForEach = (value: object | any[], callback: DeepForEachCallback
 
 export const hasLocalDependencies = (dependencies: { [key: string]: string }) =>
   dependencies && typeof dependencies === 'object' && Object.keys(dependencies).length > 0
+
+// Rspack fails when a file with the same hash is emitted again, causing issues running build twice.
+export const cleanOuput = (output: string) => {
+  rmSync(join(getProjectBasePath(), output), { recursive: true, force: true })
+}

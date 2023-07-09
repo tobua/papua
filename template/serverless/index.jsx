@@ -26,7 +26,7 @@ function Count() {
       <p>
         Set maximum:{' '}
         <input
-          placeholer="Maximum"
+          placeholder="Maximum"
           type="number"
           min="0"
           max="999"

@@ -1,13 +1,12 @@
 import join from 'url-join'
+import { Todo } from 'data/todo'
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
     window.location.hostname === '[::1]' ||
     // 127.0.0.0/8 are considered localhost for IPv4.
-    window.location.hostname.match(
-      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-    )
+    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 )
 
 function registerValidSW(swUrl, config) {
@@ -25,6 +24,16 @@ function registerValidSW(swUrl, config) {
             if (navigator.serviceWorker.controller) {
               // eslint-disable-next-line no-console
               console.log('New content is available, close all tabs to update.')
+
+              // Force contents to update on reload.
+              if (registration && registration.waiting) {
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' })
+              }
+
+              // Timeout to ensure message passed.
+              setTimeout(() => {
+                Todo.setUpdateAvailable()
+              }, 100)
 
               if (config && config.onUpdate) {
                 config.onUpdate(registration)
@@ -67,9 +76,7 @@ function checkValidServiceWorker(swUrl, config) {
     })
     .catch(() =>
       // eslint-disable-next-line no-console
-      console.log(
-        'No internet connection found. App is running in offline mode.'
-      )
+      console.log('No internet connection found. App is running in offline mode.')
     )
 }
 
@@ -83,7 +90,7 @@ export function register(config) {
     }
 
     window.addEventListener('load', () => {
-      const swUrl = join(process.env.PUBLIC_URL, 'service-worker.js')
+      const swUrl = join(process.env.PUBLIC_URL, '/service-worker.js')
 
       if (isLocalhost) {
         checkValidServiceWorker(swUrl, config)

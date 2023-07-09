@@ -1,9 +1,12 @@
 import { rspack } from '@rspack/core'
 import { loadRspackConfig } from '../utility/configuration'
-import { log } from '../utility/helper'
+import { log, cleanOuput } from '../utility/helper'
 import { logStats, logError, recompiling } from '../utility/stats'
+import { options } from '../utility/options'
 
 export default async (development = true) => {
+  cleanOuput(options().output)
+
   const configuration = await loadRspackConfig(development)
 
   const compiler = rspack(configuration)

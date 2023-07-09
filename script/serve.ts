@@ -4,7 +4,7 @@ import http from 'http'
 import openBrowser from 'open'
 import handler from 'serve-handler'
 import { deepmerge } from 'deepmerge-ts'
-import { log, freePort } from '../utility/helper'
+import { log, freePort, cleanOuput } from '../utility/helper'
 import { options } from '../utility/options'
 import runBuild from './build'
 import runWatch from './watch'
@@ -45,7 +45,7 @@ export default async (inputs: Partial<Inputs> = {}) => {
 
   log('Building...')
   const outputPath = join(getProjectBasePath(), options().output)
-  rmSync(outputPath, { recursive: true, force: true })
+  cleanOuput(options().output)
 
   if (!watch) {
     await runBuild(false)

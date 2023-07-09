@@ -17,6 +17,7 @@ const TodosStore = class {
   data = observable<TodoStore>([])
   input = ''
   loading = true
+  updateAvailable = false // If true PWA assets will be updated upon reload.
 
   constructor() {
     makeAutoObservable(this)
@@ -55,6 +56,10 @@ const TodosStore = class {
     runInAction(() => {
       this.data.remove(todo)
     })
+  }
+
+  setUpdateAvailable() {
+    this.updateAvailable = true
   }
 }
 

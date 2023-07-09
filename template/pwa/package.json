@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "@types/react": "^18.2.8",
-    "@types/react-dom": "^18.2.4",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
     "@types/url-join": "^4.0.1",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
-    "papua": "^3.0.0",
+    "papua": "webpack",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "url-join": "^5.0.0",
@@ -14,5 +14,8 @@
     "workbox-precaching": "^7.0.0",
     "workbox-routing": "^7.0.0",
     "workbox-strategies": "^7.0.0"
+  },
+  "overrides": {
+    "typescript": ">= 5"
   }
 }

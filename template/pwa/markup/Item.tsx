@@ -1,37 +1,36 @@
 import { useState, CSSProperties } from 'react'
 import { Todo, TodoStore } from 'data/todo'
 
-const styles = (active: boolean) =>
-  ({
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    outline: 'none',
-    ...(active && {
-      fontWeight: 'bold',
-    }),
-  } as CSSProperties)
+const styles = (active: boolean): CSSProperties => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  marginBottom: 10,
+  outline: 'none',
+  ...(active && {
+    fontWeight: 'bold',
+  }),
+})
 
-const buttonStyles = (active: boolean) =>
-  ({
-    appearance: 'none',
-    background: 'black',
-    color: 'white',
-    border: 'none',
-    borderRadius: 50,
-    opacity: 0.2,
-    cursor: 'pointer',
-    outline: 'none',
-    ...(active && {
-      opacity: 1,
-    }),
-  } as CSSProperties)
+const buttonStyles = (active: boolean): CSSProperties => ({
+  appearance: 'none',
+  background: 'black',
+  color: 'white',
+  border: 'none',
+  borderRadius: 50,
+  opacity: 0.2,
+  cursor: 'pointer',
+  outline: 'none',
+  fontSize: 16,
+  ...(active && {
+    opacity: 1,
+  }),
+})
 
 interface Props {
   todo: TodoStore
 }
 
-export const Item = ({ todo }: Props) => {
+export function Item({ todo }: Props) {
   const [active, setActive] = useState(false)
   return (
     <div
@@ -43,11 +42,7 @@ export const Item = ({ todo }: Props) => {
       onMouseLeave={() => setActive(false)}
       onFocus={() => setActive(true)}
       onBlur={() => setActive(false)}
-      onKeyPress={(event) => {
-        if (event.key === 'Enter') {
-          Todo.remove(todo)
-        }
-      }}
+      onKeyDown={(event) => event.key === 'Enter' && Todo.remove(todo)}
     >
       <span>{todo.title}</span>
       <button
