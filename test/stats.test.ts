@@ -130,7 +130,7 @@ test('Message for successful type check when building for production.', async ()
     readFile('../../../configuration/template.html')
   )
 
-  configure() // Required for tsconfig.json
+  await configure() // Required for tsconfig.json
   await build(false)
 
   const output = consoleLogMock.mock.calls.join(EOL)
@@ -151,7 +151,7 @@ test('Message for successful type check also present when errors.', async () => 
     readFile('../../../configuration/template.html')
   )
 
-  configure() // Required for tsconfig.json
+  await configure() // Required for tsconfig.json
   await build(false)
 
   const output = consoleLogMock.mock.calls.join(EOL)
@@ -159,4 +159,20 @@ test('Message for successful type check also present when errors.', async () => 
   expect(output).toContain("'number' is not assignable to type 'string'")
   expect(output).toContain('Type check finished')
   expect(output).toContain('index.ts (main)')
+})
+
+test('JSX in regular JS will show an error pointing to the source.', async () => {
+  prepare([
+    packageJson('stats-jsx-in-js'),
+    file('index.js', `const Component = () => <p>hello</p>`),
+  ])
+
+  await build(false)
+
+  const output = consoleLogMock.mock.calls.join(EOL)
+
+  expect(output).toContain('2 Errors:')
+  expect(output).toContain('JavaScript parsing error')
+  expect(output).toContain('Expression expected')
+  expect(output).toContain('<p>hello</p>')
 })

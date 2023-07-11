@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
-import formatMessages from 'webpack-format-messages'
 import { MultiCompiler, MultiStats, Stats } from '@rspack/core'
 import { log } from './helper'
 import { options } from './options'
@@ -58,7 +57,7 @@ export const logStats = (
         .join(', ')}`
     )
 
-    let assets = Object.keys(stats.compilation.assets).map((name) => {
+    const assets = Object.keys(stats.compilation.assets).map((name) => {
       const asset = stats.compilation.assets[name]
 
       return {
@@ -71,7 +70,7 @@ export const logStats = (
       console.log(`  ${chalk.bold.cyan(asset.name)}  ${prettyBytes(asset.size)}`)
     )
 
-    const { warnings, errors } = formatMessages(stats)
+    const { warnings, errors } = stats.toJson({}, true)
 
     if (warnings.length) {
       console.log('')
@@ -79,7 +78,7 @@ export const logStats = (
 
       warnings.forEach((warning) => {
         console.log('')
-        console.log(warning)
+        console.log(warning.formatted)
       })
     }
 
@@ -90,7 +89,7 @@ export const logStats = (
 
       errors.forEach((error) => {
         console.log('')
-        console.log(error)
+        console.log(error.formatted)
       })
     }
 

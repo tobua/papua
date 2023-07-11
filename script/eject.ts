@@ -9,7 +9,7 @@ const templates = {
   html: {
     title: 'HTML Template',
     file: 'index.html',
-    handler: (file: string) => {
+    handler: async (file: string) => {
       cpSync(
         join(getPluginBasePath(), 'configuration/template.html'),
         join(getProjectBasePath(), file),
@@ -18,7 +18,7 @@ const templates = {
       log(`Template created in ${join(getProjectBasePath(), file)}`)
 
       if (file !== 'index.html') {
-        editPackageJson({ papua: { html: { template: file } } })
+        await editPackageJson({ papua: { html: { template: file } } })
         log(`HTML configuration edited in package.json to point to ${file}`)
       }
     },
@@ -94,6 +94,6 @@ export default async (inputs = {}) => {
   console.log('')
 
   if (action.handler) {
-    action.handler(file || action.file)
+    await action.handler(file || action.file)
   }
 }

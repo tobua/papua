@@ -131,7 +131,7 @@ test('Adds an empty package.json if none can be found.', async () => {
   expect(Object.keys(pkg.scripts).length).toEqual(1)
 })
 
-test('Generates jsconfig extending package config.', () => {
+test('Generates jsconfig extending package config.', async () => {
   prepare([packageJson('simple'), file('index.js', 'console.log("test")')])
 
   const jsconfigPath = join(fixturePath, 'jsconfig.json')
@@ -139,7 +139,7 @@ test('Generates jsconfig extending package config.', () => {
   createConfigurationDirectory(fixturePath)
   writeFile('node_modules/papua/configuration/jsconfig.json', {})
 
-  writeJSConfig({})
+  await writeJSConfig({})
 
   expect(existsSync(jsconfigPath)).toBe(true)
   expect(existsSync(packageConfigPath)).toBe(true)
@@ -154,7 +154,7 @@ test('Generates jsconfig extending package config.', () => {
 
   expect(typeof contentsPackage.compilerOptions).toEqual('object')
 
-  writeJSConfig({ compilerOptions: { jsx: 'react' } })
+  await writeJSConfig({ compilerOptions: { jsx: 'react' } })
 
   const contentsWithOptions = readFile('jsconfig.json')
   const contentsPackageWithOptions = readFile('node_modules/papua/configuration/jsconfig.json')
@@ -166,7 +166,7 @@ test('Generates jsconfig extending package config.', () => {
   )
 })
 
-test('Generates tsconfig extending package config.', () => {
+test('Generates tsconfig extending package config.', async () => {
   prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
   const tsconfigPath = join(fixturePath, 'tsconfig.json')
@@ -174,7 +174,7 @@ test('Generates tsconfig extending package config.', () => {
   createConfigurationDirectory(fixturePath)
   writeFile('node_modules/papua/configuration/tsconfig.json', {})
 
-  writeTSConfig({})
+  await writeTSConfig({})
 
   expect(existsSync(tsconfigPath)).toBe(true)
   expect(existsSync(packageConfigPath)).toBe(true)
@@ -189,7 +189,7 @@ test('Generates tsconfig extending package config.', () => {
   expect(typeof contentsPackage.compilerOptions).toEqual('object')
   expect(contentsPackage.compilerOptions.baseUrl).toEqual('../../..')
 
-  writeTSConfig({ compilerOptions: { module: 'commonjs' } })
+  await writeTSConfig({ compilerOptions: { module: 'commonjs' } })
 
   const contentsWithOptions = readFile('tsconfig.json')
   const contentsPackageWithOptions = readFile('node_modules/papua/configuration/tsconfig.json')
@@ -201,13 +201,13 @@ test('Generates tsconfig extending package config.', () => {
   )
 })
 
-test('Fallback to put whole tsconfig into user folder if not writable.', () => {
+test('Fallback to put whole tsconfig into user folder if not writable.', async () => {
   prepare([packageJson('typescript'), file('index.ts', `console.log('typescript')`)])
 
   const tsconfigPath = join(fixturePath, 'tsconfig.json')
   const packageConfigPath = join(fixturePath, 'node_modules/papua/configuration/tsconfig.json')
 
-  writeTSConfig({ compilerOptions: { module: 'commonjs' } })
+  await writeTSConfig({ compilerOptions: { module: 'commonjs' } })
 
   expect(existsSync(tsconfigPath)).toEqual(true)
   expect(existsSync(packageConfigPath)).toEqual(false)

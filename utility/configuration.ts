@@ -8,10 +8,11 @@ import {
   symlinkSync,
 } from 'fs'
 import { join, normalize } from 'path'
-import formatJson from 'pakag'
+import { formatPackageJson } from 'pakag'
 import { deepmerge } from 'deepmerge-ts'
 import { MultiRspackOptions, RspackOptions } from '@rspack/core'
 import parse from 'parse-gitignore'
+import pEachSeries from 'p-each-series'
 import { tsconfig } from '../configuration/tsconfig.js'
 import { jsconfig } from '../configuration/jsconfig.js'
 import { packageJson } from '../configuration/package'
@@ -159,7 +160,7 @@ export const loadRspackConfig = async (development: boolean) => {
   return configuration
 }
 
-const writeUserAndPackageConfig = (
+const writeUserAndPackageConfig = async (
   filename: string,
   userConfig: object,
   packageConfig: object,
@@ -167,8 +168,14 @@ const writeUserAndPackageConfig = (
   packageTSConfigPath: string
 ) => {
   try {
-    writeFileSync(packageTSConfigPath, formatJson(JSON.stringify(packageConfig), { sort: false }))
-    writeFileSync(userTSConfigPath, formatJson(JSON.stringify(userConfig), { sort: false }))
+    writeFileSync(
+      packageTSConfigPath,
+      await formatPackageJson(JSON.stringify(packageConfig), { sort: false })
+    )
+    writeFileSync(
+      userTSConfigPath,
+      await formatPackageJson(JSON.stringify(userConfig), { sort: false })
+    )
   } catch (_) {
     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
   }
@@ -190,7 +197,7 @@ const adaptConfigToRoot = (packageConfig: object) => {
   })
 }
 
-const writeOnlyUserConfig = (
+const writeOnlyUserConfig = async (
   filename: string,
   userConfig: any,
   packageConfig: object,
@@ -201,13 +208,16 @@ const writeOnlyUserConfig = (
     delete userConfig.extends
     adaptConfigToRoot(packageConfig)
     const mergedUserConfig = deepmerge(packageConfig, userConfig)
-    writeFileSync(userTSConfigPath, formatJson(JSON.stringify(mergedUserConfig), { sort: false }))
+    writeFileSync(
+      userTSConfigPath,
+      await formatPackageJson(JSON.stringify(mergedUserConfig), { sort: false })
+    )
   } catch (_) {
     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
   }
 }
 
-const writePackageAndUserFile = (
+const writePackageAndUserFile = async (
   shouldRemove: boolean,
   filename: string,
   getConfiguration: Function,
@@ -238,7 +248,7 @@ const writePackageAndUserFile = (
       // eslint-disable-next-line no-bitwise
       constants.F_OK | constants.R_OK | constants.W_OK
     )
-    writeUserAndPackageConfig(
+    await writeUserAndPackageConfig(
       filename,
       userConfig,
       packageConfig,
@@ -247,17 +257,15 @@ const writePackageAndUserFile = (
     )
   } catch (_) {
     // Package config cannot be written, write full contents to user file.
-    writeOnlyUserConfig(filename, userConfig, packageConfig, userTSConfigPath)
+    await writeOnlyUserConfig(filename, userConfig, packageConfig, userTSConfigPath)
   }
 }
 
-export const writeTSConfig = (tsConfigUserOverrides = {}) => {
+export const writeTSConfig = (tsConfigUserOverrides = {}) =>
   writePackageAndUserFile(!options().typescript, 'tsconfig.json', tsconfig, tsConfigUserOverrides)
-}
 
-export const writeJSConfig = (jsConfigUserOverrides = {}) => {
+export const writeJSConfig = (jsConfigUserOverrides = {}) =>
   writePackageAndUserFile(options().typescript, 'jsconfig.json', jsconfig, jsConfigUserOverrides)
-}
 
 export const writeGitIgnore = (gitIgnoreUserOverrides: string[] = []) => {
   const gitIgnorePath = join(getProjectBasePath(), '.gitignore')
@@ -342,7 +350,7 @@ export const writePackageJson = async (postinstall: boolean) => {
   const mergedPackageJson = deepmerge(generatedPackageJson, packageContents)
 
   // Format with prettier and sort before writing.
-  writeFileSync(packageJsonPath, formatJson(JSON.stringify(mergedPackageJson)))
+  writeFileSync(packageJsonPath, await formatPackageJson(JSON.stringify(mergedPackageJson)))
 
   if (!mergedPackageJson.papua) {
     mergedPackageJson.papua = {}
@@ -354,9 +362,7 @@ export const writePackageJson = async (postinstall: boolean) => {
 export async function writeConfiguration(postinstall = false) {
   const workspaces = await getWorkspacePaths()
 
-  // Ensures asynchronous code is run in series.
-  // eslint-disable-next-line no-restricted-syntax
-  for (const workspacePath of workspaces) {
+  const setupWorkspace = async (workspacePath) => {
     setWorkspacePath(workspacePath)
     // Clear options cache and load options for current workspace.
     refresh()
@@ -364,15 +370,15 @@ export async function writeConfiguration(postinstall = false) {
     const { packageContents } = await writePackageJson(postinstall)
     // Skip modifying the project in case it's being installed for later programmatic use by a plugin.
     if (postinstall && isPlugin(packageContents)) {
-      return null
+      return
     }
-    writeJSConfig(packageContents.papua.jsconfig)
-    writeTSConfig(packageContents.papua.tsconfig)
+    await writeJSConfig(packageContents.papua.jsconfig)
+    await writeTSConfig(packageContents.papua.tsconfig)
     writeGitIgnore(packageContents.papua.gitignore)
     writePrettierIgnore(packageContents.papua.prettierIgnore)
     installLocalDependencies(packageContents.localDependencies)
     setWorkspacePath('.')
   }
 
-  return null
+  await pEachSeries(workspaces, setupWorkspace)
 }

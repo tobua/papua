@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, rmSync } from 'fs'
 import { join } from 'path'
 import { create } from 'logua'
-import formatPackageJson from 'pakag'
+import { formatPackageJson } from 'pakag'
 import getPort, { portNumbers } from 'get-port'
 import { deepmerge } from 'deepmerge-ts'
 import isPlainObject from 'lodash.isplainobject'
@@ -40,13 +40,13 @@ export const removeLeadingSlash = (path) => path.replace(/^\/*/, '')
 
 export const freePort = async () => getPort({ port: portNumbers(3000, 3100) })
 
-export const editPackageJson = (edits = {}) => {
+export const editPackageJson = async (edits = {}) => {
   const packageJsonPath = join(getProjectBasePath(), 'package.json')
   let packageContents = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
 
   packageContents = deepmerge(packageContents, edits)
 
-  const formattedContents = formatPackageJson(JSON.stringify(packageContents))
+  const formattedContents = await formatPackageJson(JSON.stringify(packageContents))
 
   writeFileSync(packageJsonPath, formattedContents)
 }

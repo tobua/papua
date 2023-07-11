@@ -183,6 +183,7 @@ export default (configuration, isDevelopment) => ({
 })
 
 // Optionally edit the resulting configuration after merging.
+// Called once for each configuration object.
 export const after = (configuration) => {
   // Remove file-loader
   configuration.module.rules.splice(2, 1)
