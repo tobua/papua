@@ -1,7 +1,9 @@
 import { CSSProperties } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Todo } from 'markup/Todo'
+import { Status } from 'markup/Status'
 import { register } from 'background/registration'
+import rspackLogo from 'asset/rspack.png'
 
 const styles: CSSProperties = {
   display: 'flex',
@@ -19,7 +21,11 @@ const contentStyles: CSSProperties = {
   maxWidth: '100%',
 }
 
-const textStyles: CSSProperties = {
+const footerStyles: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 20,
   textAlign: 'center',
 }
 
@@ -33,6 +39,11 @@ const headingStyles: CSSProperties = {
   margin: 0,
 }
 
+const imageStyles: CSSProperties = {
+  width: 50,
+  height: 50,
+}
+
 createRoot(document.body).render(
   <div style={styles}>
     <header style={styles}>
@@ -42,14 +53,18 @@ createRoot(document.body).render(
     <main style={contentStyles}>
       <Todo />
     </main>
-    <footer style={textStyles}>
-      Built with the{' '}
-      <a style={linkStyles} href="https://github.com/tobua/papua/tree/main/template/pwa">
-        papua PWA template
-      </a>
-      .
+    <footer style={footerStyles}>
+      <span>
+        Built with the{' '}
+        <a style={linkStyles} href="https://github.com/tobua/papua/tree/main/template/pwa">
+          papua PWA template
+        </a>{' '}
+        running on Rspack.
+      </span>
+      <img style={imageStyles} src={rspackLogo} alt="Powered by Rspack" />
+      <Status />
     </footer>
   </div>
 )
 
-register({})
+register()

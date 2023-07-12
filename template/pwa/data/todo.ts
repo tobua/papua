@@ -18,10 +18,24 @@ const TodosStore = class {
   input = ''
   loading = true
   updateAvailable = false // If true PWA assets will be updated upon reload.
+  offline = !window.navigator.onLine // true when PWA running on cached assets.
+  error: boolean | string = false // true when PWA registration errored.
+  ready = false // true when Service Worker is ready.
 
   constructor() {
     makeAutoObservable(this)
     this.load()
+
+    window.addEventListener('online', () =>
+      runInAction(() => {
+        this.offline = false
+      })
+    )
+    window.addEventListener('offline', () =>
+      runInAction(() => {
+        this.offline = true
+      })
+    )
   }
 
   load = async () => {
@@ -60,6 +74,18 @@ const TodosStore = class {
 
   setUpdateAvailable() {
     this.updateAvailable = true
+  }
+
+  setOffline() {
+    this.offline = true
+  }
+
+  setError(error = true) {
+    this.error = error
+  }
+
+  setReady() {
+    this.ready = true
   }
 }
 

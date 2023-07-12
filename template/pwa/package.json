@@ -1,11 +1,16 @@
 {
+  "papua": {
+    "hash": false,
+    "title": "Progressive Web App"
+  },
   "dependencies": {
     "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
+    "@types/react-dom": "^18.2.7",
     "@types/url-join": "^4.0.1",
-    "mobx": "^6.9.0",
-    "mobx-react-lite": "^3.4.3",
-    "papua": "webpack",
+    "inject-manifest-plugin": "^0.1.1",
+    "mobx": "^6.9.1",
+    "mobx-react-lite": "^4.0.3",
+    "papua": "^5.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "url-join": "^5.0.0",
@@ -14,8 +19,5 @@
     "workbox-precaching": "^7.0.0",
     "workbox-routing": "^7.0.0",
     "workbox-strategies": "^7.0.0"
-  },
-  "overrides": {
-    "typescript": ">= 5"
   }
 }

@@ -9,11 +9,11 @@ const isLocalhost = Boolean(
     window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 )
 
-function registerValidSW(swUrl, config) {
+function registerValidSW(swUrl: string) {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
-      // eslint-disable-next-line no-param-reassign
+      Todo.setReady()
       registration.onupdatefound = () => {
         const installingWorker = registration.installing
         if (installingWorker == null) {
@@ -22,40 +22,21 @@ function registerValidSW(swUrl, config) {
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
-              // eslint-disable-next-line no-console
-              console.log('New content is available, close all tabs to update.')
-
               // Force contents to update on reload.
               if (registration && registration.waiting) {
                 registration.waiting.postMessage({ type: 'SKIP_WAITING' })
               }
-
               // Timeout to ensure message passed.
-              setTimeout(() => {
-                Todo.setUpdateAvailable()
-              }, 100)
-
-              if (config && config.onUpdate) {
-                config.onUpdate(registration)
-              }
-            } else {
-              // eslint-disable-next-line no-console
-              console.log('Content is cached for offline use.')
-              if (config && config.onSuccess) {
-                config.onSuccess(registration)
-              }
+              setTimeout(() => Todo.setUpdateAvailable(), 100)
             }
           }
         }
       }
     })
-    .catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error('Error during service worker registration:', error)
-    })
+    .catch(() => Todo.setError())
 }
 
-function checkValidServiceWorker(swUrl, config) {
+function checkValidServiceWorker(swUrl: string) {
   fetch(swUrl, {
     headers: { 'Service-Worker': 'script' },
   })
@@ -71,21 +52,17 @@ function checkValidServiceWorker(swUrl, config) {
           })
         })
       } else {
-        registerValidSW(swUrl, config)
+        registerValidSW(swUrl)
       }
     })
-    .catch(() =>
-      // eslint-disable-next-line no-console
-      console.log('No internet connection found. App is running in offline mode.')
-    )
+    .catch(() => Todo.setOffline())
 }
 
-export function register(config) {
+export function register() {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href)
     if (publicUrl.origin !== window.location.origin) {
-      // eslint-disable-next-line no-console
-      console.log("not registering PWA, because origins don't match.")
+      Todo.setError()
       return
     }
 
@@ -93,13 +70,10 @@ export function register(config) {
       const swUrl = join(process.env.PUBLIC_URL, '/service-worker.js')
 
       if (isLocalhost) {
-        checkValidServiceWorker(swUrl, config)
-        navigator.serviceWorker.ready.then(() => {
-          // eslint-disable-next-line no-console
-          console.log('App served on localhost as a PWA.')
-        })
+        checkValidServiceWorker(swUrl)
+        navigator.serviceWorker.ready.then(() => Todo.setReady())
       } else {
-        registerValidSW(swUrl, config)
+        registerValidSW(swUrl)
       }
     })
   }
@@ -112,9 +86,6 @@ export function unregister() {
       .then((registration) => {
         registration.unregister()
       })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(error.message)
-      })
+      .catch((error) => Todo.setError(error.message))
   }
 }

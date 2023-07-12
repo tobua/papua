@@ -10,12 +10,12 @@ clientsClaim()
 // Otherwise TS error for missing variable.
 declare global {
   interface Window {
-    __WB_MANIFEST: any
+    INJECT_MANIFEST_PLUGIN: any
     skipWaiting: any
   }
 }
 
-precacheAndRoute(self.__WB_MANIFEST)
+precacheAndRoute(self.INJECT_MANIFEST_PLUGIN)
 
 const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$')
 registerRoute(
@@ -36,15 +36,14 @@ registerRoute(
 
     return true
   },
-  createHandlerBoundToURL(join(process.env.PUBLIC_URL, 'index.html'))
+  createHandlerBoundToURL(join(process.env.PUBLIC_URL as string, '/index.html'))
 )
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
-  ({ url }) =>
-    url.origin === self.location.origin && url.pathname.endsWith('.png'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: 'images',
     plugins: [
