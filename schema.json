@@ -210,8 +210,8 @@
           "description": "Configuration added to default Cypress configuration.",
           "type": "object"
         },
-        "workbox": {
-          "description": "Configuration added to workbox-webpack-plugin InjectManifest.",
+        "injectManifest": {
+          "description": "Configuration added to inject-manifest-plugin.",
           "type": "object"
         },
         "serve": {

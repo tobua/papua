@@ -33,14 +33,11 @@ const importFileIfExists = async (path, readableName, warn = false) => {
 }
 
 const importFileContents = async (fileName, readableName) => {
-  const filePath = `./../../../${fileName}`
-  const rootFilePath = join(process.cwd(), fileName)
-
-  return (
-    (await importFileIfExists(rootFilePath, readableName)) ||
-    (await importFileIfExists(filePath, readableName, true)) ||
-    {}
-  )
+  const filePath = process.env.PAPUA_TEST
+    ? join(process.cwd(), fileName)
+    : join(process.cwd(), '../../..', fileName)
+  const config = await importFileIfExists(filePath, readableName, !process.env.PAPUA_TEST)
+  return config ?? {}
 }
 
 const userConfig = await importFileContents('cypress.config.js', 'user cypress config')

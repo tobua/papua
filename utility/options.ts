@@ -20,7 +20,7 @@ const defaultOptions: Options = {
   test: 'test',
   entry: [],
   publicPath: '',
-  workbox: {},
+  injectManifest: {},
   title: 'papua App',
   hasTest: false,
   html: true,

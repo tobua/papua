@@ -1,6 +1,5 @@
 import { join } from 'path'
-import { Configuration as RspackConfiguration } from '@rspack/dev-server'
-import { Configuration } from 'webpack-dev-server'
+import { Configuration } from '@rspack/dev-server'
 import { options } from '../utility/options'
 import { isTest } from '../utility/test'
 
@@ -34,6 +33,5 @@ export const devServer = (port = 3000, headless = false) => {
     }
   }
 
-  // RspackConfiguration doesn't infer types above properly, therefore cast here.
-  return baseConfiguration as RspackConfiguration
+  return baseConfiguration
 }

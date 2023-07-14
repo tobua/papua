@@ -447,15 +447,41 @@ test('Service worker is built and injected with appropriate plugin if present.',
   const { dist } = prepare([
     packageJson('build'),
     file('index.js', 'console.log("hey")'),
-    file('service-worker.js', 'console.log("worker")'),
+    file('service-worker.js', 'console.log("worker", self.INJECT_MANIFEST_PLUGIN)'),
   ])
 
   await build(false)
 
-  const files = listFilesMatching('**/*.js', dist)
+  const files = listFilesMatching('**/*', dist)
 
-  // TODO workbox plugin not yet supported.
-  expect(files.length).toBe(1)
+  expect(files).toContain('service-worker.js')
+
+  expect(readFile('dist/index.html')).not.toContain('service-worker')
+  expect(readFile('dist/service-worker.js')).not.toContain('self.INJECT_MANIFEST_PLUGIN')
+})
+
+test('Inject manifest plugin can be disabled.', async () => {
+  const { dist } = prepare([
+    packageJson('build', {
+      papua: {
+        entry: { main: 'index.js', 'my-worker': 'service-worker.js' },
+        injectManifest: false,
+      },
+    }),
+    file('index.js', 'console.log("hey")'),
+    file('service-worker.js', 'console.log("worker", self.INJECT_MANIFEST_PLUGIN)'),
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*', dist)
+
+  expect(files).not.toContain('service-worker.js')
+  expect(readFile('dist/index.html')).toContain('my-worker')
+
+  const contents = contentsForFilesMatching('my-worker*.js', dist)
+
+  expect(contents[0].contents).toContain('self.INJECT_MANIFEST_PLUGIN')
 })
 
 test('Installs listed localDependencies.', async () => {

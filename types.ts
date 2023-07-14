@@ -1,5 +1,4 @@
 import type { Builtins, RspackOptions } from '@rspack/core'
-import type { WebpackInjectManifestOptions } from 'workbox-build'
 
 type Unpacked<T> = T extends (infer U)[] ? U : T
 export type HtmlOptions = Unpacked<Builtins['html']>
@@ -45,7 +44,7 @@ export interface Options {
   typescript: boolean
   test: false | string
   publicPath: string
-  workbox: Optional<WebpackInjectManifestOptions, 'swSrc'>
+  injectManifest: Object | false
   hasTest: boolean
   title: string
   html: boolean | HtmlOptions
@@ -88,5 +87,3 @@ export interface Package {
 
 export type Entry = string | string[] | { [key: string]: string | string[] }
 export type NormalizedEntry = string[] | { [key: string]: string[] }
-
-type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>

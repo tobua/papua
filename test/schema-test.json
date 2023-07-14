@@ -16,7 +16,7 @@
     "html": {
       "filename": "index.html"
     },
-    "workbox": {
+    "injectManifest": {
       "hello": 1
     },
     "gitignore": ["test/fixture"],

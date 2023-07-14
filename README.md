@@ -128,10 +128,11 @@ a `papua` property to your `package.json` with the following options available:
     cypress: {
       defaultCommandTimeout: 6000
     },
-    // Options for workbox-webpack-plugin InjectManifest
-    workbox: {
-      exclude: ['extension/dist']
+    // Options for inject-manifest-plugin
+    injectManifest: {
+      exclude: ['extension/dist/*']
     },
+    injectManifest: false, // Disable plugin.
     // Added to tsconfig.json, jsconfig.json.
     jsconfig: {},
     tsconfig: {

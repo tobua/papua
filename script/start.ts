@@ -18,7 +18,7 @@ export default async (options: Configuration = {}, inputs = {}) => {
 
   const configuration = await loadRspackConfig(true)
 
-  // Webpack-Dev-Server logs hidden through webpack logger.
+  // dev-server logs hidden through logger.
   configuration[0].infrastructureLogging = {
     level: 'warn',
   }
@@ -36,7 +36,6 @@ export default async (options: Configuration = {}, inputs = {}) => {
     options
   )
 
-  // Run webpack with webpack-dev-server.
   compiler.hooks.invalid.tap('invalid', recompiling)
 
   compiler.hooks.done.tap('done', (stats) => {
