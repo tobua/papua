@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
-import { MultiCompiler, MultiStats, Stats } from '@rspack/core'
+import { Compiler, MultiStats, Stats } from '@rspack/core'
 import { log } from './helper'
 import { options } from './options'
 
@@ -9,32 +9,25 @@ export const startServer = (url: string) => {
   log(`Starting server on ${url}...`)
 }
 
-const getEntries = (compiler: MultiCompiler) => {
+const getEntries = (compiler: Compiler) => {
   const entries = []
+  const { entry } = compiler.compilation.options
 
-  compiler.compilers.forEach((innerCompiler) => {
-    const { entry } = innerCompiler.compilation.options
-
-    Object.keys(entry).forEach((entryKey) => {
-      entries.push([
-        entryKey,
-        // Filter out DevServer injections.
-        entry[entryKey].import.filter(
-          (module) =>
-            !module.includes('node_modules/@rspack') && !module.includes('node_modules/webpack')
-        ),
-      ])
-    })
+  Object.keys(entry).forEach((entryKey) => {
+    entries.push([
+      entryKey,
+      // Filter out DevServer injections.
+      entry[entryKey].import.filter(
+        (module) =>
+          !module.includes('node_modules/@rspack') && !module.includes('node_modules/webpack')
+      ),
+    ])
   })
 
   return entries
 }
 
-export const logStats = (
-  input: MultiStats | Stats,
-  development: boolean,
-  compiler: MultiCompiler
-) => {
+export const logStats = (input: MultiStats | Stats, development: boolean) => {
   const multiStats: Stats[] =
     input instanceof MultiStats ? input.stats : [input as unknown as Stats]
   multiStats.forEach((stats) => {
@@ -49,8 +42,7 @@ export const logStats = (
       )
     }
 
-    const entries = getEntries(compiler)
-
+    const entries = getEntries(stats.compilation.compiler)
     console.log(
       `${chalk.gray('Entry')} ${entries
         .map((entry) => `${entry[1].join(', ')} (${entry[0]})`)

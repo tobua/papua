@@ -1,5 +1,5 @@
 import { EOL } from 'os'
-import { test, expect, beforeEach, vi } from 'vitest'
+import { test, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   environment,
   prepare,
@@ -9,9 +9,11 @@ import {
   writeFile,
   readFile,
 } from 'jest-fixture'
+import { join } from 'path'
 import { build, configure } from '../index'
+import { createRspackConfig } from './utility/configuration'
 
-environment('stats')
+const [fixturePath] = environment('stats')
 
 const consoleLogMock = vi.fn()
 console.log = consoleLogMock
@@ -19,6 +21,12 @@ console.log = consoleLogMock
 beforeEach(() => {
   consoleLogMock.mockClear()
 })
+
+afterEach(() => {
+  vi.resetModules()
+})
+
+const rspackConfig = createRspackConfig()
 
 test('Stats list all generated assets.', async () => {
   const { dist } = prepare([
@@ -175,4 +183,47 @@ test('JSX in regular JS will show an error pointing to the source.', async () =>
   expect(output).toContain('JavaScript parsing error')
   expect(output).toContain('Expression expected')
   expect(output).toContain('<p>hello</p>')
+})
+
+test('Entry stats are separated by entries for each configuration.', async () => {
+  // Virtual mock, so that file doesn't necessarly have to exist.
+  vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
+
+  const { dist } = prepare([
+    packageJson('stats-multiple-configurations'),
+    file('first.js', 'console.log("first")'),
+    file('second.js', 'console.log("second")'),
+    file('third.js', 'console.log("third")'),
+  ])
+
+  // Reset previous imports/mocks.
+  rspackConfig.default = [
+    {
+      entry: { first: { import: './first.js' } },
+    },
+    {
+      entry: { second: { import: './second.js' } },
+    },
+    {
+      entry: { third: { import: './third.js' } },
+    },
+  ]
+  // Required for vitest mocking to work properly.
+  rspackConfig.after = undefined
+
+  await build(false)
+
+  const files = listFilesMatching('**/*.js', dist)
+
+  expect(files.length).toBe(3)
+
+  expect(consoleLogMock).toHaveBeenCalled()
+
+  const output = consoleLogMock.mock.calls.join(EOL)
+
+  // Three separate builds.
+  expect([...output.matchAll(/Build in/g)].length).toBe(3)
+  expect([...output.matchAll(/\.\/first\.js \(first\)/g)].length).toBe(1)
+  expect([...output.matchAll(/\.\/second\.js \(second\)/g)].length).toBe(1)
+  expect([...output.matchAll(/\.\/third\.js \(third\)/g)].length).toBe(1)
 })

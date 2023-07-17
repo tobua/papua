@@ -316,7 +316,7 @@ test('Favicon can be customized.', async () => {
   const htmlContents = readFile(join(dist, 'index.html'))
   const imageFiles = listFilesMatching('**/*.png', '.')
 
-  expect(htmlContents).toContain(`<link rel=icon href=nested${sep}hello.png>`)
+  expect(htmlContents).toContain(`<link rel=icon href=nested/hello.png>`)
   expect(imageFiles).toContain('dist/nested/hello.png')
 })
 
@@ -482,6 +482,29 @@ test('Inject manifest plugin can be disabled.', async () => {
   const contents = contentsForFilesMatching('my-worker*.js', dist)
 
   expect(contents[0].contents).toContain('self.INJECT_MANIFEST_PLUGIN')
+})
+
+test('Service Worker entry location and chunk name can be configured.', async () => {
+  const { dist } = prepare([
+    packageJson('build', {
+      papua: {
+        injectManifest: { file: './my-worker.ts', chunkName: 'some-worker' },
+      },
+    }),
+    file('index.js', 'console.log("hey")'),
+    file('my-worker.ts', 'console.log("worker", self.INJECT_MANIFEST_PLUGIN)'),
+  ])
+
+  await build(false)
+
+  const files = listFilesMatching('**/*', dist)
+
+  expect(files).toContain('some-worker.js')
+  expect(readFile('dist/index.html')).not.toContain('some-worker')
+
+  const contents = contentsForFilesMatching('some-worker*.js', dist)
+
+  expect(contents[0].contents).not.toContain('self.INJECT_MANIFEST_PLUGIN')
 })
 
 test('Installs listed localDependencies.', async () => {

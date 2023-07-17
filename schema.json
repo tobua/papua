@@ -212,7 +212,29 @@
         },
         "injectManifest": {
           "description": "Configuration added to inject-manifest-plugin.",
-          "type": "object"
+          "type": "object",
+          "properties": {
+            "file": {
+              "description": "The filename pointing to the service worker.",
+              "type": "string"
+            },
+            "injectionPoint": {
+              "description": "The variable in the service worker to replace with the manifest during the build.",
+              "type": "string"
+            },
+            "exclude": {
+              "description": "List of globs for files that should be excluded from the manifest.",
+              "type": "array"
+            },
+            "removeHash": {
+              "description": "Removes hash in the emitted filename of the service worker.",
+              "type": "boolean"
+            },
+            "chunkName": {
+              "description": "The name of the service worker chunk.",
+              "type": "string"
+            }
+          }
         },
         "serve": {
           "description": "Configuration passed to serve-handler package in serve script.",

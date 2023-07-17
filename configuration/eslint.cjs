@@ -26,6 +26,19 @@ const customRules = {
   'react/react-in-jsx-scope': 0,
   // Allow assignment to function param properties, like parameter.innerHTML = ...
   'no-param-reassign': [2, { props: false }],
+  // No warning when devDependencies are imported, as they are usually bundled and dependencies used to serve the bundle later.
+  // import/no-unresolved errors if a dependency is used that's not installed.
+  // This still errors if an unlisted dependency is imported.
+  'import/no-extraneous-dependencies': [
+    'error',
+    {
+      // NOTE docs seem to get the defaults wrong
+      // https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md
+      devDependencies: true,
+      optionalDependencies: true,
+      peerDependencies: true,
+    },
+  ],
 }
 
 const customSettings = {

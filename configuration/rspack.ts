@@ -12,22 +12,27 @@ const root = (folder: string) => resolve(process.cwd(), folder)
 
 const getPlugins = (development: boolean) => {
   const plugins: Plugins = []
+  const pluginOptions = options()
 
-  if (!development && options().typescript) {
+  if (!development && pluginOptions.typescript) {
     plugins.push(new TypeScriptWebpackPlugin() as unknown as RspackPluginInstance)
   }
 
-  const serviceWorkerFileName = `service-worker.${options().typescript ? 'ts' : 'js'}`
-  const serviceWorkerSourcePath = join(getProjectBasePath(), serviceWorkerFileName)
+  if (!development && pluginOptions.injectManifest) {
+    const serviceWorkerFileName =
+      pluginOptions.injectManifest.file ??
+      `./service-worker.${pluginOptions.typescript ? 'ts' : 'js'}`
+    const serviceWorkerSourcePath = join(getProjectBasePath(), serviceWorkerFileName)
 
-  if (existsSync(serviceWorkerSourcePath) && !development && options().injectManifest) {
-    plugins.push(
-      new InjectManifestPlugin({
-        file: serviceWorkerFileName,
-        removeHash: true,
-        ...options().injectManifest,
-      })
-    )
+    if (existsSync(serviceWorkerSourcePath)) {
+      plugins.push(
+        new InjectManifestPlugin({
+          file: serviceWorkerFileName,
+          removeHash: true,
+          ...pluginOptions.injectManifest,
+        })
+      )
+    }
   }
 
   return plugins

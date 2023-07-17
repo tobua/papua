@@ -1,4 +1,5 @@
 import type { Builtins, RspackOptions } from '@rspack/core'
+import type { Options as InjectManifestOptions } from 'inject-manifest-plugin'
 
 type Unpacked<T> = T extends (infer U)[] ? U : T
 export type HtmlOptions = Unpacked<Builtins['html']>
@@ -44,7 +45,7 @@ export interface Options {
   typescript: boolean
   test: false | string
   publicPath: string
-  injectManifest: Object | false
+  injectManifest: InjectManifestOptions | false
   hasTest: boolean
   title: string
   html: boolean | HtmlOptions
