@@ -126,6 +126,7 @@ export const loadRspackConfig = async (development: boolean) => {
   } catch (error) {
     if (existsSync(userConfigurationPath)) {
       log(`Failed to import user rspack configuration in ${userConfigurationPath}`, 'warning')
+      console.error(error)
     }
 
     // Ignore, no user configuration found.

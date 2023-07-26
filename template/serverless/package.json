@@ -13,6 +13,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "vercel": "^31.0.1"
+    "vercel": "^31.1.0"
   }
 }
