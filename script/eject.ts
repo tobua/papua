@@ -40,7 +40,8 @@ export default (configuration, isDevelopment) => ({
   // Add rspack modifications here.
 })
 
-// Optionally edit the resulting configuration after merging.
+// Optionally edit the resulting configurations after merging.
+// Called once for every configuration object (when default returns array).
 /** @type {(configuration: import('@rspack/core').RspackOptions) => import('@rspack/core').RspackOptions} */
 export const after = (configuration) => {
   // Modify configuration.

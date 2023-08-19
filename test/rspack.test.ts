@@ -95,6 +95,35 @@ test('User can add their own rspack configuration file.', async () => {
   expect(configurations[0].builtins?.emotion).toBe(true)
 })
 
+test(`Default export isn't required in custom configuration.`, async () => {
+  // Virtual mock, so that file doesn't necessarly have to exist.
+  vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
+
+  const loaderPluginMergeStructure = [packageJson('custom-configuration'), file('index.js', '')]
+
+  prepare(loaderPluginMergeStructure, fixturePath)
+
+  // Mocking import manually, as filesystem import is cached and filechanges not reflected.
+  rspackConfig.default = {}
+
+  const initialConfigurations = await loadRspackConfig(true)
+
+  expect(initialConfigurations.length).toBe(1)
+
+  prepare(loaderPluginMergeStructure, fixturePath)
+
+  rspackConfig.after = (config) => {
+    config.target = 'hello'
+    return config
+  }
+  rspackConfig.default = undefined // NOTE vitest mock import will fail without default property present.
+
+  const configurations = await loadRspackConfig(true)
+
+  expect(configurations.length).toBe(1)
+  expect(configurations[0].target).toBe('hello')
+})
+
 test('Multiple builds with different output locations.', async () => {
   vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
 
@@ -136,6 +165,7 @@ test('Multiple builds with different output locations.', async () => {
       },
     },
   ]
+  rspackConfig.after = undefined
 
   prepare([
     packageJson('multiple-builds', {

@@ -122,6 +122,8 @@ export const loadRspackConfig = async (development: boolean) => {
 
     if (userConfiguration.default) {
       userConfiguration = userConfiguration.default
+    } else if (userConfiguration.after) {
+      userConfiguration = {}
     }
   } catch (error) {
     if (existsSync(userConfigurationPath)) {

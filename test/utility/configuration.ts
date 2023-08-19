@@ -2,7 +2,7 @@ import { RspackOptions, MultiRspackOptions } from '@rspack/core'
 
 type RspackConfigMock = {
   __esModule: boolean
-  default:
+  default?:
     | RspackOptions
     | MultiRspackOptions
     | ((configuration: RspackOptions, isDevelopment: boolean) => RspackOptions | MultiRspackOptions)
