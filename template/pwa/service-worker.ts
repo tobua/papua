@@ -5,16 +5,17 @@ import { registerRoute } from 'workbox-routing'
 import { StaleWhileRevalidate } from 'workbox-strategies'
 import join from 'url-join'
 
-clientsClaim()
+clientsClaim() // Allows updating open service workers.
 
-// Otherwise TS error for missing variable.
+// Add types for the plugin and workbox.
 declare global {
   interface Window {
-    INJECT_MANIFEST_PLUGIN: any
-    skipWaiting: any
+    INJECT_MANIFEST_PLUGIN: { url: string; revision: string }[]
+    skipWaiting: Function
   }
 }
 
+// Add all assets generated during build to the browser cache.
 precacheAndRoute(self.INJECT_MANIFEST_PLUGIN)
 
 const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$')
@@ -54,8 +55,7 @@ registerRoute(
   })
 )
 
-// This allows the web app to trigger skipWaiting via
-// registration.waiting.postMessage({type: 'SKIP_WAITING'})
+// Update cached assets after reload without the need for the user to close all open tabs.
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()

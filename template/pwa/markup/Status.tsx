@@ -16,10 +16,22 @@ const badgeStyles = (error = false): CSSProperties => ({
   whiteSpace: 'nowrap',
 })
 
+const getReadyState = (ready: boolean | 'local') => {
+  if (!ready) {
+    return 'installing'
+  }
+
+  if (ready === 'local') {
+    return 'development (not installed)'
+  }
+
+  return 'ready'
+}
+
 export const Status = observer(() => (
   <div style={wrapperStyles}>
     <span style={badgeStyles(Todo.offline)}>{Todo.offline ? 'offline' : 'online'}</span>
-    <span style={badgeStyles(!Todo.ready)}>{!Todo.ready ? 'installing' : 'ready'}</span>
+    <span style={badgeStyles(!Todo.ready)}>{getReadyState(Todo.ready)}</span>
     <span style={badgeStyles(Todo.updateAvailable)}>
       {Todo.updateAvailable ? 'update available' : 'up-to-date'}
     </span>

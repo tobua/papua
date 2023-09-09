@@ -76,6 +76,10 @@ export function register() {
         registerValidSW(swUrl)
       }
     })
+  } else if (!('serviceWorker' in navigator)) {
+    Todo.setError('Service Worker feature not available.')
+  } else {
+    Todo.setReady('local')
   }
 }
 

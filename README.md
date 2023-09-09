@@ -192,3 +192,7 @@ export const after = (configuration) => {
   return configuration
 }
 ```
+
+## Deployment
+
+To deploy a papua to **Vercel** import the repository and ensure `Other Frameworks` is selected as the preset. Then override the build command with `npx papua build` and set the output folder to `dist`.
