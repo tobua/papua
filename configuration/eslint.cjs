@@ -28,8 +28,11 @@ const customRules = {
   'no-param-reassign': [2, { props: false }],
   // No warning when devDependencies are imported, as they are usually bundled and dependencies used to serve the bundle later.
   // import/no-unresolved errors if a dependency is used that's not installed.
-  // This still errors if an unlisted dependency is imported.
-  'import/no-extraneous-dependencies': ['error'],
+  // Documented defaults "true" don't seem to apply so set them explicitly.
+  'import/no-extraneous-dependencies': [
+    'error',
+    { devDependencies: true, optionalDependencies: true, peerDependencies: true },
+  ],
 }
 
 const customSettings = {

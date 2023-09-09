@@ -112,6 +112,7 @@ export default (development: boolean): RspackOptions => ({
   module: {
     // Matched from bottom to top!
     rules: [
+      // Images
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
         type: 'asset', // Auto-detect: Inline if < 8kb, external otherwise.
@@ -123,6 +124,11 @@ export default (development: boolean): RspackOptions => ({
       {
         test: /\.load\.(png|jpe?g|gif|svg)$/i,
         type: 'asset/resource', // Convert *.load.png asset to separate file loaded through request.
+      },
+      // Fonts
+      {
+        test: /\.(woff|woff2|otf|ttf)$/i,
+        type: 'asset/resource',
       },
     ],
   },

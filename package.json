@@ -91,6 +91,7 @@
     "padua": "^2.0.3",
     "react": "^18.2.0",
     "tcp-port-used": "^1.0.2",
+    "tobua": "^0.2.0",
     "vitest": "^0.34.4"
   },
   "peerDependencies": {

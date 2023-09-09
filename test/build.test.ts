@@ -1,5 +1,5 @@
 import { existsSync } from 'fs'
-import { join, sep } from 'path'
+import { join } from 'path'
 import { test, expect, beforeEach } from 'vitest'
 import {
   environment,
@@ -943,4 +943,18 @@ test('Builds multiple times with customized output.', async () => {
   expect(listFilesMatching('*.js.map', dist).length).toBe(0)
   // No favicon by default.
   expect(listFilesMatching('**/*.png', dist).length).toBe(0)
+})
+
+test('Can import fonts.', async () => {
+  const { dist } = prepare([
+    packageJson('build-font'),
+    file('index.js', `import tobua from 'tobua'; console.log(tobua)`),
+  ])
+
+  await build(false)
+
+  expect(listFilesMatching('*.woff2', dist).length).toBe(1)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+  expect(mainJsContents).toContain('.woff2')
 })
