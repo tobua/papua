@@ -107,7 +107,7 @@ test('Updates old package json properties.', async () => {
 
   pkg = readFile('package.json')
 
-  expect(pkg.engines.node).toEqual('>= 16')
+  expect(pkg.engines.node).toEqual('>= 18')
   expect(pkg.engines.test).toEqual('hello')
 })
 
