@@ -80,7 +80,7 @@
               "default": "auto",
               "description": "Allows to control how chunks should be sorted before they are included to the html."
             },
-            "excludeChunks": {
+            "excludedChunks": {
               "type": "array",
               "items": { "type": "string" },
               "description": "List all entries which should not be injected"

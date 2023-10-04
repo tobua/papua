@@ -34,7 +34,7 @@ const consoleLogMock = vi.fn()
 console.log = consoleLogMock
 
 test('Basic check of all three linters.', async () => {
-  const initialIndexJs = `import { styles } from './cli.js'; const method = (value) => value * 2; console.log('test',method());`
+  const initialIndexJs = `import { styles } from './cli.js'; const method = (value) => value * 2; console.log('test',method()); const longArguments = (firstLongArgument, secondLongArgument, thirdLongArgument, lastLongArgument) => null`
 
   prepare([
     packageJson('lint'),
@@ -74,7 +74,7 @@ console.log(first, second)`
   expect(initialIndexJs).not.toContain('\n')
   expect(formattedIndexJs).toContain('\n')
   expect(formattedIndexJs).not.toContain(':') // semi: false
-  expect(formattedIndexJs).toContain('(value)') // No trailingComma all
+  expect(formattedIndexJs).toContain('lastLongArgument,') // Trailing comman for multiple line arguments
   expect(formattedIndexJs).toContain("'test', method()") // Space added
 
   // NOTE might be failing due to debug statements...
