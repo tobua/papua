@@ -34,7 +34,7 @@ const consoleLogMock = vi.fn()
 console.log = consoleLogMock
 
 test('Basic check of all three linters.', async () => {
-  const initialIndexJs = `import { styles } from './cli.js'; const method = (value) => value * 2; console.log('test',method()); const longArguments = (firstLongArgument, secondLongArgument, thirdLongArgument, lastLongArgument) => null`
+  const initialIndexJs = `import { styles, unused } from './cli.js'; const method = (value) => value * 2; console.log('test',method(), styles); const longArguments = (firstLongArgument, secondLongArgument, thirdLongArgument, lastLongArgument) => null`
 
   prepare([
     packageJson('lint'),
@@ -43,6 +43,9 @@ test('Basic check of all three linters.', async () => {
       'cli.js',
       `const css = () => {}
 const styled = {}
+
+export const styles = {}
+export const unused = {}
 
 // Mock styled-components with @emotion
 const first = styled.div\`
@@ -57,7 +60,7 @@ const second = css\`
   height: 4fh;
 \`
 
-console.log(first, second)`
+console.log(first, second)`,
     ),
     file('node_modules/papua/configuration/eslint.cjs', eslintConfig),
     file('node_modules/papua/configuration/.prettierrc.json', prettierConfig),
@@ -76,6 +79,9 @@ console.log(first, second)`
   expect(formattedIndexJs).not.toContain(':') // semi: false
   expect(formattedIndexJs).toContain('lastLongArgument,') // Trailing comman for multiple line arguments
   expect(formattedIndexJs).toContain("'test', method()") // Space added
+  // Remove unused exports (eslint-plugin)
+  expect(formattedIndexJs).toContain('{ styles }')
+  expect(formattedIndexJs).not.toContain('unused')
 
   // NOTE might be failing due to debug statements...
   expect(consoleLogMock.mock.calls.length).toEqual(5)

@@ -17,8 +17,8 @@ export default async () => {
   const ignorePath = join(configurationPath, '.prettierignore')
 
   execSync(
-    `prettier --write "**/*.{ts,tsx,js,jsx}" --config "${configPath}" --ignore-path "${ignorePath}"`,
-    { stdio: 'inherit', cwd: process.cwd() }
+    `prettier --write "**/*.{ts,tsx,js,jsx,cjs,mjs}" --config "${configPath}" --ignore-path "${ignorePath}"`,
+    { stdio: 'inherit', cwd: process.cwd() },
   )
 
   console.log('')
@@ -28,7 +28,7 @@ export default async () => {
   // ESLint
   const linter = new ESLint({
     fix: true,
-    extensions: ['.js', '.ts', '.jsx', '.tsx'],
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.cjs', '.mjs'],
   })
   const eslintResults = await linter.lintFiles('.')
   await ESLint.outputFixes(eslintResults)
@@ -41,7 +41,7 @@ export default async () => {
 
   // Stylelint
   const stylelintResults = await lint({
-    files: '**/*.{js,jsx,ts,tsx}',
+    files: '**/*.{js,jsx,ts,tsx,cjs,mjs}',
     formatter: 'verbose',
     ignorePattern: [options().output],
     customSyntax: 'postcss-styled',

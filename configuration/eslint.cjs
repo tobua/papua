@@ -33,6 +33,16 @@ const customRules = {
     'error',
     { devDependencies: true, optionalDependencies: true, peerDependencies: true },
   ],
+  'unused-imports/no-unused-imports': 'error',
+  'unused-imports/no-unused-vars': [
+    'warn',
+    {
+      vars: 'all',
+      varsIgnorePattern: '^_',
+      args: 'after-used',
+      argsIgnorePattern: '^_',
+    },
+  ],
 }
 
 const customSettings = {
@@ -61,6 +71,7 @@ const findTSConfig = () => {
 module.exports = {
   extends: ['airbnb', 'prettier'],
   rules: customRules,
+  plugins: ['unused-imports'],
   ignorePatterns: ['dist'],
   env: {
     browser: true,
