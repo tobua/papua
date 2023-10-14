@@ -19,7 +19,8 @@ export const devServer = (port = 3000, headless = false) => {
   } as Configuration
 
   if (options().publicPath) {
-    baseConfiguration.open = !isTest() && (removeLeadingSlash(options().publicPath) || '/')
+    baseConfiguration.open =
+      baseConfiguration.open && !isTest() && (removeLeadingSlash(options().publicPath) || '/')
     // Leading and trailing slashes required.
     // Leading slash for bundle and trailing for assets.
     const publicPathWithSlashes = join('/', options().publicPath, '/')
