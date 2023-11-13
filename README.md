@@ -100,6 +100,7 @@ a `papua` property to your `package.json` with the following options available:
     entry: { main: './index.js', separate: ['./chunk.js', 'second.js'] },
     // Public path where the files are served from, default '.'.
     publicPath: '/app',
+    publicPath: '/', // Enables SPA rewrites to index.html for local development.
     // App title used in the template.
     title: 'My papua App',
     // Configure html file to be generated.

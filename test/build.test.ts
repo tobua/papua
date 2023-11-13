@@ -12,7 +12,7 @@ import {
   json,
   writeFile,
 } from 'jest-fixture'
-import { build } from '../index'
+import { build, configure } from '../index'
 import { refresh } from '../utility/helper'
 import { writeConfiguration } from '../utility/configuration'
 
@@ -40,6 +40,16 @@ test('Builds without errors.', async () => {
   expect(listFilesMatching('*.js.map', dist).length).toBe(0)
   // No favicon by default.
   expect(listFilesMatching('**/*.png', dist).length).toBe(0)
+})
+
+test('Works with TypeScript.', async () => {
+  const { dist } = prepare([packageJson('build-ts'), file('index.ts', `console.log('test')`)])
+
+  await configure() // Required for tsconfig.json
+  await build(false)
+
+  expect(existsSync(dist)).toBe(true)
+  expect(existsSync(join(dist, 'index.html'))).toBe(true)
 })
 
 test('Source map support can be enabled for production.', async () => {
@@ -85,7 +95,7 @@ test('No public path applied properly in bundle.', async () => {
     packageJson('publicpath'),
     file(
       'index.js',
-      `import rootLogo from 'logo.load.png'; import logo from 'nested/logo.load.png'; console.log(rootLogo, logo)`
+      `import rootLogo from 'logo.load.png'; import logo from 'nested/logo.load.png'; console.log(rootLogo, logo)`,
     ),
     {
       name: 'logo.load.png',
@@ -199,7 +209,7 @@ test('Html template can be customized.', async () => {
   <body>
     <p>${loadingMessage}</p>
   </body>
-</html>`
+</html>`,
     ),
   ])
 
@@ -229,7 +239,7 @@ test('Html template has no default title injected if set to false.', async () =>
 <html>
   <body>
   </body>
-</html>`
+</html>`,
     ),
   ])
 
@@ -431,7 +441,7 @@ test('Can import JSON.', async () => {
     packageJson('build'),
     file(
       'index.js',
-      `import content from './index.json'; import { hello } from './index.json'; console.log(content, hello)`
+      `import content from './index.json'; import { hello } from './index.json'; console.log(content, hello)`,
     ),
     json('index.json', { hello: 'world' }),
   ])
@@ -530,17 +540,17 @@ test('Installs listed localDependencies.', async () => {
     // Imports symlinked modules.
     file(
       'index.js',
-      `import somethang from 'somethang'; import anotherthang from 'anotherthang'; console.log(somethang, anotherthang)`
+      `import somethang from 'somethang'; import anotherthang from 'anotherthang'; console.log(somethang, anotherthang)`,
     ),
   ])
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
   await writeConfiguration(false)
@@ -591,11 +601,11 @@ test('localDependencies also work with TypeScript and ES Modules.', async () => 
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
   await writeConfiguration(false)
@@ -654,26 +664,26 @@ test('localDependencies work when importing horizontally (even with cycles).', a
     // Imports symlinked modules.
     file(
       'base/index.ts',
-      `import { higherDependency } from 'higher'; import { lowerDependency } from 'lower'; console.log(higherDependency(), lowerDependency())`
+      `import { higherDependency } from 'higher'; import { lowerDependency } from 'lower'; console.log(higherDependency(), lowerDependency())`,
     ),
   ])
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
   writeFile(
     'base/node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'base/node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
   setCwd(join(process.cwd(), 'base'))
@@ -829,7 +839,7 @@ test('Tree-shaking is applied to ES Modules.', async () => {
       'node_modules/my-module/index.js',
       `export default 'remove-me'
   export const hello = 'keep-me'
-  export const world = 'remove-me'`
+  export const world = 'remove-me'`,
     ),
   ])
 
@@ -849,7 +859,7 @@ test('Older syntax is not transformed by default.', async () => {
     packageJson('build-default'),
     file(
       'index.js',
-      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first }, first?.hello, first.id ||= 1)`
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first }, first?.hello, first.id ||= 1)`,
     ),
   ])
 
@@ -867,7 +877,7 @@ test('Code is transformed to specified ECMSScript version.', async () => {
     packageJson('build-es-version', { papua: { esVersion: 'es5' } }),
     file(
       'index.js',
-      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first }, first?.hello)`
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first }, first?.hello)`,
     ),
   ])
 
@@ -890,7 +900,7 @@ test('Code is transformed according to ES version derived from browserslist.', a
     }),
     file(
       'index.js',
-      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first })`
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first })`,
     ),
   ])
 
@@ -910,7 +920,7 @@ test('Code is transformed according to ES version derived from browserslist.', a
     }),
     file(
       'index.js',
-      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first })`
+      `const first = { hello: 'world' }; console.log('merge', { ...first, ...first })`,
     ),
     file('.browserslistrc', `IE 11`),
   ])

@@ -43,31 +43,24 @@ const createSingleRspackConfiguration = (
   baseConfiguration: RspackOptions,
   userConfiguration: UserConfiguration,
   afterMergeConfiguration: Function,
-  index = 0
+  index = 0,
 ) => {
   // Quick copy of builtins, as baseConfiguration is generated only once.
   let configuration: RspackOptions = {
     ...baseConfiguration,
     builtins: {
       ...{
-        html: [...baseConfiguration.builtins.html],
-        copy: { ...baseConfiguration.builtins.copy },
-        define: { ...baseConfiguration.builtins.define },
         presetEnv: { ...baseConfiguration.builtins.presetEnv },
       },
     },
-  }
-
-  if (userConfiguration.builtins?.html || index !== 0) {
-    delete configuration.builtins.html
-  }
-
-  if (userConfiguration.builtins?.copy) {
-    delete configuration.builtins.copy
-  }
-
-  if (userConfiguration.builtins?.define) {
-    delete configuration.builtins.define
+    // Plugin order: Define, Copy and Html (optional)
+    // Usage of legacy builtins by user will lead to warning.
+    plugins: [
+      !userConfiguration.builtins?.define && baseConfiguration.plugins[0],
+      !userConfiguration.builtins?.copy && baseConfiguration.plugins[1],
+      !userConfiguration.builtins?.html && index === 0 && baseConfiguration.plugins[2],
+      ...baseConfiguration.plugins.slice(3),
+    ].filter(Boolean),
   }
 
   if (userConfiguration.builtins?.presetEnv) {
@@ -92,15 +85,15 @@ const createSingleRspackConfiguration = (
 const createMultipleWebpackConfigurations = (
   baseConfiguration: RspackOptions,
   userConfigurations: UserConfiguration[],
-  afterMergeConfiguration: Function
+  afterMergeConfiguration: Function,
 ) => {
   const configurations = userConfigurations.map((userConfiguration, index) =>
     createSingleRspackConfiguration(
       baseConfiguration,
       userConfiguration,
       afterMergeConfiguration,
-      index
-    )
+      index,
+    ),
   )
 
   return configurations
@@ -149,14 +142,14 @@ export const loadRspackConfig = async (development: boolean) => {
       createSingleRspackConfiguration(
         baseConfiguration,
         userConfiguration,
-        afterMergeConfiguration
+        afterMergeConfiguration,
       ),
     ]
   } else {
     configuration = createMultipleWebpackConfigurations(
       baseConfiguration,
       userConfiguration,
-      afterMergeConfiguration
+      afterMergeConfiguration,
     )
   }
 
@@ -168,16 +161,16 @@ const writeUserAndPackageConfig = async (
   userConfig: object,
   packageConfig: object,
   userTSConfigPath: string,
-  packageTSConfigPath: string
+  packageTSConfigPath: string,
 ) => {
   try {
     writeFileSync(
       packageTSConfigPath,
-      await formatPackageJson(JSON.stringify(packageConfig), { sort: false })
+      await formatPackageJson(JSON.stringify(packageConfig), { sort: false }),
     )
     writeFileSync(
       userTSConfigPath,
-      await formatPackageJson(JSON.stringify(userConfig), { sort: false })
+      await formatPackageJson(JSON.stringify(userConfig), { sort: false }),
     )
   } catch (_) {
     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
@@ -204,7 +197,7 @@ const writeOnlyUserConfig = async (
   filename: string,
   userConfig: any,
   packageConfig: object,
-  userTSConfigPath: string
+  userTSConfigPath: string,
 ) => {
   try {
     // eslint-disable-next-line no-param-reassign
@@ -213,7 +206,7 @@ const writeOnlyUserConfig = async (
     const mergedUserConfig = deepmerge(packageConfig, userConfig)
     writeFileSync(
       userTSConfigPath,
-      await formatPackageJson(JSON.stringify(mergedUserConfig), { sort: false })
+      await formatPackageJson(JSON.stringify(mergedUserConfig), { sort: false }),
     )
   } catch (_) {
     log(`Couldn't write ${filename}, therefore this plugin might not work as expected`, 'warning')
@@ -224,7 +217,7 @@ const writePackageAndUserFile = async (
   shouldRemove: boolean,
   filename: string,
   getConfiguration: Function,
-  userConfigOverrides: object
+  userConfigOverrides: object,
 ) => {
   const userTSConfigPath = join(getProjectBasePath(), `./${filename}`)
   const packageTSConfigPath = getConfigurationFilePath(filename)
@@ -249,14 +242,14 @@ const writePackageAndUserFile = async (
     accessSync(
       packageTSConfigPath,
       // eslint-disable-next-line no-bitwise
-      constants.F_OK | constants.R_OK | constants.W_OK
+      constants.F_OK | constants.R_OK | constants.W_OK,
     )
     await writeUserAndPackageConfig(
       filename,
       userConfig,
       packageConfig,
       userTSConfigPath,
-      packageTSConfigPath
+      packageTSConfigPath,
     )
   } catch (_) {
     // Package config cannot be written, write full contents to user file.
@@ -323,7 +316,7 @@ const installLocalDependencies = (dependencies: Dependencies) => {
     } else if (!existsSync(absolutePath)) {
       log(
         `localDependency "${name}" pointing to a non-existing location: ${absolutePath}`,
-        'warning'
+        'warning',
       )
     }
   })

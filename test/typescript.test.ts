@@ -20,14 +20,14 @@ test('Build with typescript errors fails.', async () => {
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
-  configure()
+  await configure() // Required for tsconfig.json
   await build(false)
 
   // Build doesn't fail, but prints error.
@@ -38,7 +38,7 @@ test('Build with typescript errors fails.', async () => {
   // Output includes TypeScript error.
   expect(
     consoleLogMock.mock.calls.some((call) =>
-      call[0].includes("Type 'string' is not assignable to type 'number'.")
-    )
+      call[0].includes("Type 'string' is not assignable to type 'number'."),
+    ),
   ).toBe(true)
 })

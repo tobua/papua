@@ -10,6 +10,7 @@ import {
   wait,
   readFile,
 } from 'jest-fixture'
+import { HtmlRspackPlugin } from '@rspack/core'
 import { createRspackConfig } from './utility/configuration'
 import { start } from '../index'
 
@@ -174,13 +175,11 @@ test('rspack.config.js also works with multiple devServer properties that are th
     },
     {
       entry: { second: 'second.js' },
-      builtins: {
-        html: [
-          {
-            filename: 'second.html',
-          },
-        ],
-      },
+      plugins: [
+        new HtmlRspackPlugin({
+          filename: 'second.html',
+        }),
+      ],
       devServer: {
         devMiddleware: {
           publicPath: '/nested/',

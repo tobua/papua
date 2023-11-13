@@ -10,7 +10,7 @@ import {
   readFile,
   listFilesMatching,
 } from 'jest-fixture'
-import { Compiler } from '@rspack/core'
+import { Compiler, HtmlRspackPlugin } from '@rspack/core'
 import { createRspackConfig } from './utility/configuration'
 import { build } from '../index'
 import { loadRspackConfig } from '../utility/configuration'
@@ -48,7 +48,7 @@ test('Can use absolute and relative imports.', async () => {
       `import 'absolute.js';
 import './relative.js';
 
-console.log('index')`
+console.log('index')`,
     ),
     file('absolute.js', `console.log('absolute')`),
     file('relative.js', `console.log('relative')`),
@@ -139,9 +139,6 @@ test('Multiple builds with different output locations.', async () => {
           import: 'extension.js',
         },
       },
-      builtins: {
-        html: [],
-      },
       output: {
         path: join(fixturePath, 'extension/dist'),
       },
@@ -152,13 +149,11 @@ test('Multiple builds with different output locations.', async () => {
           import: 'blog.js',
         },
       },
-      builtins: {
-        html: [
-          {
-            publicPath: 'our/blog/',
-          },
-        ],
-      },
+      plugins: [
+        new HtmlRspackPlugin({
+          publicPath: 'our/blog/',
+        }),
+      ],
       output: {
         path: join(fixturePath, 'blog/dist'),
         publicPath: 'our/blog/',
@@ -262,7 +257,7 @@ test('Custom plugins and loaders can be used.', async () => {
       `module.exports = function MyLoader(content) {
   // This will be the return value of the import.
   return \`export default '${newContents}'\`
-}`
+}`,
     ),
   ]
 
@@ -329,7 +324,7 @@ test('Multiple html files can be generated with multiple configurations.', async
     {
       entry: './first.js',
       builtins: {
-        html: [], // Disable default html template.
+        html: [], // Disable default html template. (TODO with plugin)
       },
       devServer: {
         open: false,
@@ -337,26 +332,22 @@ test('Multiple html files can be generated with multiple configurations.', async
     },
     {
       entry: './second.js',
-      builtins: {
-        html: [
-          {
-            filename: 'second.html',
-          },
-        ],
-      },
+      plugins: [
+        new HtmlRspackPlugin({
+          filename: 'second.html',
+        }),
+      ],
     },
     {
       entry: './third.js',
       output: {
         path: join(fixturePath, 'dist/third'),
       },
-      builtins: {
-        html: [
-          {
-            filename: 'third.html',
-          },
-        ],
-      },
+      plugins: [
+        new HtmlRspackPlugin({
+          filename: 'third.html',
+        }),
+      ],
     },
   ]
   // Required for vitest mocking to work properly.

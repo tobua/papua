@@ -19,7 +19,7 @@ const getEntries = (compiler: Compiler) => {
       // Filter out DevServer injections.
       entry[entryKey].import.filter(
         (module) =>
-          !module.includes('node_modules/@rspack') && !module.includes('node_modules/webpack')
+          !module.includes('node_modules/@rspack') && !module.includes('node_modules/webpack'),
       ),
     ])
   })
@@ -37,8 +37,8 @@ export const logStats = (input: MultiStats | Stats, development: boolean) => {
           stats.compilation.endTime - stats.compilation.startTime,
           {
             verbose: true,
-          }
-        )}`
+          },
+        )}`,
       )
     }
 
@@ -46,7 +46,7 @@ export const logStats = (input: MultiStats | Stats, development: boolean) => {
     console.log(
       `${chalk.gray('Entry')} ${entries
         .map((entry) => `${entry[1].join(', ')} (${entry[0]})`)
-        .join(', ')}`
+        .join(', ')}`,
     )
 
     const assets = Object.keys(stats.compilation.assets).map((name) => {
@@ -59,7 +59,7 @@ export const logStats = (input: MultiStats | Stats, development: boolean) => {
     })
 
     assets.forEach((asset) =>
-      console.log(`  ${chalk.bold.cyan(asset.name)}  ${prettyBytes(asset.size)}`)
+      console.log(`  ${chalk.bold.cyan(asset.name)}  ${prettyBytes(asset.size)}`),
     )
 
     const { warnings, errors } = stats.toJson({}, true)

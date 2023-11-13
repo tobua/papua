@@ -1,42 +1,11 @@
-import { existsSync } from 'fs'
 import { resolve, join } from 'path'
-import { RspackOptions, Plugins, RspackPluginInstance } from '@rspack/core'
+import { RspackOptions } from '@rspack/core'
 import urlJoin from 'url-join'
-import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
-import { InjectManifestPlugin } from 'inject-manifest-plugin'
 import { options } from '../utility/options'
 import { getProjectBasePath } from '../utility/path'
-import { getBuiltins } from './rspack-builtins'
+import { getPlugins } from './rspack-plugins'
 
 const root = (folder: string) => resolve(process.cwd(), folder)
-
-const getPlugins = (development: boolean) => {
-  const plugins: Plugins = []
-  const pluginOptions = options()
-
-  if (!development && pluginOptions.typescript) {
-    plugins.push(new TypeScriptWebpackPlugin() as unknown as RspackPluginInstance)
-  }
-
-  if (!development && pluginOptions.injectManifest) {
-    const serviceWorkerFileName =
-      pluginOptions.injectManifest.file ??
-      `./service-worker.${pluginOptions.typescript ? 'ts' : 'js'}`
-    const serviceWorkerSourcePath = join(getProjectBasePath(), serviceWorkerFileName)
-
-    if (existsSync(serviceWorkerSourcePath)) {
-      plugins.push(
-        new InjectManifestPlugin({
-          file: serviceWorkerFileName,
-          removeHash: true,
-          ...pluginOptions.injectManifest,
-        })
-      )
-    }
-  }
-
-  return plugins
-}
 
 const getRoots = () => {
   const paths = []
@@ -105,7 +74,7 @@ export default (development: boolean): RspackOptions => ({
       development || !options().hash ? '[path][name][ext][query]' : '[hash][ext][query]',
   },
   devtool: getSourceMap(development),
-  plugins: getPlugins(development),
+  plugins: getPlugins(development, getPublicPath()),
   resolve: {
     modules: getRoots(),
   },
@@ -132,5 +101,13 @@ export default (development: boolean): RspackOptions => ({
       },
     ],
   },
-  builtins: getBuiltins(development, getPublicPath()),
+  builtins: {
+    presetEnv: {
+      mode: 'entry',
+      targets:
+        options().esVersion !== 'browserslist'
+          ? ['last 3 versions', '> 1%', 'not dead']
+          : undefined,
+    },
+  },
 })

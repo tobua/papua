@@ -1,7 +1,16 @@
 import { basename, join, relative } from 'path'
 import { cpSync, existsSync } from 'fs'
 import { deepmerge } from 'deepmerge-ts'
-import { RspackOptions } from '@rspack/core'
+import {
+  RspackOptions,
+  Plugins,
+  RspackPluginInstance,
+  DefinePlugin,
+  HtmlRspackPlugin,
+  CopyRspackPlugin,
+} from '@rspack/core'
+import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import { InjectManifestPlugin } from 'inject-manifest-plugin'
 import { options } from '../utility/options'
 import { getPluginBasePath, getProjectBasePath } from '../utility/path'
 import type { HtmlOptions, CopyOptions } from '../types'
@@ -28,7 +37,7 @@ const faviconPath = (icon: boolean | string) => {
       if (!customIconPath.includes(getProjectBasePath())) {
         log(
           `icon "${icon}" is located outside the project "${getProjectBasePath()}" and will be copied to the root.`,
-          'warning'
+          'warning',
         )
 
         const iconFileName = basename(customIconPath)
@@ -47,6 +56,16 @@ const faviconPath = (icon: boolean | string) => {
   }
 
   return path && relative(getProjectBasePath(), path)
+}
+
+const getCopyPlugin = () => {
+  const result: CopyOptions = { patterns: [] }
+
+  if (existsSync(join(process.cwd(), 'public'))) {
+    result.patterns.push({ from: 'public', globOptions: { ignore: ['**/.DS_Store'] } })
+  }
+
+  return result
 }
 
 export const htmlPlugin = (development: boolean, inputs?: boolean | HtmlOptions) => {
@@ -84,29 +103,43 @@ export const htmlPlugin = (development: boolean, inputs?: boolean | HtmlOptions)
   return htmlOptions
 }
 
-const getCopyPlugin = () => {
-  const result: CopyOptions = { patterns: [] }
+export const getPlugins = (development: boolean, publicPath: string): RspackOptions['plugins'] => {
+  const plugins: Plugins = []
+  const pluginOptions = options()
 
-  if (existsSync(join(process.cwd(), 'public'))) {
-    result.patterns.push({ from: 'public', globOptions: { ignore: ['**/.DS_Store'] } })
+  if (!development && pluginOptions.typescript) {
+    plugins.push(new TypeScriptWebpackPlugin() as unknown as RspackPluginInstance)
   }
 
-  return result
-}
+  plugins.push(
+    new DefinePlugin({
+      'process.env.PUBLIC_URL': JSON.stringify(publicPath),
+      'process.env.NODE_ENV': development ? '"development"' : '"production"',
+    }),
+  )
 
-export const getBuiltins = (
-  development: boolean,
-  publicPath: string
-): RspackOptions['builtins'] => ({
-  define: {
-    'process.env.PUBLIC_URL': JSON.stringify(publicPath),
-    'process.env.NODE_ENV': development ? '"development"' : '"production"',
-  },
-  html: options().html ? [htmlPlugin(development, options().html)] : [],
-  copy: getCopyPlugin(),
-  presetEnv: {
-    mode: 'entry',
-    targets:
-      options().esVersion !== 'browserslist' ? ['last 3 versions', '> 1%', 'not dead'] : undefined,
-  },
-})
+  plugins.push(new CopyRspackPlugin(getCopyPlugin()))
+
+  if (pluginOptions.html) {
+    plugins.push(new HtmlRspackPlugin(htmlPlugin(development, options().html)))
+  }
+
+  if (!development && pluginOptions.injectManifest) {
+    const serviceWorkerFileName =
+      pluginOptions.injectManifest.file ??
+      `./service-worker.${pluginOptions.typescript ? 'ts' : 'js'}`
+    const serviceWorkerSourcePath = join(getProjectBasePath(), serviceWorkerFileName)
+
+    if (existsSync(serviceWorkerSourcePath)) {
+      plugins.push(
+        new InjectManifestPlugin({
+          file: serviceWorkerFileName,
+          removeHash: true,
+          ...pluginOptions.injectManifest,
+        }),
+      )
+    }
+  }
+
+  return plugins
+}
