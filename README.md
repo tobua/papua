@@ -21,6 +21,8 @@ npm init now papua ./my-project
 npm init now papua . javascript
 ```
 
+Replace `npm init` with `bun create` if you're already living in the future 🚀
+
 The following [templates](https://github.com/tobua/papua/tree/main/template) are available:
 
 - default (TS + React)

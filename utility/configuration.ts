@@ -57,7 +57,8 @@ const createSingleRspackConfiguration = (
     // Usage of legacy builtins by user will lead to warning.
     plugins: [
       !userConfiguration.builtins?.define && baseConfiguration.plugins[0],
-      !userConfiguration.builtins?.copy && baseConfiguration.plugins[1],
+      // Copy and Html plugin will only be added automatically to first configuration.
+      !userConfiguration.builtins?.copy && index === 0 && baseConfiguration.plugins[1],
       !userConfiguration.builtins?.html && index === 0 && baseConfiguration.plugins[2],
       ...baseConfiguration.plugins.slice(3),
     ].filter(Boolean),

@@ -45,6 +45,15 @@ test('Builds without errors.', async () => {
 test('Works with TypeScript.', async () => {
   const { dist } = prepare([packageJson('build-ts'), file('index.ts', `console.log('test')`)])
 
+  writeFile(
+    'node_modules/papua/configuration/.prettierignore',
+    readFile('../../../configuration/.prettierignore'),
+  )
+  writeFile(
+    'node_modules/papua/configuration/template.html',
+    readFile('../../../configuration/template.html'),
+  )
+
   await configure() // Required for tsconfig.json
   await build(false)
 
