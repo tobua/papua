@@ -10,7 +10,7 @@ import {
 import { join, normalize } from 'path'
 import { formatPackageJson } from 'pakag'
 import { deepmerge } from 'deepmerge-ts'
-import { MultiRspackOptions, RspackOptions } from '@rspack/core'
+import type { MultiRspackOptions, RspackOptions } from '@rspack/core'
 import parse from 'parse-gitignore'
 import pEachSeries from 'p-each-series'
 import { tsconfig } from '../configuration/tsconfig.js'
@@ -48,11 +48,6 @@ const createSingleRspackConfiguration = (
   // Quick copy of builtins, as baseConfiguration is generated only once.
   let configuration: RspackOptions = {
     ...baseConfiguration,
-    builtins: {
-      ...{
-        presetEnv: { ...baseConfiguration.builtins.presetEnv },
-      },
-    },
     // Plugin order: Define, Copy and Html (optional)
     // Usage of legacy builtins by user will lead to warning.
     plugins: [
@@ -62,10 +57,6 @@ const createSingleRspackConfiguration = (
       !userConfiguration.builtins?.html && index === 0 && baseConfiguration.plugins[2],
       ...baseConfiguration.plugins.slice(3),
     ].filter(Boolean),
-  }
-
-  if (userConfiguration.builtins?.presetEnv) {
-    delete configuration.builtins.presetEnv
   }
 
   // With clone plugins etc. (non-serializable properties) will be gone.

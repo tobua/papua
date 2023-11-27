@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import prettyMs from 'pretty-ms'
 import prettyBytes from 'pretty-bytes'
-import { Compiler, MultiStats, Stats } from '@rspack/core'
+import type { Compiler, MultiStats, Stats } from '@rspack/core'
 import { log } from './helper'
 import { options } from './options'
 
@@ -27,9 +27,10 @@ const getEntries = (compiler: Compiler) => {
   return entries
 }
 
-export const logStats = (input: MultiStats | Stats, development: boolean) => {
-  const multiStats: Stats[] =
-    input instanceof MultiStats ? input.stats : [input as unknown as Stats]
+export const logStats = (input: MultiStats, development: boolean) => {
+  const multiStats: Stats[] = Array.isArray(input.stats)
+    ? input.stats
+    : [input.stats as unknown as Stats]
   multiStats.forEach((stats) => {
     if (!development) {
       log(

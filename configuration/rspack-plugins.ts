@@ -1,14 +1,8 @@
 import { basename, join, relative } from 'path'
 import { cpSync, existsSync } from 'fs'
 import { deepmerge } from 'deepmerge-ts'
-import {
-  RspackOptions,
-  Plugins,
-  RspackPluginInstance,
-  DefinePlugin,
-  HtmlRspackPlugin,
-  CopyRspackPlugin,
-} from '@rspack/core'
+import rspack from '@rspack/core'
+import type { RspackOptions, Plugins, RspackPluginInstance } from '@rspack/core'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import { InjectManifestPlugin } from 'inject-manifest-plugin'
 import { options } from '../utility/options'
@@ -112,16 +106,16 @@ export const getPlugins = (development: boolean, publicPath: string): RspackOpti
   }
 
   plugins.push(
-    new DefinePlugin({
+    new rspack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(publicPath),
       'process.env.NODE_ENV': development ? '"development"' : '"production"',
     }),
   )
 
-  plugins.push(new CopyRspackPlugin(getCopyPlugin()))
+  plugins.push(new rspack.CopyRspackPlugin(getCopyPlugin()))
 
   if (pluginOptions.html) {
-    plugins.push(new HtmlRspackPlugin(htmlPlugin(development, options().html)))
+    plugins.push(new rspack.HtmlRspackPlugin(htmlPlugin(development, options().html)))
   }
 
   if (!development && pluginOptions.injectManifest) {

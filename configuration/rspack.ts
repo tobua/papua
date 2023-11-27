@@ -1,5 +1,5 @@
 import { resolve, join } from 'path'
-import { RspackOptions } from '@rspack/core'
+import type { RspackOptions } from '@rspack/core'
 import urlJoin from 'url-join'
 import { options } from '../utility/options'
 import { getProjectBasePath } from '../utility/path'
@@ -61,53 +61,131 @@ const getTarget = () => {
   return targets
 }
 
-export default (development: boolean): RspackOptions => ({
-  target: getTarget(),
-  mode: development ? 'development' : 'production',
-  entry: options().entry,
-  output: {
-    filename: development || !options().hash ? '[name].js' : '[name].[contenthash].js',
-    path: join(getProjectBasePath(), options().output),
-    publicPath: getPublicPath(),
-    // Path not required when hash is present, shortens paths.
-    assetModuleFilename:
-      development || !options().hash ? '[path][name][ext][query]' : '[hash][ext][query]',
-  },
-  devtool: getSourceMap(development),
-  plugins: getPlugins(development, getPublicPath()),
-  resolve: {
-    modules: getRoots(),
-  },
-  module: {
-    // Matched from bottom to top!
-    rules: [
-      // Images
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        type: 'asset', // Auto-detect: Inline if < 8kb, external otherwise.
-      },
-      {
-        test: /\.inline\.(png|jpe?g|gif|svg)$/i,
-        type: 'asset/inline', // Inline *.inline.svg files in JavaScript using base64 dataURI.
-      },
-      {
-        test: /\.load\.(png|jpe?g|gif|svg)$/i,
-        type: 'asset/resource', // Convert *.load.png asset to separate file loaded through request.
-      },
-      // Fonts
-      {
-        test: /\.(woff|woff2|otf|ttf)$/i,
-        type: 'asset/resource',
-      },
-    ],
-  },
-  builtins: {
-    presetEnv: {
-      mode: 'entry',
-      targets:
-        options().esVersion !== 'browserslist'
-          ? ['last 3 versions', '> 1%', 'not dead']
-          : undefined,
+export default (development: boolean): RspackOptions => {
+  const esVersionSpecified = options().esVersion && options().esVersion !== 'browserslist'
+  const transformEnv = !options().esVersion
+    ? {
+        mode: 'entry',
+        targets: ['last 3 versions', '> 1%', 'not dead'],
+      }
+    : undefined
+
+  return {
+    target: getTarget(),
+    mode: development ? 'development' : 'production',
+    entry: options().entry,
+    output: {
+      filename: development || !options().hash ? '[name].js' : '[name].[contenthash].js',
+      path: join(getProjectBasePath(), options().output),
+      publicPath: getPublicPath(),
+      // Path not required when hash is present, shortens paths.
+      assetModuleFilename:
+        development || !options().hash ? '[path][name][ext][query]' : '[hash][ext][query]',
     },
-  },
-})
+    devtool: getSourceMap(development),
+    plugins: getPlugins(development, getPublicPath()),
+    resolve: {
+      modules: getRoots(),
+    },
+    module: {
+      // Matched from bottom to top!
+      rules: [
+        // Images
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset', // Auto-detect: Inline if < 8kb, external otherwise.
+        },
+        {
+          test: /\.inline\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset/inline', // Inline *.inline.svg files in JavaScript using base64 dataURI.
+        },
+        {
+          test: /\.load\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset/resource', // Convert *.load.png asset to separate file loaded through request.
+        },
+        // Fonts
+        {
+          test: /\.(woff|woff2|otf|ttf)$/i,
+          type: 'asset/resource',
+        },
+        // Transform using built-in SWC.
+        {
+          test: /.js$/, // JavaScript without JSX.
+          use: {
+            loader: 'builtin:swc-loader',
+            options: {
+              jsc: {
+                parser: {
+                  syntax: 'ecmascript',
+                  jsx: false,
+                },
+                target: esVersionSpecified ? options().esVersion : undefined,
+              },
+              env: transformEnv,
+            },
+          },
+        },
+        {
+          test: /.jsx$/, // JavaScript with JSX.
+          use: {
+            loader: 'builtin:swc-loader',
+            options: {
+              jsc: {
+                parser: {
+                  syntax: 'ecmascript',
+                  jsx: true,
+                },
+                transform: {
+                  react: {
+                    development,
+                    refresh: development,
+                  },
+                },
+                target: esVersionSpecified ? options().esVersion : undefined,
+              },
+              env: transformEnv,
+            },
+          },
+        },
+        {
+          test: /.ts$/, // TypeScript without JSX.
+          use: {
+            loader: 'builtin:swc-loader',
+            options: {
+              jsc: {
+                parser: {
+                  syntax: 'typescript',
+                  jsx: false,
+                },
+                target: esVersionSpecified ? options().esVersion : undefined,
+              },
+              env: transformEnv,
+            },
+          },
+        },
+        {
+          test: /.tsx$/,
+          use: {
+            loader: 'builtin:swc-loader',
+            options: {
+              jsc: {
+                parser: {
+                  syntax: 'typescript',
+                  jsx: true,
+                },
+                transform: {
+                  react: {
+                    development,
+                    refresh: development,
+                  },
+                },
+                target: esVersionSpecified ? options().esVersion : undefined,
+              },
+              env: transformEnv,
+            },
+          },
+        },
+      ],
+    },
+  }
+}

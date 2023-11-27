@@ -1,4 +1,4 @@
-import { RspackOptions, MultiRspackOptions } from '@rspack/core'
+import type { RspackOptions, MultiRspackOptions } from '@rspack/core'
 
 type RspackConfigMock = {
   __esModule: boolean

@@ -1,4 +1,4 @@
-import { rspack, MultiCompiler } from '@rspack/core'
+import rspack, { type MultiCompiler } from '@rspack/core'
 import { loadRspackConfig } from '../utility/configuration'
 import { logStats, logError } from '../utility/stats'
 import { cleanOuput } from '../utility/helper'
@@ -10,7 +10,7 @@ export default async (development: boolean) => {
 
   const configuration = await loadRspackConfig(development)
   return new Promise<MultiCompiler>((done) => {
-    const compiler = rspack(configuration, (error, stats) => {
+    const compiler = rspack.rspack(configuration, (error, stats) => {
       if (error) {
         logError(error)
         process.exit(1)

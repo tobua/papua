@@ -1,4 +1,4 @@
-import { RspackOptions, rspack } from '@rspack/core'
+import rspack, { type RspackOptions } from '@rspack/core'
 import { RspackDevServer, Configuration } from '@rspack/dev-server'
 import { deepmerge } from 'deepmerge-ts'
 import { startServer, recompiling, logStats } from '../utility/stats'
@@ -13,7 +13,7 @@ export default async (options: Configuration = {}, inputs = {}) => {
       port: 'number',
       headless: 'boolean',
     },
-    inputs
+    inputs,
   )
 
   const configuration = await loadRspackConfig(true)
@@ -23,17 +23,17 @@ export default async (options: Configuration = {}, inputs = {}) => {
     level: 'warn',
   }
 
-  const compiler = rspack(configuration)
+  const compiler = rspack.rspack(configuration)
 
   const devServerConfigurations = configuration.reduce(
     (result, current) => deepmerge(result, current.devServer ?? ({} as RspackOptions)),
-    {}
+    {},
   )
 
   const devServerConfiguration: Configuration = deepmerge(
     devServer(port, headless),
     devServerConfigurations,
-    options
+    options,
   )
 
   compiler.hooks.invalid.tap('invalid', recompiling)

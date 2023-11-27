@@ -36,7 +36,7 @@ test('Stats list all generated assets.', async () => {
       `import './styles.css';
     import './logo.load.png';
     
-    console.log('test')`
+    console.log('test')`,
     ),
     file('styles.css', 'p { color: red; }'),
     {
@@ -65,7 +65,7 @@ test('Only actual entry files are listed.', async () => {
     file(
       'index.js',
       `import './not-entry';
-      console.log('is-entry')`
+      console.log('is-entry')`,
     ),
     file('not-entry.js', 'console.log("is-not-entry")'),
   ])
@@ -85,12 +85,12 @@ test('Multiple entries are listed.', async () => {
     file(
       'first.js',
       `import './not-entry';
-        console.log('is-first-entry')`
+        console.log('is-first-entry')`,
     ),
     file(
       'second.js',
       `import './not-entry';
-        console.log('is-second-entry')`
+        console.log('is-second-entry')`,
     ),
     file('not-entry.js', 'console.log("is-not-entry")'),
   ])
@@ -131,11 +131,11 @@ test('Message for successful type check when building for production.', async ()
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
   await configure() // Required for tsconfig.json
@@ -152,11 +152,11 @@ test('Message for successful type check also present when errors.', async () => 
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
   await configure() // Required for tsconfig.json
@@ -179,9 +179,9 @@ test('JSX in regular JS will show an error pointing to the source.', async () =>
 
   const output = consoleLogMock.mock.calls.join(EOL)
 
-  expect(output).toContain('2 Errors:')
-  expect(output).toContain('JavaScript parsing error')
+  expect(output).toContain('1 Error:')
   expect(output).toContain('Expression expected')
+  expect(output).toContain('Unterminated regexp literal')
   expect(output).toContain('<p>hello</p>')
 })
 

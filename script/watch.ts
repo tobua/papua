@@ -1,4 +1,4 @@
-import { rspack } from '@rspack/core'
+import rspack from '@rspack/core'
 import { loadRspackConfig } from '../utility/configuration'
 import { log, cleanOuput } from '../utility/helper'
 import { logStats, logError, recompiling } from '../utility/stats'
@@ -9,7 +9,7 @@ export default async (development = true) => {
 
   const configuration = await loadRspackConfig(development)
 
-  const compiler = rspack(configuration)
+  const compiler = rspack.rspack(configuration)
 
   // Indicates new compile has been triggered on watched changes.
   compiler.hooks.invalid.tap('invalid', recompiling)

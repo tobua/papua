@@ -791,7 +791,7 @@ test('Can render React JSX.', async () => {
 test('Can render React without JSX entry.', async () => {
   const { dist } = prepare([
     packageJson('jsx', { dependencies: { react: 'latest' } }),
-    file('index.js', `import 'component.jsx'`),
+    file('index.js', `import Component from 'component.jsx'; console.log(Component)`),
     file('component.jsx', 'export default () => <p>hey</p>'),
   ])
 
