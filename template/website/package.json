@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "@stitches/react": "^1.2.8",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "mobx": "^6.11.0",
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.17",
+    "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
     "papua": "latest",
     "react": "^18.2.0",

@@ -137,6 +137,7 @@ export default (development: boolean): RspackOptions => {
                 },
                 transform: {
                   react: {
+                    runtime: 'automatic',
                     development,
                     refresh: development,
                   },
@@ -175,6 +176,7 @@ export default (development: boolean): RspackOptions => {
                 },
                 transform: {
                   react: {
+                    runtime: 'automatic',
                     development,
                     refresh: development,
                   },
