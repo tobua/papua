@@ -3,6 +3,7 @@ import { cpSync, existsSync } from 'fs'
 import { deepmerge } from 'deepmerge-ts'
 import rspack from '@rspack/core'
 import type { RspackOptions, Plugins, RspackPluginInstance } from '@rspack/core'
+import ReactRefreshPlugin from '@rspack/plugin-react-refresh'
 import TypeScriptWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import { InjectManifestPlugin } from 'inject-manifest-plugin'
 import { options } from '../utility/options'
@@ -133,6 +134,10 @@ export const getPlugins = (development: boolean, publicPath: string): RspackOpti
         }),
       )
     }
+  }
+
+  if (development) {
+    plugins.push(new ReactRefreshPlugin())
   }
 
   return plugins
