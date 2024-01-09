@@ -33,11 +33,11 @@ test('Configuration paths properly resolved in a workspaces setup.', async () =>
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../configuration/.prettierignore')
+    readFile('../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../configuration/template.html')
+    readFile('../../../configuration/template.html'),
   )
 
   await writeConfiguration(false)
@@ -71,11 +71,9 @@ test('Configuration paths properly resolved in a workspaces setup.', async () =>
     },
   })
 
-  expect(configContents[2].contents.compilerOptions).toContain({
-    baseUrl: '.',
-    jsx: 'react-jsx',
-    esModuleInterop: true,
-  })
+  expect(configContents[2].contents.compilerOptions.baseUrl).toBe('.')
+  expect(configContents[2].contents.compilerOptions.jsx).toBe('react-jsx')
+  expect(configContents[2].contents.compilerOptions.esModuleInterop).toBe(true)
 
   expect(configContents[2].contents.files).toEqual(['index.ts'])
 
@@ -145,7 +143,7 @@ test('localDependencies work with workspaces setup and cyclical import.', async 
     // Imports symlinked modules.
     file(
       'demo/index.ts',
-      `import { localDependency } from 'wrapper'; console.log(localDependency())`
+      `import { localDependency } from 'wrapper'; console.log(localDependency())`,
     ),
   ])
 
@@ -157,11 +155,11 @@ test('localDependencies work with workspaces setup and cyclical import.', async 
 
   writeFile(
     'node_modules/papua/configuration/.prettierignore',
-    readFile('../../../../configuration/.prettierignore')
+    readFile('../../../../configuration/.prettierignore'),
   )
   writeFile(
     'node_modules/papua/configuration/template.html',
-    readFile('../../../../configuration/template.html')
+    readFile('../../../../configuration/template.html'),
   )
 
   await writeConfiguration(false)
