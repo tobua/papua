@@ -86,6 +86,7 @@ export default (development: boolean): RspackOptions => {
     plugins: getPlugins(development, getPublicPath()),
     resolve: {
       modules: getRoots(),
+      extensions: ['...', '.tsx', '.ts', '.jsx'], // "..." means to extend from the default extensions
     },
     module: {
       // Matched from bottom to top!

@@ -977,3 +977,17 @@ test('Can import fonts.', async () => {
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
   expect(mainJsContents).toContain('.woff2')
 })
+
+test('Absolute imports can be used.', async () => {
+  const { dist } = prepare([
+    packageJson('absolute'),
+    file('index.jsx', `import { greeting } from 'hello/world'; console.log(greeting)`),
+    file('hello/world.jsx', 'export const greeting = "HEY"'),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain('HEY')
+})
