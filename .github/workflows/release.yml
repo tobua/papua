@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-test-release:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     permissions:
       id-token: write # Required to mint token for npm package provenance
       contents: write
