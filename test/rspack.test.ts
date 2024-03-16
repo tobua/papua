@@ -78,21 +78,25 @@ test('User can add their own rspack configuration file.', async () => {
 
   const initialConfigurations = await loadRspackConfig(true)
 
-  expect(initialConfigurations[0].builtins?.emotion).toBeUndefined()
+  expect(initialConfigurations[0].builtins?.treeShaking).toBeUndefined()
 
   prepare(loaderPluginMergeStructure, fixturePath)
 
   // Reset previous imports/mocks.
   rspackConfig.default = {
     builtins: {
-      emotion: true,
+      css: {
+        namedExports: true,
+      },
+      treeShaking: true,
     },
   }
 
   const configurations = await loadRspackConfig(true)
 
   expect(configurations.length).toBe(1)
-  expect(configurations[0].builtins?.emotion).toBe(true)
+  expect(configurations[0].builtins?.treeShaking).toBe(true)
+  expect(configurations[0].builtins?.css?.namedExports).toBe(true)
 })
 
 test(`Default export isn't required in custom configuration.`, async () => {
@@ -311,7 +315,7 @@ test('Multiple html files can be generated with multiple configurations.', async
   vi.doMock(join(fixturePath, 'rspack.config.js'), () => rspackConfig)
 
   const loaderPluginMergeStructure = [
-    packageJson('multiple-html'),
+    packageJson('multiple-html', { papua: { html: false } }),
     file('first.js', 'console.log("first")'),
     file('second.js', 'console.log("second")'),
     file('third.js', 'console.log("third")'),
@@ -323,9 +327,6 @@ test('Multiple html files can be generated with multiple configurations.', async
   rspackConfig.default = () => [
     {
       entry: './first.js',
-      builtins: {
-        html: [], // Disable default html template. (TODO with plugin)
-      },
       devServer: {
         open: false,
       },

@@ -98,7 +98,11 @@ export const htmlPlugin = (development: boolean, inputs?: boolean | HtmlOptions)
   return htmlOptions
 }
 
-export const getPlugins = (development: boolean, publicPath: string): RspackOptions['plugins'] => {
+export const getPlugins = (
+  development: boolean,
+  publicPath: string,
+  isFirst: boolean,
+): RspackOptions['plugins'] => {
   const plugins: Plugins = []
   const pluginOptions = options()
 
@@ -110,12 +114,16 @@ export const getPlugins = (development: boolean, publicPath: string): RspackOpti
     new rspack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(publicPath),
       'process.env.NODE_ENV': development ? '"development"' : '"production"',
+      ...pluginOptions.envVariables.reduce((result, variable) => {
+        result[`process.env.${variable}`] = JSON.stringify(process.env[variable])
+        return result
+      }, {}),
     }),
   )
 
   plugins.push(new rspack.CopyRspackPlugin(getCopyPlugin()))
 
-  if (pluginOptions.html) {
+  if (pluginOptions.html && isFirst) {
     plugins.push(new rspack.HtmlRspackPlugin(htmlPlugin(development, options().html)))
   }
 

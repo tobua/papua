@@ -29,6 +29,7 @@ const defaultOptions: Options = {
   root: true,
   localDependencies: false,
   sourceMap: false,
+  envVariables: [],
 }
 
 const normalizePaths = (paths: string[] | string) => {
@@ -39,7 +40,7 @@ const normalizePaths = (paths: string[] | string) => {
   }
 
   result = result.map((path) =>
-    relative(getProjectBasePath(), isAbsolute(path) ? path : join(getProjectBasePath(), path))
+    relative(getProjectBasePath(), isAbsolute(path) ? path : join(getProjectBasePath(), path)),
   )
 
   // Remove duplicates.
@@ -71,7 +72,7 @@ const getEntry = (entry: Entry): NormalizedEntry => {
       if (existsSync(join(getProjectBasePath(), entryFilePath))) {
         defaultEntries.push(entryFilePath)
       }
-    })
+    }),
   )
 
   return normalizePaths(defaultEntries)
@@ -133,7 +134,7 @@ export const options = cache(() => {
   if (features.javascript && features.typescript) {
     log(
       'Both JavaScript and TypeScript entries found, we recommend to only use one language per project',
-      'warning'
+      'warning',
     )
   }
 
@@ -171,5 +172,5 @@ export const options = cache(() => {
     result.title = `${packageContents.name || 'papua'} App`
   }
 
-  return result
+  return result as Options
 })

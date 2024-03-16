@@ -1,9 +1,9 @@
-import type { Builtins, RspackOptions } from '@rspack/core'
+import type { RspackOptions, HtmlRspackPluginOptions, CopyRspackPluginOptions } from '@rspack/core'
 import type { Options as InjectManifestOptions } from 'inject-manifest-plugin'
 
 type Unpacked<T> = T extends (infer U)[] ? U : T
-export type HtmlOptions = Unpacked<Builtins['html']>
-export type CopyOptions = Builtins['copy']
+export type HtmlOptions = Unpacked<HtmlRspackPluginOptions>
+export type CopyOptions = CopyRspackPluginOptions
 
 interface Rewrite {
   source: string
@@ -56,6 +56,7 @@ export interface Options {
   localDependencies: boolean
   sourceMap: boolean
   esVersion?: Unpacked<RspackOptions['target']>
+  envVariables: string[]
 }
 
 export interface Package {

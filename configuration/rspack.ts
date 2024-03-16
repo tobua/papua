@@ -61,7 +61,7 @@ const getTarget = () => {
   return targets
 }
 
-export default (development: boolean): RspackOptions => {
+export default (development: boolean, isFirst: boolean): RspackOptions => {
   const esVersionSpecified = options().esVersion && options().esVersion !== 'browserslist'
   const transformEnv = !options().esVersion
     ? {
@@ -83,7 +83,7 @@ export default (development: boolean): RspackOptions => {
         development || !options().hash ? '[path][name][ext][query]' : '[hash][ext][query]',
     },
     devtool: getSourceMap(development),
-    plugins: getPlugins(development, getPublicPath()),
+    plugins: getPlugins(development, getPublicPath(), isFirst),
     resolve: {
       modules: getRoots(),
       extensions: ['...', '.tsx', '.ts', '.jsx'], // "..." means to extend from the default extensions

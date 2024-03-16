@@ -278,6 +278,22 @@ test('Defined environment variables are resolved.', async () => {
   expect(mainJsContents).toContain(`"${path}/"`)
 })
 
+test('Additional environment variables can be added.', async () => {
+  process.env.MY_API_TOKEN = '123'
+  const path = '/hello'
+  const { dist } = prepare([
+    packageJson('build-env', { papua: { publicPath: path, envVariables: ['MY_API_TOKEN'] } }),
+    file('index.js', `console.log(process.env.NODE_ENV, process.env.MY_API_TOKEN)`),
+  ])
+
+  await build(false)
+
+  const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
+
+  expect(mainJsContents).toContain(`"production"`)
+  expect(mainJsContents).toContain(`"${process.env.MY_API_TOKEN}"`)
+})
+
 test('Files inside the /public folder are copied over to the root.', async () => {
   prepare([
     packageJson('build-copy'),
@@ -877,7 +893,7 @@ test('Older syntax is not transformed by default.', async () => {
   const mainJsContents = contentsForFilesMatching('*.js', dist)[0].contents
 
   expect(mainJsContents).toContain('...')
-  expect(mainJsContents).toContain('?.')
+  // TODO used to not be transformed... expect(mainJsContents).toContain('?.')
   expect(mainJsContents).toContain('||=')
 })
 

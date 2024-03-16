@@ -127,6 +127,8 @@ a `papua` property to your `package.json` with the following options available:
     prettierIgnore: ['test'],
     // Use browserslist to determine environment or set to es5, es2015, es2022, etc.
     esVersion: 'browserslist',
+    // Additional env variables to inject during build, default includes 'NODE_ENV' and 'PUBLIC_URL'.
+    envVariables: ['MY_API_TOKEN'],
     // Configure cypress front end tests.
     cypress: {
       defaultCommandTimeout: 6000

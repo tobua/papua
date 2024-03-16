@@ -43,24 +43,9 @@ const createSingleRspackConfiguration = (
   baseConfiguration: RspackOptions,
   userConfiguration: UserConfiguration,
   afterMergeConfiguration: Function,
-  index = 0,
 ) => {
-  // Quick copy of builtins, as baseConfiguration is generated only once.
-  let configuration: RspackOptions = {
-    ...baseConfiguration,
-    // Plugin order: Define, Copy and Html (optional)
-    // Usage of legacy builtins by user will lead to warning.
-    plugins: [
-      !userConfiguration.builtins?.define && baseConfiguration.plugins[0],
-      // Copy and Html plugin will only be added automatically to first configuration.
-      !userConfiguration.builtins?.copy && index === 0 && baseConfiguration.plugins[1],
-      !userConfiguration.builtins?.html && index === 0 && baseConfiguration.plugins[2],
-      ...baseConfiguration.plugins.slice(3),
-    ].filter(Boolean),
-  }
-
   // With clone plugins etc. (non-serializable properties) will be gone.
-  configuration = deepmerge(configuration, userConfiguration)
+  let configuration: RspackOptions = deepmerge(baseConfiguration, userConfiguration)
 
   // Apply user edits.
   if (afterMergeConfiguration) {
@@ -72,23 +57,6 @@ const createSingleRspackConfiguration = (
   }
 
   return configuration as unknown as RspackOptions
-}
-
-const createMultipleWebpackConfigurations = (
-  baseConfiguration: RspackOptions,
-  userConfigurations: UserConfiguration[],
-  afterMergeConfiguration: Function,
-) => {
-  const configurations = userConfigurations.map((userConfiguration, index) =>
-    createSingleRspackConfiguration(
-      baseConfiguration,
-      userConfiguration,
-      afterMergeConfiguration,
-      index,
-    ),
-  )
-
-  return configurations
 }
 
 export const loadRspackConfig = async (development: boolean) => {
@@ -119,7 +87,7 @@ export const loadRspackConfig = async (development: boolean) => {
     // Ignore, no user configuration found.
   }
 
-  const baseConfiguration = rspackConfig(development)
+  const baseConfiguration = rspackConfig(development, true)
 
   // User configuration can be a function and will receive the default config and the environment.
   if (typeof userConfiguration === 'function') {
@@ -138,11 +106,24 @@ export const loadRspackConfig = async (development: boolean) => {
       ),
     ]
   } else {
-    configuration = createMultipleWebpackConfigurations(
-      baseConfiguration,
-      userConfiguration,
-      afterMergeConfiguration,
-    )
+    const additionalConfigurations = rspackConfig(development, false)
+    configuration = [
+      createSingleRspackConfiguration(
+        baseConfiguration,
+        // First configuration with html enabled by default.
+        userConfiguration[0],
+        afterMergeConfiguration,
+      ),
+      ...userConfiguration
+        .slice(1)
+        .map((userConfigurationItem) =>
+          createSingleRspackConfiguration(
+            additionalConfigurations,
+            userConfigurationItem,
+            afterMergeConfiguration,
+          ),
+        ),
+    ]
   }
 
   return configuration

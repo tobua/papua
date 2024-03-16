@@ -11,21 +11,19 @@ jobs:
       id-token: write # Required to mint token for npm package provenance
       contents: write
     steps:
-      - uses: actions/checkout@v3
-      - run: npm install --legacy-peer-deps
-      - run: npm run build
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - run: bun run build
       - name: 🧪 Test
-        run: npm test
-      - name: 🦺 Install latest npm with npm package provenance feature
-        run: npm install -g npm@latest
-      - uses: tobua/release-npm-action@v2
+        run: bun run test
+      - uses: tobua/release-npm-action@v3
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          DEBUG: true
   test-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: npm install --legacy-peer-deps
+      - uses: actions/checkout@v4
+      - run: npm install
       - name: 🧪 Test
         run: npm test
