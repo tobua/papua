@@ -41,7 +41,7 @@ npm init now papua [destination-directory] [template]
 npm i papua
 ```
 
-This will automatically adapt your `package.json` configuration to work with `papua`.
+This will automatically adapt your `package.json` configuration to work with `papua`. When using Bun make sure to add `papua` as a [trustedDependency](https://bun.sh/docs/install/lifecycle#trusteddependencies) as this plugin relies on postinstall to generate configurations during installation.
 
 ## Usage
 
